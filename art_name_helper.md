@@ -21,6 +21,11 @@ Updated art naming app so apostrophes are removed cleanly during slug creation i
 - `Trailer`
 - `Extras`
 
+## Series Title Rule
+
+- For `Season Placeholder`, the `Title` input should be the series title.
+- For `Episode`, the `Title` input should be the series title.
+
 ## Art Types
 
 - `ca` = Cover Art

@@ -37,6 +37,14 @@ FIELD_LABELS = {
     FIELD_ASPECT_RATIO: "Aspect Ratio *",
     FIELD_DIMENSIONS: "Dimensions *",
 }
+TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
+    "Season Placeholder": {
+        FIELD_TITLE: "Series Title *",
+    },
+    "Episode": {
+        FIELD_TITLE: "Series Title *",
+    },
+}
 LANGUAGE_OPTIONS = ("English", "Spanish")
 
 ART_TAG_OPTIONS = (
@@ -400,6 +408,7 @@ class ArtNameHelperApp:
 
         self.field_vars = {field: tk.StringVar(value=default) for field, default in DEFAULT_VALUES.items()}
         self.field_rows: dict[str, ttk.Frame] = {}
+        self.field_labels: dict[str, ttk.Label] = {}
         self.field_combos: dict[str, ttk.Combobox] = {}
         self.batch_csv_path: Path | None = None
 
@@ -577,8 +586,13 @@ class ArtNameHelperApp:
 
     def _add_entry_row(self, parent: ttk.Widget, label: str, variable: tk.StringVar, width: int = 40) -> ttk.Frame:
         row = ttk.Frame(parent)
-        ttk.Label(row, text=label, width=18).pack(side="left")
+        label_widget = ttk.Label(row, text=label, width=18)
+        label_widget.pack(side="left")
         ttk.Entry(row, textvariable=variable, width=width).pack(side="left", fill="x", expand=True)
+        for field_name, field_label in FIELD_LABELS.items():
+            if field_label == label:
+                self.field_labels[field_name] = label_widget
+                break
         return row
 
     def _add_combo_row(
@@ -590,9 +604,14 @@ class ArtNameHelperApp:
         values: tuple[str, ...],
     ) -> ttk.Frame:
         row = ttk.Frame(parent)
-        ttk.Label(row, text=label, width=18).pack(side="left")
+        label_widget = ttk.Label(row, text=label, width=18)
+        label_widget.pack(side="left")
         combo = ttk.Combobox(row, textvariable=variable, values=values, state="readonly", width=30)
         combo.pack(side="left")
+        for field_name, field_label in FIELD_LABELS.items():
+            if field_label == label:
+                self.field_labels[field_name] = label_widget
+                break
         self.field_combos[field_name] = combo
         return row
 
@@ -671,8 +690,14 @@ class ArtNameHelperApp:
             self.task_row.pack(fill="x", pady=(0, 10))
             self.multi_frame.pack_forget()
             self.single_frame.pack(fill="x", pady=(0, 10))
+            self._refresh_field_labels(task)
             self._refresh_art_tag_dropdown()
             self._render_single_rows(required_fields)
+
+    def _refresh_field_labels(self, task: str) -> None:
+        overrides = TASK_FIELD_LABEL_OVERRIDES.get(task, {})
+        for field_name, label_widget in self.field_labels.items():
+            label_widget.config(text=overrides.get(field_name, FIELD_LABELS[field_name]))
 
     def _render_single_rows(self, required_fields: tuple[str, ...]) -> None:
         for row in self.field_rows.values():
@@ -706,6 +731,8 @@ class ArtNameHelperApp:
             "`tt` always outputs `.png`. `ca` and `bg` output `.jpg`.",
             "Dimensions must match the selected Aspect Ratio.",
         ]
+        if task_name in {"Season Placeholder", "Episode"}:
+            lines.append("For this art type, `title` should be the series title.")
         return "\n".join(lines)
 
     def _raw_fields_for_task(self) -> dict[str, str]:

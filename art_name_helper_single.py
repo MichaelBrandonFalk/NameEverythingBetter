@@ -32,6 +32,7 @@ from art_name_helper import (
     build_filename,
     plus_warning_needed,
     PLUS_WARNING_MESSAGE,
+    TASK_FIELD_LABEL_OVERRIDES,
 )
 
 
@@ -48,6 +49,7 @@ class SingleArtNameHelperApp:
 
         self.field_vars = {field: tk.StringVar(value=default) for field, default in DEFAULT_VALUES.items()}
         self.field_rows: dict[str, ttk.Frame] = {}
+        self.field_labels: dict[str, ttk.Label] = {}
         self.field_combos: dict[str, ttk.Combobox] = {}
 
         self._build_ui()
@@ -114,13 +116,17 @@ class SingleArtNameHelperApp:
 
     def _add_entry_row(self, field_name: str, width: int = 40) -> ttk.Frame:
         row = ttk.Frame(self.fields_frame)
-        ttk.Label(row, text=FIELD_LABELS[field_name], width=18).pack(side="left")
+        label_widget = ttk.Label(row, text=FIELD_LABELS[field_name], width=18)
+        label_widget.pack(side="left")
+        self.field_labels[field_name] = label_widget
         ttk.Entry(row, textvariable=self.field_vars[field_name], width=width).pack(side="left", fill="x", expand=True)
         return row
 
     def _add_combo_row(self, field_name: str, values: tuple[str, ...]) -> ttk.Frame:
         row = ttk.Frame(self.fields_frame)
-        ttk.Label(row, text=FIELD_LABELS[field_name], width=18).pack(side="left")
+        label_widget = ttk.Label(row, text=FIELD_LABELS[field_name], width=18)
+        label_widget.pack(side="left")
+        self.field_labels[field_name] = label_widget
         combo = ttk.Combobox(row, textvariable=self.field_vars[field_name], values=values, state="readonly", width=30)
         combo.pack(side="left")
         self.field_combos[field_name] = combo
@@ -159,14 +165,21 @@ class SingleArtNameHelperApp:
             self.field_vars[FIELD_DIMENSIONS].set(valid_dimensions[0])
 
     def _refresh_task_ui(self) -> None:
-        required_fields = TASKS[self.task_var.get()]
+        task_name = self.task_var.get()
+        required_fields = TASKS[task_name]
         for row in self.field_rows.values():
             row.pack_forget()
+        self._refresh_field_labels(task_name)
         self._refresh_art_tag_dropdown()
         for field in required_fields:
             self.field_rows[field].pack(fill="x", pady=4)
         self._refresh_size_dropdowns()
         self.output_var.set("")
+
+    def _refresh_field_labels(self, task_name: str) -> None:
+        overrides = TASK_FIELD_LABEL_OVERRIDES.get(task_name, {})
+        for field_name, label_widget in self.field_labels.items():
+            label_widget.config(text=overrides.get(field_name, FIELD_LABELS[field_name]))
 
     def _raw_fields_for_task(self) -> dict[str, str]:
         fields = TASKS[self.task_var.get()]

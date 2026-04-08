@@ -1,0 +1,1333 @@
+<h1 id="new-art-naming-conventions">New Art Naming Conventions</h1>
+<p>Date: April 1, 2026</p>
+<h2 id="purpose">Purpose</h2>
+<p>We are standardizing art names to help streamline how art is
+associated with titles across deliveries, libraries, and internal
+workflows.</p>
+<p>A consistent naming structure makes it easier to:</p>
+<ul>
+<li>match art to the correct title quickly</li>
+<li>review and organize assets with less manual sorting</li>
+<li>reduce renaming during handoff</li>
+<li>improve consistency across teams and vendors</li>
+</ul>
+<p>The goal is simple: cleaner file names, faster association, and fewer
+avoidable fixes later.</p>
+<h2 id="standard-building-blocks">Standard Building Blocks</h2>
+<p>Every art filename is built from a predictable set of pieces:</p>
+<ul>
+<li>title or series name</li>
+<li>season and episode, when applicable</li>
+<li>any fixed token required by the media type</li>
+<li>art tag</li>
+<li>aspect ratio</li>
+<li>dimensions</li>
+<li>file extension</li>
+</ul>
+<p>All parts are joined with underscores.</p>
+<h2 id="art-types">Art Types</h2>
+<p>These are the three art types currently used in the standard:</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Name</th>
+<th>File Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ca</code></td>
+<td>Cover Art</td>
+<td><code>.jpg</code></td>
+<td>Key art, posters, and primary visual packaging</td>
+</tr>
+<tr>
+<td><code>bg</code></td>
+<td>Background Art</td>
+<td><code>.jpg</code></td>
+<td>Background-style art used across title, season, and episode
+placements</td>
+</tr>
+<tr>
+<td><code>tt</code></td>
+<td>Title Treatment</td>
+<td><code>.png</code></td>
+<td>Always saved as PNG</td>
+</tr>
+</tbody>
+</table>
+<h2 id="allowed-art-tags-by-media-type">Allowed Art Tags By Media
+Type</h2>
+<table>
+<thead>
+<tr>
+<th>Media Type</th>
+<th>Allowed Art Tags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Movie</td>
+<td><code>ca</code>, <code>bg</code>, <code>tt</code></td>
+</tr>
+<tr>
+<td>Series</td>
+<td><code>ca</code>, <code>bg</code>, <code>tt</code></td>
+</tr>
+<tr>
+<td>Season Placeholder</td>
+<td><code>ca</code>, <code>bg</code></td>
+</tr>
+<tr>
+<td>Episode</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Original Premium Series (Yearly)</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Exclusive Conversation (Yearly)</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Virtual Screening</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Trailer</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Extras</td>
+<td><code>bg</code></td>
+</tr>
+<tr>
+<td>Carousel</td>
+<td><code>ca</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="general-formatting-rules">General Formatting Rules</h2>
+<ul>
+<li>Use lowercase only.</li>
+<li>Replace spaces with underscores.</li>
+<li>Remove apostrophes instead of turning them into extra
+separators.</li>
+<li>Strip accents to plain letters so the word stays intact.</li>
+<li>Use aspect ratios in <code>x</code> format, such as
+<code>16x9</code>.</li>
+<li>Use dimensions in <code>widthxheight</code> format, such as
+<code>1920x1080</code>.</li>
+<li>Use two digits for season and episode numbers, such as
+<code>s02</code> and <code>e05</code>.</li>
+<li>Use a four-digit year for yearly formats, such as
+<code>2026</code>.</li>
+<li>Language rule: English adds <code>_eng</code> immediately before the
+art tag. Spanish adds <code>_las</code> immediately before the art
+tag.</li>
+</ul>
+<p>For season and episode-based art, the starting title value should be
+the series title, not a season name or episode title.</p>
+<h2 id="symbol-handling-rules">Symbol Handling Rules</h2>
+<ul>
+<li>Spaces become underscores.</li>
+<li>Apostrophes are removed.</li>
+<li><code>&amp;</code> becomes <code>and</code>.</li>
+<li><code>@</code> becomes <code>at</code>.</li>
+<li>A standalone <code>+</code> becomes <code>and</code>.</li>
+<li>An attached <code>+</code> becomes <code>plus</code>.</li>
+<li><code>!</code>, <code>.</code>, <code>·</code>, and <code>*</code>
+are removed.</li>
+</ul>
+<h2 id="name-cleanup-examples">Name Cleanup Examples</h2>
+<table>
+<thead>
+<tr>
+<th>Entered Value</th>
+<th>Final Filename Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>God's not Dead</code></td>
+<td><code>gods_not_dead</code></td>
+</tr>
+<tr>
+<td><code>José María</code></td>
+<td><code>jose_maria</code></td>
+</tr>
+<tr>
+<td><code>We're the Messengers</code></td>
+<td><code>were_the_messengers</code></td>
+</tr>
+<tr>
+<td><code>Anthony Hopkins</code></td>
+<td><code>anthony_hopkins</code></td>
+</tr>
+<tr>
+<td><code>Mr. &amp; Mrs. Smith</code></td>
+<td><code>mr_and_mrs_smith</code></td>
+</tr>
+<tr>
+<td><code>Watch on GFAM+</code></td>
+<td><code>watch_on_gfam_plus</code></td>
+</tr>
+<tr>
+<td><code>Romeo + Juliet</code></td>
+<td><code>romeo_and_juliet</code></td>
+</tr>
+<tr>
+<td><code>WALL·E</code></td>
+<td><code>walle</code></td>
+</tr>
+<tr>
+<td><code>M*A*S*H</code></td>
+<td><code>mash</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="media-types-and-filename-recipes">Media Types And Filename
+Recipes</h2>
+<h3 id="movie">Movie</h3>
+<p>Formula:</p>
+<p><code>[title]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>county_rescue_eng_ca_16x9_3840x2160.jpg</code></p>
+<p>English example:</p>
+<p><code>strong_fathers_strong_daughters_eng_bg_16x9_1920x1080.jpg</code></p>
+<p>Spanish example:</p>
+<p><code>strong_fathers_strong_daughters_las_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="series">Series</h3>
+<p>Formula:</p>
+<p><code>[title]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>county_rescue_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="season-placeholder">Season Placeholder</h3>
+<p>Formula:</p>
+<p><code>[series_name]_s[xx]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Series Name</li>
+<li>Season</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>county_rescue_s02_eng_ca_16x9_1920x1080.jpg</code></p>
+<h3 id="episode">Episode</h3>
+<p>Formula:</p>
+<p><code>[series_name]_s[xx]_e[xx]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Series Name</li>
+<li>Season</li>
+<li>Episode</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Examples:</p>
+<p><code>county_rescue_s02_e06_eng_bg_16x9_1920x1080.jpg</code></p>
+<p><code>county_rescue_s02_e06_eng_bg_7x3_2450x1100.jpg</code></p>
+<h3 id="original-premium-series-yearly">Original Premium Series
+(Yearly)</h3>
+<p>Formula:</p>
+<p><code>[title]_s[yyyy]_e[xx]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Year</li>
+<li>Episode</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>pure_devotions_s2025_e01_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="exclusive-conversation-yearly">Exclusive Conversation
+(Yearly)</h3>
+<p>Formula:</p>
+<p><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Year</li>
+<li>Episode</li>
+<li>Interviewee(s)</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li><code>exclusive_conversations</code> is a fixed starting token.</li>
+<li>The interviewee value is inserted after the episode token.</li>
+</ul>
+<p>Example:</p>
+<p><code>exclusive_conversations_s2026_e09_anthony_hopkins_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="virtual-screening">Virtual Screening</h3>
+<p>Formula:</p>
+<p><code>[title]_virtual_screening_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>wild_like_me_virtual_screening_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="trailer">Trailer</h3>
+<p>Formula:</p>
+<p><code>[title]_trailer_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>gods_not_dead_trailer_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="extras">Extras</h3>
+<p>Formula:</p>
+<p><code>[title]_[extra_prefix]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Extra Type</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>gods_not_dead_del_eng_bg_16x9_1920x1080.jpg</code></p>
+<h3 id="carousel">Carousel</h3>
+<p>Formula:</p>
+<p><code>[title]_carousel_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]</code></p>
+<p>Required fields:</p>
+<ul>
+<li>Title</li>
+<li>Language</li>
+<li>Art Tag</li>
+<li>Aspect Ratio</li>
+<li>Dimensions</li>
+</ul>
+<p>Example:</p>
+<p><code>county_rescue_carousel_eng_ca_7x3_2450x1100.jpg</code></p>
+<h2 id="extras-prefixes">Extras Prefixes</h2>
+<table>
+<thead>
+<tr>
+<th>Extra Type</th>
+<th>Filename Prefix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Behind the Scenes / Making Of</td>
+<td><code>bts</code></td>
+</tr>
+<tr>
+<td>Interviews (Cast/Crew)</td>
+<td><code>int</code></td>
+</tr>
+<tr>
+<td>Deleted Scenes</td>
+<td><code>del</code></td>
+</tr>
+<tr>
+<td>Bloopers / Alternate Takes</td>
+<td><code>alt</code></td>
+</tr>
+<tr>
+<td>Music Videos</td>
+<td><code>mus</code></td>
+</tr>
+<tr>
+<td>Promotional Clips</td>
+<td><code>clp</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="approved-art-sizes">Approved Art Sizes</h2>
+<p>Use one of the approved aspect ratio and dimensions combinations
+below.</p>
+<p>The aspect ratio determines which pixel sizes are allowed. Not every
+dimension is valid for every ratio.</p>
+<h3 id="approved-pixel-sizes-by-aspect-ratio">Approved Pixel Sizes By
+Aspect Ratio</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect Ratio</th>
+<th>Approved Pixel Sizes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>7x3</code></td>
+<td><code>2450x1100</code></td>
+</tr>
+<tr>
+<td><code>16x9</code></td>
+<td><code>3840x2160</code>, <code>2560x1440</code>,
+<code>1920x1080</code></td>
+</tr>
+<tr>
+<td><code>4x3</code></td>
+<td><code>3200x2400</code>, <code>2560x1920</code>,
+<code>1440x1080</code></td>
+</tr>
+<tr>
+<td><code>3x4</code></td>
+<td><code>2400x3200</code>, <code>1920x2560</code></td>
+</tr>
+<tr>
+<td><code>2x3</code></td>
+<td><code>2000x3000</code>, <code>1600x2400</code></td>
+</tr>
+<tr>
+<td><code>1x1</code></td>
+<td><code>3000x3000</code></td>
+</tr>
+<tr>
+<td><code>9x5</code></td>
+<td><code>1800x1000</code></td>
+</tr>
+</tbody>
+</table>
+<p>These are the approved pixel sizes the app should present after an
+aspect ratio is selected.</p>
+<h2 id="quick-reference-by-media-type">Quick Reference By Media
+Type</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Media Type</th>
+<th>Required Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Movie</td>
+<td><code>title</code>, <code>language</code>, <code>art_tag</code>,
+<code>aspect_ratio</code>, <code>dimensions</code></td>
+</tr>
+<tr>
+<td>Series</td>
+<td><code>title</code>, <code>language</code>, <code>art_tag</code>,
+<code>aspect_ratio</code>, <code>dimensions</code></td>
+</tr>
+<tr>
+<td>Season Placeholder</td>
+<td><code>title</code>, <code>season</code>, <code>language</code>,
+<code>art_tag</code>, <code>aspect_ratio</code>,
+<code>dimensions</code></td>
+</tr>
+<tr>
+<td>Episode</td>
+<td><code>title</code>, <code>season</code>, <code>episode</code>,
+<code>language</code>, <code>art_tag</code>, <code>aspect_ratio</code>,
+<code>dimensions</code></td>
+</tr>
+<tr>
+<td>Original Premium Series (Yearly)</td>
+<td><code>title</code>, <code>year</code>, <code>episode</code>,
+<code>language</code>, <code>art_tag</code>, <code>aspect_ratio</code>,
+<code>dimensions</code></td>
+</tr>
+<tr>
+<td>Exclusive Conversation (Yearly)</td>
+<td><code>year</code>, <code>episode</code>, <code>interviewees</code>,
+<code>language</code>, <code>art_tag</code>, <code>aspect_ratio</code>,
+<code>dimensions</code></td>
+</tr>
+<tr>
+<td>Virtual Screening</td>
+<td><code>title</code>, <code>language</code>, <code>art_tag</code>,
+<code>aspect_ratio</code>, <code>dimensions</code></td>
+</tr>
+<tr>
+<td>Trailer</td>
+<td><code>title</code>, <code>language</code>, <code>art_tag</code>,
+<code>aspect_ratio</code>, <code>dimensions</code></td>
+</tr>
+<tr>
+<td>Extras</td>
+<td><code>title</code>, <code>language</code>, <code>extra_usage</code>,
+<code>art_tag</code>, <code>aspect_ratio</code>,
+<code>dimensions</code></td>
+</tr>
+<tr>
+<td>Carousel</td>
+<td><code>title</code>, <code>language</code>, <code>art_tag</code>,
+<code>aspect_ratio</code>, <code>dimensions</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="workflow">Workflow</h2>
+<ol type="1">
+<li>Start with the correct media type.</li>
+<li>Enter the title or series value using the standard cleanup
+rules.</li>
+<li>Add season, episode, year, interviewee, or extra prefix only when
+that media type requires it.</li>
+<li>Choose the correct art tag.</li>
+<li>Choose an approved aspect ratio and matching dimensions.</li>
+<li>Save the file with the extension that belongs to that art tag.</li>
+</ol>
+<h2 id="adoption-note">Adoption Note</h2>
+<p>This naming standard is meant to make art easier to place, easier to
+review, and easier to trace back to the right title. The more
+consistently it is used, the less time gets spent on cleanup later in
+the process.</p>
+<h2 id="example-matrix">Example Matrix</h2>
+<p>The tables below use one fixed sample title so every allowed filename
+variation can be reviewed side by side. - Title / Series Name:
+<code>be_like_water</code> - Season sample: <code>s01</code> - Episode
+sample: <code>e01</code> - Languages shown: <code>eng</code>,
+<code>las</code> ### Movie Combinations | Title | Language | Art Tag |
+Aspect Ratio | Dimensions | Example Filename | | — | — | — | — | — | — |
+| be_like_water | eng | ca | 7x3 | 2450x1100 |
+be_like_water_eng_ca_7x3_2450x1100.jpg | | be_like_water | las | ca |
+7x3 | 2450x1100 | be_like_water_las_ca_7x3_2450x1100.jpg | |
+be_like_water | eng | ca | 16x9 | 3840x2160 |
+be_like_water_eng_ca_16x9_3840x2160.jpg | | be_like_water | las | ca |
+16x9 | 3840x2160 | be_like_water_las_ca_16x9_3840x2160.jpg | |
+be_like_water | eng | ca | 16x9 | 1920x1080 |
+be_like_water_eng_ca_16x9_1920x1080.jpg | | be_like_water | las | ca |
+16x9 | 1920x1080 | be_like_water_las_ca_16x9_1920x1080.jpg | |
+be_like_water | eng | ca | 4x3 | 3200x2400 |
+be_like_water_eng_ca_4x3_3200x2400.jpg | | be_like_water | las | ca |
+4x3 | 3200x2400 | be_like_water_las_ca_4x3_3200x2400.jpg | |
+be_like_water | eng | ca | 4x3 | 2560x1920 |
+be_like_water_eng_ca_4x3_2560x1920.jpg | | be_like_water | las | ca |
+4x3 | 2560x1920 | be_like_water_las_ca_4x3_2560x1920.jpg | |
+be_like_water | eng | ca | 3x4 | 2400x3200 |
+be_like_water_eng_ca_3x4_2400x3200.jpg | | be_like_water | las | ca |
+3x4 | 2400x3200 | be_like_water_las_ca_3x4_2400x3200.jpg | |
+be_like_water | eng | ca | 3x4 | 1920x2560 |
+be_like_water_eng_ca_3x4_1920x2560.jpg | | be_like_water | las | ca |
+3x4 | 1920x2560 | be_like_water_las_ca_3x4_1920x2560.jpg | |
+be_like_water | eng | ca | 2x3 | 2000x3000 |
+be_like_water_eng_ca_2x3_2000x3000.jpg | | be_like_water | las | ca |
+2x3 | 2000x3000 | be_like_water_las_ca_2x3_2000x3000.jpg | |
+be_like_water | eng | ca | 2x3 | 1600x2400 |
+be_like_water_eng_ca_2x3_1600x2400.jpg | | be_like_water | las | ca |
+2x3 | 1600x2400 | be_like_water_las_ca_2x3_1600x2400.jpg | |
+be_like_water | eng | ca | 1x1 | 3000x3000 |
+be_like_water_eng_ca_1x1_3000x3000.jpg | | be_like_water | las | ca |
+1x1 | 3000x3000 | be_like_water_las_ca_1x1_3000x3000.jpg | |
+be_like_water | eng | bg | 16x9 | 3840x2160 |
+be_like_water_eng_bg_16x9_3840x2160.jpg | | be_like_water | las | bg |
+16x9 | 3840x2160 | be_like_water_las_bg_16x9_3840x2160.jpg | |
+be_like_water | eng | bg | 16x9 | 2560x1440 |
+be_like_water_eng_bg_16x9_2560x1440.jpg | | be_like_water | las | bg |
+16x9 | 2560x1440 | be_like_water_las_bg_16x9_2560x1440.jpg | |
+be_like_water | eng | bg | 16x9 | 1920x1080 |
+be_like_water_eng_bg_16x9_1920x1080.jpg | | be_like_water | las | bg |
+16x9 | 1920x1080 | be_like_water_las_bg_16x9_1920x1080.jpg | |
+be_like_water | eng | bg | 2x3 | 2000x3000 |
+be_like_water_eng_bg_2x3_2000x3000.jpg | | be_like_water | las | bg |
+2x3 | 2000x3000 | be_like_water_las_bg_2x3_2000x3000.jpg | |
+be_like_water | eng | bg | 7x3 | 2450x1100 |
+be_like_water_eng_bg_7x3_2450x1100.jpg | | be_like_water | las | bg |
+7x3 | 2450x1100 | be_like_water_las_bg_7x3_2450x1100.jpg | |
+be_like_water | eng | bg | 4x3 | 1440x1080 |
+be_like_water_eng_bg_4x3_1440x1080.jpg | | be_like_water | las | bg |
+4x3 | 1440x1080 | be_like_water_las_bg_4x3_1440x1080.jpg | |
+be_like_water | eng | tt | 9x5 | 1800x1000 |
+be_like_water_eng_tt_9x5_1800x1000.png | | be_like_water | las | tt |
+9x5 | 1800x1000 | be_like_water_las_tt_9x5_1800x1000.png |</p>
+<h3 id="series-combinations">Series Combinations</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>Title</th>
+<th>Language</th>
+<th>Art Tag</th>
+<th>Aspect Ratio</th>
+<th>Dimensions</th>
+<th>Example Filename</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_eng_ca_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_las_ca_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_eng_ca_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_las_ca_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_eng_ca_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_las_ca_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>4x3</td>
+<td>3200x2400</td>
+<td>be_like_water_eng_ca_4x3_3200x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>4x3</td>
+<td>3200x2400</td>
+<td>be_like_water_las_ca_4x3_3200x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>4x3</td>
+<td>2560x1920</td>
+<td>be_like_water_eng_ca_4x3_2560x1920.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>4x3</td>
+<td>2560x1920</td>
+<td>be_like_water_las_ca_4x3_2560x1920.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>3x4</td>
+<td>2400x3200</td>
+<td>be_like_water_eng_ca_3x4_2400x3200.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>3x4</td>
+<td>2400x3200</td>
+<td>be_like_water_las_ca_3x4_2400x3200.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>3x4</td>
+<td>1920x2560</td>
+<td>be_like_water_eng_ca_3x4_1920x2560.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>3x4</td>
+<td>1920x2560</td>
+<td>be_like_water_las_ca_3x4_1920x2560.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_eng_ca_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_las_ca_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>2x3</td>
+<td>1600x2400</td>
+<td>be_like_water_eng_ca_2x3_1600x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>2x3</td>
+<td>1600x2400</td>
+<td>be_like_water_las_ca_2x3_1600x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>ca</td>
+<td>1x1</td>
+<td>3000x3000</td>
+<td>be_like_water_eng_ca_1x1_3000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>ca</td>
+<td>1x1</td>
+<td>3000x3000</td>
+<td>be_like_water_las_ca_1x1_3000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_eng_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_las_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_eng_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_las_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_eng_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_las_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_eng_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_las_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_eng_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_las_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_eng_bg_4x3_1440x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_las_bg_4x3_1440x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>eng</td>
+<td>tt</td>
+<td>9x5</td>
+<td>1800x1000</td>
+<td>be_like_water_eng_tt_9x5_1800x1000.png</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>las</td>
+<td>tt</td>
+<td>9x5</td>
+<td>1800x1000</td>
+<td>be_like_water_las_tt_9x5_1800x1000.png</td>
+</tr>
+</tbody>
+</table>
+<h3 id="season-combinations">Season Combinations</h3>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th>Title</th>
+<th>Season</th>
+<th>Language</th>
+<th>Art Tag</th>
+<th>Aspect Ratio</th>
+<th>Dimensions</th>
+<th>Example Filename</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_eng_ca_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_las_ca_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_eng_ca_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_las_ca_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_eng_ca_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_las_ca_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>4x3</td>
+<td>3200x2400</td>
+<td>be_like_water_s01_eng_ca_4x3_3200x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>4x3</td>
+<td>3200x2400</td>
+<td>be_like_water_s01_las_ca_4x3_3200x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>4x3</td>
+<td>2560x1920</td>
+<td>be_like_water_s01_eng_ca_4x3_2560x1920.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>4x3</td>
+<td>2560x1920</td>
+<td>be_like_water_s01_las_ca_4x3_2560x1920.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>3x4</td>
+<td>2400x3200</td>
+<td>be_like_water_s01_eng_ca_3x4_2400x3200.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>3x4</td>
+<td>2400x3200</td>
+<td>be_like_water_s01_las_ca_3x4_2400x3200.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>3x4</td>
+<td>1920x2560</td>
+<td>be_like_water_s01_eng_ca_3x4_1920x2560.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>3x4</td>
+<td>1920x2560</td>
+<td>be_like_water_s01_las_ca_3x4_1920x2560.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_eng_ca_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_las_ca_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>2x3</td>
+<td>1600x2400</td>
+<td>be_like_water_s01_eng_ca_2x3_1600x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>2x3</td>
+<td>1600x2400</td>
+<td>be_like_water_s01_las_ca_2x3_1600x2400.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>ca</td>
+<td>1x1</td>
+<td>3000x3000</td>
+<td>be_like_water_s01_eng_ca_1x1_3000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>ca</td>
+<td>1x1</td>
+<td>3000x3000</td>
+<td>be_like_water_s01_las_ca_1x1_3000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_eng_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_las_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_s01_eng_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_s01_las_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_eng_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_las_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_eng_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_las_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_eng_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_las_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>eng</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_s01_eng_bg_4x3_1440x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>las</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_s01_las_bg_4x3_1440x1080.jpg</td>
+</tr>
+</tbody>
+</table>
+<h3 id="episode-combinations">Episode Combinations</h3>
+<table>
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr>
+<th>Title</th>
+<th>Season</th>
+<th>Episode</th>
+<th>Language</th>
+<th>Art Tag</th>
+<th>Aspect Ratio</th>
+<th>Dimensions</th>
+<th>Example Filename</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_e01_eng_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>3840x2160</td>
+<td>be_like_water_s01_e01_las_bg_16x9_3840x2160.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_s01_e01_eng_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>2560x1440</td>
+<td>be_like_water_s01_e01_las_bg_16x9_2560x1440.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_e01_eng_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>16x9</td>
+<td>1920x1080</td>
+<td>be_like_water_s01_e01_las_bg_16x9_1920x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_e01_eng_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>2x3</td>
+<td>2000x3000</td>
+<td>be_like_water_s01_e01_las_bg_2x3_2000x3000.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_e01_eng_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>7x3</td>
+<td>2450x1100</td>
+<td>be_like_water_s01_e01_las_bg_7x3_2450x1100.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>eng</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_s01_e01_eng_bg_4x3_1440x1080.jpg</td>
+</tr>
+<tr>
+<td>be_like_water</td>
+<td>s01</td>
+<td>e01</td>
+<td>las</td>
+<td>bg</td>
+<td>4x3</td>
+<td>1440x1080</td>
+<td>be_like_water_s01_e01_las_bg_4x3_1440x1080.jpg</td>
+</tr>
+</tbody>
+</table>

@@ -31,6 +31,16 @@ const FIELD_CONFIG = {
   aspect_ratio: { label: "Aspect Ratio *", type: "select" },
   dimensions: { label: "Dimensions *", type: "select" },
 };
+const TASK_FIELD_LABEL_OVERRIDES = {
+  neb: {
+    "Episode": { title: "Series Title *" },
+    "Episode Caption": { title: "Series Title *" },
+  },
+  art: {
+    "Season Placeholder": { title: "Series Title *" },
+    "Episode": { title: "Series Title *" },
+  },
+};
 
 const NEB_TASKS = {
   "Movie": { fields: ["title", "language", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
@@ -585,6 +595,7 @@ function renderField(field, domainState) {
   const task = domainState.task;
   const value = domainState.values[field] ?? "";
   const classes = config.full ? "field full" : "field";
+  const label = TASK_FIELD_LABEL_OVERRIDES[state.domain]?.[task]?.[field] || config.label;
 
   if (config.type === "select") {
     const options = optionsForField(state.domain, field, task, domainState.values);
@@ -593,7 +604,7 @@ function renderField(field, domainState) {
     const optionsHtml = options.map((option) => `<option value="${option}">${option}</option>`).join("");
     return `
       <div class="${classes}">
-        <label for="field-${field}">${config.label}</label>
+        <label for="field-${field}">${label}</label>
         <select id="field-${field}" data-field="${field}">${optionsHtml}</select>
       </div>
     `;
@@ -601,7 +612,7 @@ function renderField(field, domainState) {
 
   return `
     <div class="${classes}">
-      <label for="field-${field}">${config.label}</label>
+      <label for="field-${field}">${label}</label>
       <input id="field-${field}" data-field="${field}" type="text" value="${escapeHtml(String(value))}">
     </div>
   `;

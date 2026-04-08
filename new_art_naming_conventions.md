@@ -29,6 +29,8 @@ Every art filename is built from a predictable set of pieces:
 
 All parts are joined with underscores.
 
+For season and episode-based art, the starting title value should be the series title, not a season name or episode title.
+
 ## Art Types
 
 These are the three art types currently used in the standard:
@@ -141,11 +143,11 @@ Example:
 
 Formula:
 
-`[title]_s[xx]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]`
+`[series_name]_s[xx]_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]`
 
 Required fields:
 
-- Title
+- Series Name
 - Season
 - Language
 - Art Tag

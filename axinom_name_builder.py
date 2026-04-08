@@ -37,6 +37,14 @@ FIELD_LABELS = {
     FIELD_YEAR: "Year *",
     FIELD_EXTRA_USAGE: "Extra Usage *",
 }
+TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
+    "Episode": {
+        FIELD_TITLE: "Series Title *",
+    },
+    "Episode Caption": {
+        FIELD_TITLE: "Series Title *",
+    },
+}
 
 LANGUAGE_OPTIONS = ("English", "Spanish")
 SUBTITLE_TYPE_OPTIONS = ("cc", "sub")
@@ -394,6 +402,7 @@ class NebFilenameAssistant:
 
         self.field_vars = {field: tk.StringVar(value=default) for field, default in DEFAULT_VALUES.items()}
         self.field_rows: dict[str, ttk.Frame] = {}
+        self.field_labels: dict[str, ttk.Label] = {}
         self.batch_csv_path: Path | None = None
         self._subtitle_type_manual_override = False
         self._suppress_subtitle_tracking = False
@@ -564,8 +573,13 @@ class NebFilenameAssistant:
 
     def _add_entry_row(self, parent: ttk.Widget, label: str, variable: tk.StringVar, width: int = 40) -> ttk.Frame:
         row = ttk.Frame(parent)
-        ttk.Label(row, text=label, width=22).pack(side="left")
+        label_widget = ttk.Label(row, text=label, width=22)
+        label_widget.pack(side="left")
         ttk.Entry(row, textvariable=variable, width=width).pack(side="left", fill="x", expand=True)
+        for field_name, field_label in FIELD_LABELS.items():
+            if field_label == label:
+                self.field_labels[field_name] = label_widget
+                break
         return row
 
     def _add_combo_row(
@@ -576,8 +590,13 @@ class NebFilenameAssistant:
         values: tuple[str, ...],
     ) -> ttk.Frame:
         row = ttk.Frame(parent)
-        ttk.Label(row, text=label, width=22).pack(side="left")
+        label_widget = ttk.Label(row, text=label, width=22)
+        label_widget.pack(side="left")
         ttk.Combobox(row, textvariable=variable, values=values, state="readonly", width=30).pack(side="left")
+        for field_name, field_label in FIELD_LABELS.items():
+            if field_label == label:
+                self.field_labels[field_name] = label_widget
+                break
         return row
 
     def _bind_field_logic(self) -> None:
@@ -665,7 +684,13 @@ class NebFilenameAssistant:
             self.task_row.pack(fill="x", pady=(0, 10))
             self.multi_frame.pack_forget()
             self.single_frame.pack(fill="x", pady=(0, 10))
+            self._refresh_field_labels(task)
             self._render_single_rows(required_fields)
+
+    def _refresh_field_labels(self, task: str) -> None:
+        overrides = TASK_FIELD_LABEL_OVERRIDES.get(task, {})
+        for field_name, label_widget in self.field_labels.items():
+            label_widget.config(text=overrides.get(field_name, FIELD_LABELS[field_name]))
 
     def _render_single_rows(self, required_fields: tuple[str, ...]) -> None:
         for row in self.field_rows.values():
@@ -681,6 +706,8 @@ class NebFilenameAssistant:
             f"CSV headers for this template: {', '.join(headers)}",
             "The output CSV will add a single `filename` column at the front.",
         ]
+        if task_name in {"Episode", "Episode Caption"}:
+            lines.append("For episode filenames, `title` should be the series title.")
         if FIELD_SUBTITLE_TYPE in TASKS[task_name]["fields"]:  # type: ignore[index]
             lines.append("If `caption_type` is blank, the app defaults it from `language`: English -> cc, Spanish -> cc.")
         return "\n".join(lines)

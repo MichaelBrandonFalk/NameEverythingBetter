@@ -59,7 +59,7 @@ GitHub will then publish `index.html` as the public landing page.
 
 ## Current Public Artifacts
 
-- `downloads/Name Everything Better V1_21.zip`
-- `downloads/Verso - Art Naming Tool V1_11.zip`
-- `downloads/Verso - Art Naming Tool - Single V1_3.zip`
+- `downloads/Name Everything Better V1_22.zip`
+- `downloads/Verso - Art Naming Tool V1_12.zip`
+- `downloads/Verso - Art Naming Tool - Single V1_4.zip`
 - `downloads/New Art Naming Conventions.docx`
