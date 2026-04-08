@@ -1,0 +1,9 @@
+build/
+__pycache__/
+*.pyc
+*.spec
+.DS_Store
+
+# Keep public downloads, but do not publish the whole local dist history.
+dist/
+!downloads/
