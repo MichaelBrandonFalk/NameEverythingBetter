@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Name Everything Better - Naming Conventions</title>
+  <style>
+    :root {
+      --bg: #f6efe6;
+      --panel: rgba(255, 251, 245, 0.96);
+      --ink: #2f241c;
+      --muted: #6d5c4e;
+      --accent: #b4682b;
+      --accent-dark: #8f4f1d;
+      --line: rgba(74, 46, 27, 0.14);
+      --shadow: 0 18px 44px rgba(64, 38, 20, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(214, 148, 79, 0.35), transparent 34%),
+        linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
+    }
+
+    .wrap {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 32px;
+      margin-top: 24px;
+    }
+
+    .hero {
+      margin-top: 0;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.08;
+      font-weight: 700;
+    }
+
+    h1 { font-size: clamp(2.2rem, 4vw, 4rem); }
+    h2 { font-size: clamp(1.45rem, 2.2vw, 2.1rem); margin-bottom: 14px; }
+    h3 { font-size: 1.08rem; margin-bottom: 10px; }
+
+    p, li {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-dark);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff8ee;
+    }
+
+    .btn.secondary {
+      background: rgba(255, 247, 238, 0.9);
+      color: var(--accent-dark);
+      border: 1px solid rgba(180, 104, 43, 0.26);
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 20px;
+      background: rgba(255,255,255,0.75);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.94em;
+      color: var(--ink);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { color: var(--ink); }
+
+    .section-stack {
+      display: grid;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel hero">
+      <p class="eyebrow">Reference</p>
+      <h1>Naming Conventions</h1>
+      <p>
+        This page explains the browser logic behind both sides of the public tool:
+        Neb for movies and captions, and Verso for art. It is meant to be readable
+        on the web without needing the downloadable Mac apps.
+      </p>
+      <div class="actions">
+        <a class="btn secondary" href="index.html">Back To Tool</a>
+        <a class="btn primary" href="downloads/New%20Art%20Naming%20Conventions.docx">Download Art Word Doc</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Shared Cleanup Rules</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Formatting</h3>
+          <ul>
+            <li>Lowercase everything.</li>
+            <li>Spaces become underscores.</li>
+            <li>Accents are stripped to their base letters.</li>
+            <li>Apostrophes are removed instead of becoming separators.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Symbol Handling</h3>
+          <ul>
+            <li><code>&amp;</code> becomes <code>and</code>.</li>
+            <li><code>@</code> becomes <code>at</code>.</li>
+            <li>Standalone <code>+</code> becomes <code>and</code>.</li>
+            <li>Attached <code>+</code> becomes <code>plus</code>.</li>
+            <li><code>!</code>, <code>.</code>, <code>·</code>, and <code>*</code> are removed.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Neb: Movies and Captions</h2>
+      <div class="section-stack">
+        <p>
+          For episodic naming, the title field should contain the series title. That applies to
+          episode video names and episode caption names.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Formula</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Movie</td><td><code>[title]_feature_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Caption</td><td><code>[title]_feature[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Dub Audio</td><td><code>[title]_feature_[resolution]_[house_number]_dub_las.wav</code></td></tr>
+            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number].mov</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number].mov</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number].mov</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number].mov</code></td></tr>
+            <tr><td>Trailer Caption</td><td><code>[title]_trailer_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number].mov</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Verso: Art</h2>
+      <div class="section-stack">
+        <p>
+          For season and episode art, the title field should contain the series title. Language is
+          always included before the art tag as <code>_eng</code> or <code>_las</code>.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Formula</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Movie</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Series</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Season Placeholder</td><td><code>[series_title]_s[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Carousel</td><td><code>[title]_carousel_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+          </tbody>
+        </table>
+        <div class="grid">
+          <article class="card">
+            <h3>Art Tags</h3>
+            <ul>
+              <li><code>ca</code> = Cover Art</li>
+              <li><code>bg</code> = Background Art</li>
+              <li><code>tt</code> = Title Treatment</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Extensions</h3>
+            <ul>
+              <li><code>tt</code> always outputs <code>.png</code>.</li>
+              <li><code>ca</code> and <code>bg</code> output <code>.jpg</code>.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
