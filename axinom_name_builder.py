@@ -179,6 +179,9 @@ DEFAULT_VALUES = {
 }
 
 CSV_FILENAME = "filename"
+CSV_MOV_FILENAME = "mov_filename"
+CSV_CAPTION_ENG_FILENAME = "english_caption_filename"
+CSV_CAPTION_LAS_FILENAME = "spanish_caption_filename"
 CSV_TITLE = "title"
 CSV_LANGUAGE = "language"
 CSV_CAPTION_TYPE = "caption_type"
@@ -560,7 +563,7 @@ class NebFilenameAssistant:
         ttk.Combobox(
             task_picker,
             textvariable=self.multi_task_var,
-            values=tuple(TASKS.keys()),
+            values=self._multi_task_options(),
             state="readonly",
         ).grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
@@ -711,6 +714,9 @@ class NebFilenameAssistant:
     def _single_task_options(self) -> tuple[str, ...]:
         return tuple(task_name for task_name in TASKS.keys() if task_name not in SINGLE_HIDDEN_TASKS)
 
+    def _multi_task_options(self) -> tuple[str, ...]:
+        return self._single_task_options()
+
     def _csv_headers_for_task(self, task_name: str) -> list[str]:
         reverse_map = {field: header for header, field in CSV_HEADER_TO_FIELD.items()}
         return [reverse_map[field] for field in self._multi_fields_for_task(task_name)]
@@ -792,12 +798,15 @@ class NebFilenameAssistant:
         lines = [
             f"Selected type: {task_name}",
             f"CSV headers for this template: {', '.join(headers)}",
-            "The output CSV will add a single `filename` column at the front.",
         ]
-        if task_name in {"Episode", "Episode Caption", "Virtual Screening Episode", "Virtual Screening Episode Caption"}:
+        if task_name in COMPANION_CAPTION_TASKS:
+            lines.append(
+                "The output CSV will add `mov_filename`, `english_caption_filename`, and `spanish_caption_filename` at the front."
+            )
+        else:
+            lines.append("The output CSV will add a single `filename` column at the front.")
+        if task_name in {"Episode", "Virtual Screening Episode"}:
             lines.append("For episode filenames, `title` should be the series title.")
-        if FIELD_SUBTITLE_TYPE in TASKS[task_name]["fields"]:  # type: ignore[index]
-            lines.append("If `caption_type` is blank, the app defaults it from `language`: English -> cc, Spanish -> cc.")
         return "\n".join(lines)
 
     def _raw_fields_for_task(self) -> dict[str, str]:
@@ -1019,7 +1028,19 @@ class NebFilenameAssistant:
             self.status_var.set(f"CSV is missing required header(s): {', '.join(missing_headers)}.")
             return
 
-        output_headers = [CSV_FILENAME] + [header for header in input_headers if header != CSV_FILENAME]
+        companion_caption_task = COMPANION_CAPTION_TASKS.get(selected_task)
+        if companion_caption_task is not None:
+            output_headers = [
+                CSV_MOV_FILENAME,
+                CSV_CAPTION_ENG_FILENAME,
+                CSV_CAPTION_LAS_FILENAME,
+            ] + [
+                header
+                for header in input_headers
+                if header not in {CSV_MOV_FILENAME, CSV_CAPTION_ENG_FILENAME, CSV_CAPTION_LAS_FILENAME}
+            ]
+        else:
+            output_headers = [CSV_FILENAME] + [header for header in input_headers if header != CSV_FILENAME]
         generated_rows: list[dict[str, str]] = []
         generated_count = 0
         saw_plus_warning = False
@@ -1028,7 +1049,16 @@ class NebFilenameAssistant:
             task_fields = self._row_to_task_fields(row)
             output_row = {header: row.get(header, "") for header in output_headers}
             try:
-                output_row[CSV_FILENAME] = build_filename(selected_task, task_fields)
+                main_filename = build_filename(selected_task, task_fields)
+                if companion_caption_task is not None:
+                    companion_captions = self._companion_caption_outputs(selected_task, task_fields)
+                    if companion_captions is None:
+                        raise ValueError("Missing companion caption configuration.")
+                    output_row[CSV_MOV_FILENAME] = main_filename
+                    output_row[CSV_CAPTION_ENG_FILENAME] = companion_captions[0]
+                    output_row[CSV_CAPTION_LAS_FILENAME] = companion_captions[1]
+                else:
+                    output_row[CSV_FILENAME] = main_filename
             except ValueError as error:
                 self.status_var.set(f"CSV row {index} ({selected_task}): {error}")
                 return
