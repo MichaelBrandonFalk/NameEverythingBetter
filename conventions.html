@@ -197,6 +197,11 @@
           In the single-item browser tool, supported video tasks show the MOV output first, then
           the English caption name, then the Spanish caption name.
         </p>
+        <p>
+          Language now applies across the full Neb MOV and caption set. MOV files end with
+          <code>_eng</code> or <code>_las</code>, and Spanish caption filenames also carry
+          <code>_las</code> in the main stem before resolution.
+        </p>
         <table>
           <thead>
             <tr>
@@ -210,14 +215,14 @@
             <tr><td>Dub Audio</td><td><code>[title]_feature_[resolution]_[house_number]_dub_las.wav</code></td></tr>
             <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
             <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number].mov</code></td></tr>
-            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number].mov</code></td></tr>
-            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number].mov</code></td></tr>
-            <tr><td>Trailer Caption</td><td><code>[title]_trailer_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number].mov</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Trailer Caption</td><td><code>[title]_trailer[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
           </tbody>
         </table>
       </div>

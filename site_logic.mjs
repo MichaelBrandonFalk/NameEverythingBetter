@@ -51,14 +51,14 @@ const NEB_TASKS = {
   "Dub Audio": { fields: ["title", "language", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Episode": { fields: ["title", "language", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Episode Caption": { fields: ["title", "language", "subtitle_type", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
-  "Original Premium Series (Yearly)": { fields: ["title", "year", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
-  "Exclusive Conversation (Yearly)": { fields: ["year", "episode", "interviewees", "resolution", "house"], housePrefixes: ["PFP"] },
-  "Virtual Screening": { fields: ["title", "resolution", "house"], housePrefixes: ["PFP"] },
-  "Virtual Screening Episode": { fields: ["title", "season", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Original Premium Series (Yearly)": { fields: ["title", "language", "year", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Exclusive Conversation (Yearly)": { fields: ["language", "year", "episode", "interviewees", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Virtual Screening": { fields: ["title", "language", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Virtual Screening Episode": { fields: ["title", "language", "season", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
   "Virtual Screening Episode Caption": { fields: ["title", "language", "subtitle_type", "season", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
-  "Trailer": { fields: ["title", "resolution", "house"], housePrefixes: ["TRL"] },
+  "Trailer": { fields: ["title", "language", "resolution", "house"], housePrefixes: ["TRL"] },
   "Trailer Caption": { fields: ["title", "language", "subtitle_type", "resolution", "house"], housePrefixes: ["TRL"] },
-  "Extras": { fields: ["title", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
+  "Extras": { fields: ["title", "language", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
 };
 const NEB_SINGLE_HIDDEN_TASKS = new Set([
   "Caption",
@@ -407,28 +407,32 @@ export function buildNebFilename(task, rawFields) {
 
   if (task === "Original Premium Series (Yearly)") {
     const title = normalizeNebTitle(rawFields.title);
+    const language = normalizeNebLanguage(rawFields.language);
     const year = normalizeYear(rawFields.year);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_s${year}_${episode}_${resolution}_${house}.mov`;
+    return `${title}_s${year}_${episode}_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   if (task === "Exclusive Conversation (Yearly)") {
+    const language = normalizeNebLanguage(rawFields.language);
     const year = normalizeYear(rawFields.year);
     const episode = normalizeNebEpisode(rawFields.episode);
     const interviewees = normalizeInterviewees(rawFields.interviewees);
-    return `exclusive_conversations_s${year}_${episode}_${interviewees}_${resolution}_${house}.mov`;
+    return `exclusive_conversations_s${year}_${episode}_${interviewees}_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   if (task === "Virtual Screening") {
     const title = normalizeNebTitle(rawFields.title);
-    return `${title}_virtual_screening_${resolution}_${house}.mov`;
+    const language = normalizeNebLanguage(rawFields.language);
+    return `${title}_virtual_screening_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   if (task === "Virtual Screening Episode") {
     const title = normalizeNebTitle(rawFields.title);
+    const language = normalizeNebLanguage(rawFields.language);
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}.mov`;
+    return `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   if (task === "Virtual Screening Episode Caption") {
@@ -437,25 +441,31 @@ export function buildNebFilename(task, rawFields) {
     const subtitleType = normalizeSubtitleType((rawFields.subtitle_type || SUBTITLE_DEFAULT_BY_LANGUAGE[language]).toLowerCase());
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${subtitleType}_${language === "Spanish" ? "las" : "eng"}.vtt`;
+    return language === "Spanish"
+      ? `${title}_${season}_${episode}_virtual_screening_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      : `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
   if (task === "Trailer") {
     const title = normalizeNebTitle(rawFields.title);
-    return `${title}_trailer_${resolution}_${house}.mov`;
+    const language = normalizeNebLanguage(rawFields.language);
+    return `${title}_trailer_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   if (task === "Trailer Caption") {
     const title = normalizeNebTitle(rawFields.title);
     const language = normalizeNebLanguage(rawFields.language);
     const subtitleType = normalizeSubtitleType((rawFields.subtitle_type || SUBTITLE_DEFAULT_BY_LANGUAGE[language]).toLowerCase());
-    return `${title}_trailer_${resolution}_${house}_${subtitleType}_${language === "Spanish" ? "las" : "eng"}.vtt`;
+    return language === "Spanish"
+      ? `${title}_trailer_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      : `${title}_trailer_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
   if (task === "Extras") {
     const title = normalizeNebTitle(rawFields.title);
+    const language = normalizeNebLanguage(rawFields.language);
     const extraPrefix = normalizeExtraUsage(rawFields.extra_usage);
-    return `${title}_${extraPrefix}_${resolution}_${house}.mov`;
+    return `${title}_${extraPrefix}_${resolution}_${house}_${language === "Spanish" ? "las" : "eng"}.mov`;
   }
 
   throw new Error("Unsupported task type.");
@@ -708,7 +718,7 @@ function onFieldInput(event) {
     domainState.subtitleManual = true;
   }
 
-  if (state.domain === "neb" && field === "language" && ["Caption", "Episode Caption", "Trailer Caption"].includes(domainState.task)) {
+  if (state.domain === "neb" && field === "language" && ["Caption", "Episode Caption", "Trailer Caption", "Virtual Screening Episode Caption"].includes(domainState.task)) {
     if (!domainState.subtitleManual) {
       domainState.values.subtitle_type = SUBTITLE_DEFAULT_BY_LANGUAGE[event.target.value] || "cc";
     }

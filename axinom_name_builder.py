@@ -104,22 +104,22 @@ TASKS: dict[str, dict[str, object]] = {
         "bulk_group": "episode",
     },
     "Original Premium Series (Yearly)": {
-        "fields": (FIELD_TITLE, FIELD_YEAR, FIELD_EPISODE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_YEAR, FIELD_EPISODE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("PFP",),
         "bulk_group": "premium_series",
     },
     "Exclusive Conversation (Yearly)": {
-        "fields": (FIELD_YEAR, FIELD_EPISODE, FIELD_INTERVIEWEES, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_LANGUAGE, FIELD_YEAR, FIELD_EPISODE, FIELD_INTERVIEWEES, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("PFP",),
         "bulk_group": "premium_series",
     },
     "Virtual Screening": {
-        "fields": (FIELD_TITLE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("PFP",),
         "bulk_group": "virtual_screening",
     },
     "Virtual Screening Episode": {
-        "fields": (FIELD_TITLE, FIELD_SEASON, FIELD_EPISODE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_SEASON, FIELD_EPISODE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("PFP",),
         "bulk_group": "virtual_screening_episode",
     },
@@ -137,7 +137,7 @@ TASKS: dict[str, dict[str, object]] = {
         "bulk_group": "virtual_screening_episode",
     },
     "Trailer": {
-        "fields": (FIELD_TITLE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("TRL",),
         "bulk_group": "trailer",
     },
@@ -147,7 +147,7 @@ TASKS: dict[str, dict[str, object]] = {
         "bulk_group": "trailer",
     },
     "Extras": {
-        "fields": (FIELD_TITLE, FIELD_EXTRA_USAGE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "fields": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_EXTRA_USAGE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("EXT",),
         "bulk_group": "extras",
     },
@@ -376,29 +376,33 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"{title}_s{year}_{episode}_{resolution}_{house}.mov"
+        return f"{title}_s{year}_{episode}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Exclusive Conversation (Yearly)":
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         interviewees = normalize_interviewees(raw_fields.get(FIELD_INTERVIEWEES, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"exclusive_conversations_s{year}_{episode}_{interviewees}_{resolution}_{house}.mov"
+        return f"exclusive_conversations_s{year}_{episode}_{interviewees}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Virtual Screening":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        return f"{title}_virtual_screening_{resolution}_{house}.mov"
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
+        return f"{title}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Virtual Screening Episode":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Series Title is required.")
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}.mov"
+        return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Virtual Screening Episode Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
@@ -410,14 +414,15 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
-            return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_{season}_{episode}_virtual_screening_las_{resolution}_{house}_{subtitle_type}_las.vtt"
         return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Trailer":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        return f"{title}_trailer_{resolution}_{house}.mov"
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
+        return f"{title}_trailer_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Trailer Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
@@ -427,18 +432,19 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
         subtitle_type = normalize_subtitle_type(subtitle_raw)
         if language == "Spanish":
-            return f"{title}_trailer_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_trailer_las_{resolution}_{house}_{subtitle_type}_las.vtt"
         return f"{title}_trailer_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Extras":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         usage = raw_fields.get(FIELD_EXTRA_USAGE, "").strip()
         extra_prefix = EXTRA_USAGE_TO_PREFIX.get(usage)
         if not extra_prefix:
             raise ValueError("Choose an Extra Usage from the Section 5.2 list.")
-        return f"{title}_{extra_prefix}_{resolution}_{house}.mov"
+        return f"{title}_{extra_prefix}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     raise ValueError("Unsupported task type.")
 
