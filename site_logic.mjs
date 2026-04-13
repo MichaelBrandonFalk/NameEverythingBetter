@@ -3,7 +3,7 @@ const SUBTITLE_TYPE_OPTIONS = ["cc", "sub"];
 const RESOLUTION_OPTIONS = ["hd", "sd", "4k"];
 const SUBTITLE_DEFAULT_BY_LANGUAGE = {
   English: "cc",
-  Spanish: "cc",
+  Spanish: "sub",
 };
 const EXTRA_USAGE_TO_PREFIX = {
   "Behind the Scenes / Making Of": "bts",

@@ -1,4 +1,4 @@
-# Name Everything Better V1_26 (macOS)
+# Name Everything Better V1_27 (macOS)
 
 This version tightens title slugging so punctuation and symbols condense into cleaner Axinom-style filenames, and Neb now carries language across the full MOV side instead of only Movie and Episode.
 
@@ -11,12 +11,12 @@ python3 axinom_name_builder.py
 ## Build a macOS `.app`
 
 ```bash
-./build_name_everything_better_v1_26.sh
+./build_name_everything_better_v1_27.sh
 ```
 
 Output:
 
-- `dist/Name Everything Better V1_26.app`
+- `dist/Name Everything Better V1_27.app`
 
 ## Slug Examples
 
@@ -42,3 +42,4 @@ Output:
 - In the single-item Neb flow, supported video tasks now show the MOV name plus English and Spanish caption names together.
 - In the bulk Neb flow, supported video tasks now generate `mov_filename`, `english_caption_filename`, and `spanish_caption_filename` in the output CSV.
 - Neb now applies the `Language` field to all MOV-side filename types, including trailers, extras, virtual screenings, and the yearly types.
+- Spanish captions now default to `sub` again in generated companion caption outputs and blank `caption_type` cases.

@@ -57,7 +57,7 @@ SUBTITLE_TYPE_OPTIONS = ("cc", "sub")
 RESOLUTION_OPTIONS = ("hd", "sd", "4k")
 SUBTITLE_DEFAULT_BY_LANGUAGE = {
     "English": "cc",
-    "Spanish": "cc",
+    "Spanish": "sub",
 }
 EXTRA_USAGE_TO_PREFIX = {
     "Behind the Scenes / Making Of": "bts",
