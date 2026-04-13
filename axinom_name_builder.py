@@ -152,6 +152,18 @@ TASKS: dict[str, dict[str, object]] = {
         "bulk_group": "extras",
     },
 }
+SINGLE_HIDDEN_TASKS = {
+    "Caption",
+    "Episode Caption",
+    "Trailer Caption",
+    "Virtual Screening Episode Caption",
+}
+COMPANION_CAPTION_TASKS = {
+    "Movie": "Caption",
+    "Episode": "Episode Caption",
+    "Trailer": "Trailer Caption",
+    "Virtual Screening Episode": "Virtual Screening Episode Caption",
+}
 
 DEFAULT_VALUES = {
     FIELD_TITLE: "",
@@ -440,7 +452,11 @@ class NebFilenameAssistant:
         self.task_var = tk.StringVar(value=next(iter(TASKS.keys())))
         self.multi_task_var = tk.StringVar(value=next(iter(TASKS.keys())))
         self.status_var = tk.StringVar(value="")
-        self.single_output_var = tk.StringVar(value="")
+        self.single_output_vars = {
+            "video": tk.StringVar(value=""),
+            "caption_eng": tk.StringVar(value=""),
+            "caption_las": tk.StringVar(value=""),
+        }
         self.batch_input_path_var = tk.StringVar(value="No CSV selected.")
         self.batch_output_path_var = tk.StringVar(value="")
         self.multi_help_var = tk.StringVar(value=self._multi_help_text(self.multi_task_var.get()))
@@ -501,7 +517,7 @@ class NebFilenameAssistant:
         task_combo = ttk.Combobox(
             self.task_row,
             textvariable=self.task_var,
-            values=tuple(TASKS.keys()),
+            values=self._single_task_options(),
             state="readonly",
         )
         task_combo.pack(side="left", fill="x", expand=True)
@@ -516,17 +532,18 @@ class NebFilenameAssistant:
 
         single_buttons = ttk.Frame(self.single_frame)
         single_buttons.pack(fill="x", pady=(10, 6))
-        ttk.Button(single_buttons, text="Generate Filename", command=self._generate_single).pack(side="right")
+        ttk.Button(single_buttons, text="Generate Names", command=self._generate_single).pack(side="right")
         ttk.Button(single_buttons, text="Clear", command=self._clear_single_fields).pack(side="right", padx=(0, 8))
 
-        output_frame = ttk.LabelFrame(self.single_frame, text="Filename")
+        output_frame = ttk.LabelFrame(self.single_frame, text="Generated Names")
         output_frame.pack(fill="x")
         output_frame.columnconfigure(0, weight=1)
-        ttk.Entry(output_frame, textvariable=self.single_output_var, state="readonly").grid(
-            row=0, column=0, sticky="ew", padx=(10, 8), pady=10
-        )
-        ttk.Button(output_frame, text="Copy", command=self._copy_single).grid(
-            row=0, column=1, sticky="e", padx=(0, 10), pady=10
+        self.single_output_rows: dict[str, ttk.Frame] = {}
+        self.single_output_rows["video"] = self._add_output_row(output_frame, 0, "MOV Name", self.single_output_vars["video"])
+        self.single_output_rows["caption_eng"] = self._add_output_row(output_frame, 1, "English Caption", self.single_output_vars["caption_eng"])
+        self.single_output_rows["caption_las"] = self._add_output_row(output_frame, 2, "Spanish Caption", self.single_output_vars["caption_las"])
+        ttk.Button(output_frame, text="Copy All", command=self._copy_single).grid(
+            row=3, column=1, sticky="e", padx=(0, 10), pady=(0, 10)
         )
 
         self.multi_frame = ttk.Frame(self.builder_frame)
@@ -644,6 +661,14 @@ class NebFilenameAssistant:
                 break
         return row
 
+    def _add_output_row(self, parent: ttk.Widget, row_index: int, label: str, variable: tk.StringVar) -> ttk.Frame:
+        row = ttk.Frame(parent)
+        row.grid(row=row_index, column=0, columnspan=2, sticky="ew", padx=10, pady=(10 if row_index == 0 else 0, 8))
+        row.columnconfigure(1, weight=1)
+        ttk.Label(row, text=label, width=18).grid(row=0, column=0, sticky="w", padx=(0, 8))
+        ttk.Entry(row, textvariable=variable, state="readonly").grid(row=0, column=1, sticky="ew")
+        return row
+
     def _bind_field_logic(self) -> None:
         self.task_var.trace_add("write", self._on_task_change)
         self.multi_task_var.trace_add("write", self._on_multi_task_change)
@@ -683,6 +708,9 @@ class NebFilenameAssistant:
     def _multi_fields_for_task(self, task_name: str) -> list[str]:
         return list(TASKS[task_name]["fields"])  # type: ignore[index]
 
+    def _single_task_options(self) -> tuple[str, ...]:
+        return tuple(task_name for task_name in TASKS.keys() if task_name not in SINGLE_HIDDEN_TASKS)
+
     def _csv_headers_for_task(self, task_name: str) -> list[str]:
         reverse_map = {field: header for header, field in CSV_HEADER_TO_FIELD.items()}
         return [reverse_map[field] for field in self._multi_fields_for_task(task_name)]
@@ -698,7 +726,7 @@ class NebFilenameAssistant:
         self.builder_frame.pack(fill="both", expand=True)
         self._refresh_task_ui()
         if mode == "single":
-            self.status_var.set("Fill required fields and click Generate Filename.")
+            self.status_var.set("Fill required fields and click Generate Names.")
         else:
             self.multi_help_var.set(self._multi_help_text(self.multi_task_var.get()))
             self.status_var.set("Choose one filename type, then download the custom template.")
@@ -742,7 +770,22 @@ class NebFilenameAssistant:
             row.pack_forget()
         for field in required_fields:
             self.field_rows[field].pack(fill="x", pady=4)
-        self.single_output_var.set("")
+        self._clear_single_outputs()
+        self._refresh_output_rows()
+
+    def _clear_single_outputs(self) -> None:
+        for variable in self.single_output_vars.values():
+            variable.set("")
+
+    def _refresh_output_rows(self) -> None:
+        has_companion_captions = self.task_var.get() in COMPANION_CAPTION_TASKS
+        self.single_output_rows["video"].grid()
+        if has_companion_captions:
+            self.single_output_rows["caption_eng"].grid()
+            self.single_output_rows["caption_las"].grid()
+        else:
+            self.single_output_rows["caption_eng"].grid_remove()
+            self.single_output_rows["caption_las"].grid_remove()
 
     def _multi_help_text(self, task_name: str) -> str:
         headers = self._csv_headers_for_task(task_name)
@@ -761,20 +804,45 @@ class NebFilenameAssistant:
         fields = TASKS[self.task_var.get()]["fields"]  # type: ignore[index]
         return {field: self.field_vars[field].get().strip() for field in fields}
 
+    def _companion_caption_outputs(self, task: str, raw_fields: dict[str, str]) -> tuple[str, str] | None:
+        caption_task = COMPANION_CAPTION_TASKS.get(task)
+        if caption_task is None:
+            return None
+
+        english_fields = dict(raw_fields)
+        english_fields[FIELD_LANGUAGE] = "English"
+        english_fields[FIELD_SUBTITLE_TYPE] = SUBTITLE_DEFAULT_BY_LANGUAGE["English"]
+
+        spanish_fields = dict(raw_fields)
+        spanish_fields[FIELD_LANGUAGE] = "Spanish"
+        spanish_fields[FIELD_SUBTITLE_TYPE] = SUBTITLE_DEFAULT_BY_LANGUAGE["Spanish"]
+
+        return (
+            build_filename(caption_task, english_fields),
+            build_filename(caption_task, spanish_fields),
+        )
+
     def _generate_single(self) -> None:
         task = self.task_var.get()
         raw_fields = self._raw_fields_for_task()
         try:
             filename = build_filename(task, raw_fields)
+            companion_captions = self._companion_caption_outputs(task, raw_fields)
         except ValueError as error:
-            self.single_output_var.set("")
+            self._clear_single_outputs()
             self.status_var.set(str(error))
             return
-        self.single_output_var.set(filename)
-        if plus_warning_needed(raw_fields):
-            self.status_var.set(f'Filename generated. {PLUS_WARNING_MESSAGE}')
+        self.single_output_vars["video"].set(filename)
+        if companion_captions is not None:
+            self.single_output_vars["caption_eng"].set(companion_captions[0])
+            self.single_output_vars["caption_las"].set(companion_captions[1])
         else:
-            self.status_var.set("Filename generated.")
+            self.single_output_vars["caption_eng"].set("")
+            self.single_output_vars["caption_las"].set("")
+        if plus_warning_needed(raw_fields):
+            self.status_var.set(f'Names generated. {PLUS_WARNING_MESSAGE}')
+        else:
+            self.status_var.set("Names generated.")
 
     def _template_example_rows(self, headers: list[str], task_name: str) -> list[dict[str, str]]:
         first_row = {
@@ -992,20 +1060,25 @@ class NebFilenameAssistant:
             self.status_var.set(f"Generated {generated_count} filename(s) into a new CSV.")
 
     def _copy_single(self) -> None:
-        value = self.single_output_var.get().strip()
-        if not value:
+        values = [
+            self.single_output_vars["video"].get().strip(),
+            self.single_output_vars["caption_eng"].get().strip(),
+            self.single_output_vars["caption_las"].get().strip(),
+        ]
+        payload = "\n".join(value for value in values if value)
+        if not payload:
             messagebox.showwarning(APP_TITLE, "No filename to copy.")
             return
         self.root.clipboard_clear()
-        self.root.clipboard_append(value)
-        self.status_var.set("Copied filename.")
+        self.root.clipboard_append(payload)
+        self.status_var.set("Copied generated names.")
 
     def _clear_single_fields(self) -> None:
         for field, variable in self.field_vars.items():
             variable.set(DEFAULT_VALUES[field])
         self._subtitle_type_manual_override = False
         self._apply_subtitle_default(force=True)
-        self.single_output_var.set("")
+        self._clear_single_outputs()
         self.status_var.set("Single-item fields cleared.")
 
 

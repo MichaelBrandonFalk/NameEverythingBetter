@@ -60,6 +60,18 @@ const NEB_TASKS = {
   "Trailer Caption": { fields: ["title", "language", "subtitle_type", "resolution", "house"], housePrefixes: ["TRL"] },
   "Extras": { fields: ["title", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
 };
+const NEB_SINGLE_HIDDEN_TASKS = new Set([
+  "Caption",
+  "Episode Caption",
+  "Trailer Caption",
+  "Virtual Screening Episode Caption",
+]);
+const COMPANION_CAPTION_TASKS = {
+  "Movie": "Caption",
+  "Episode": "Episode Caption",
+  "Trailer": "Trailer Caption",
+  "Virtual Screening Episode": "Virtual Screening Episode Caption",
+};
 
 const NEB_DEFAULTS = {
   title: "",
@@ -554,10 +566,16 @@ function getDomainState() {
 
 function resetOutput() {
   const status = document.getElementById("status");
-  const output = document.getElementById("filename-output");
+  const outputs = [
+    document.getElementById("filename-output-video"),
+    document.getElementById("filename-output-caption-eng"),
+    document.getElementById("filename-output-caption-las"),
+  ];
   status.textContent = "";
   status.className = "status hidden";
-  output.textContent = "";
+  outputs.forEach((output) => {
+    output.textContent = "";
+  });
 }
 
 function setStatus(message, tone) {
@@ -568,6 +586,13 @@ function setStatus(message, tone) {
 
 function currentTaskMap() {
   return state.domain === "neb" ? NEB_TASKS : ART_TASKS;
+}
+
+function currentVisibleTaskNames() {
+  if (state.domain === "neb") {
+    return Object.keys(NEB_TASKS).filter((taskName) => !NEB_SINGLE_HIDDEN_TASKS.has(taskName));
+  }
+  return Object.keys(ART_TASKS);
 }
 
 function currentDefaults() {
@@ -601,7 +626,7 @@ function renderBuilder() {
   const title = document.getElementById("builder-title");
   const domainState = getDomainState();
   const taskMap = currentTaskMap();
-  const taskNames = Object.keys(taskMap);
+  const taskNames = currentVisibleTaskNames();
 
   if (state.domain === "art") {
     normalizeArtDependentValues(domainState);
@@ -618,6 +643,7 @@ function renderBuilder() {
   const taskFields = taskMap[domainState.task].fields || taskMap[domainState.task];
   fields.innerHTML = taskFields.map((field) => renderField(field, domainState)).join("");
   bindFieldHandlers(taskFields);
+  refreshOutputVisibility();
 }
 
 function renderField(field, domainState) {
@@ -654,6 +680,13 @@ function escapeHtml(value) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function refreshOutputVisibility() {
+  const hasCompanionCaptions = state.domain === "neb" && Boolean(COMPANION_CAPTION_TASKS[getDomainState().task]);
+  document.getElementById("output-video-wrap").classList.remove("hidden");
+  document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+  document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
 }
 
 function bindFieldHandlers(taskFields) {
@@ -713,36 +746,68 @@ function clearCurrentForm() {
   resetOutput();
 }
 
+function companionCaptionOutputs(task, rawFields) {
+  const captionTask = COMPANION_CAPTION_TASKS[task];
+  if (!captionTask) {
+    return null;
+  }
+  return {
+    eng: buildNebFilename(captionTask, {
+      ...rawFields,
+      language: "English",
+      subtitle_type: SUBTITLE_DEFAULT_BY_LANGUAGE.English,
+    }),
+    las: buildNebFilename(captionTask, {
+      ...rawFields,
+      language: "Spanish",
+      subtitle_type: SUBTITLE_DEFAULT_BY_LANGUAGE.Spanish,
+    }),
+  };
+}
+
 function generateCurrentFilename() {
   const domainState = getDomainState();
   try {
-    const filename = state.domain === "neb"
-      ? buildNebFilename(domainState.task, domainState.values)
-      : buildArtFilename(domainState.task, domainState.values);
-
-    document.getElementById("filename-output").textContent = filename;
-    if (plusWarningNeeded(domainState.values)) {
-      setStatus(`Filename generated. ${PLUS_WARNING_MESSAGE}`, "warning");
+    let filename;
+    let companionCaptions = null;
+    if (state.domain === "neb") {
+      filename = buildNebFilename(domainState.task, domainState.values);
+      companionCaptions = companionCaptionOutputs(domainState.task, domainState.values);
     } else {
-      setStatus("Filename generated.", "success");
+      filename = buildArtFilename(domainState.task, domainState.values);
+    }
+
+    document.getElementById("filename-output-video").textContent = filename;
+    document.getElementById("filename-output-caption-eng").textContent = companionCaptions?.eng || "";
+    document.getElementById("filename-output-caption-las").textContent = companionCaptions?.las || "";
+    if (plusWarningNeeded(domainState.values)) {
+      setStatus(`Names generated. ${PLUS_WARNING_MESSAGE}`, "warning");
+    } else {
+      setStatus("Names generated.", "success");
     }
   } catch (error) {
-    document.getElementById("filename-output").textContent = "";
+    document.getElementById("filename-output-video").textContent = "";
+    document.getElementById("filename-output-caption-eng").textContent = "";
+    document.getElementById("filename-output-caption-las").textContent = "";
     setStatus(error.message || "Unable to generate filename.", "error");
   }
 }
 
 async function copyFilename() {
-  const text = document.getElementById("filename-output").textContent.trim();
+  const text = [
+    document.getElementById("filename-output-video").textContent.trim(),
+    document.getElementById("filename-output-caption-eng").textContent.trim(),
+    document.getElementById("filename-output-caption-las").textContent.trim(),
+  ].filter(Boolean).join("\n");
   if (!text) {
-    setStatus("Generate a filename first.", "error");
+    setStatus("Generate names first.", "error");
     return;
   }
   try {
     await navigator.clipboard.writeText(text);
-    setStatus("Filename copied.", "success");
+    setStatus("Generated names copied.", "success");
   } catch {
-    setStatus("Clipboard access was blocked. Copy the filename manually.", "warning");
+    setStatus("Clipboard access was blocked. Copy the generated names manually.", "warning");
   }
 }
 
