@@ -38,3 +38,4 @@ Output:
 - attached `+` condenses to `plus`
 - punctuation like apostrophes, exclamation marks, dots, middots, and asterisks is stripped cleanly
 - For `Episode` and `Episode Caption`, the `Title` input should be the series title.
+- For `Virtual Screening Episode` and `Virtual Screening Episode Caption`, the `Title` input should be the series title.

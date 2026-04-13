@@ -35,10 +35,13 @@ const TASK_FIELD_LABEL_OVERRIDES = {
   neb: {
     "Episode": { title: "Series Title *" },
     "Episode Caption": { title: "Series Title *" },
+    "Virtual Screening Episode": { title: "Series Title *" },
+    "Virtual Screening Episode Caption": { title: "Series Title *" },
   },
   art: {
     "Season Placeholder": { title: "Series Title *" },
     "Episode": { title: "Series Title *" },
+    "Virtual Screening Episode": { title: "Series Title *" },
   },
 };
 
@@ -51,6 +54,8 @@ const NEB_TASKS = {
   "Original Premium Series (Yearly)": { fields: ["title", "year", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
   "Exclusive Conversation (Yearly)": { fields: ["year", "episode", "interviewees", "resolution", "house"], housePrefixes: ["PFP"] },
   "Virtual Screening": { fields: ["title", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Virtual Screening Episode": { fields: ["title", "season", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
+  "Virtual Screening Episode Caption": { fields: ["title", "language", "subtitle_type", "season", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
   "Trailer": { fields: ["title", "resolution", "house"], housePrefixes: ["TRL"] },
   "Trailer Caption": { fields: ["title", "language", "subtitle_type", "resolution", "house"], housePrefixes: ["TRL"] },
   "Extras": { fields: ["title", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
@@ -92,6 +97,7 @@ const TASK_ART_TAG_CODES = {
   "Original Premium Series (Yearly)": ["bg"],
   "Exclusive Conversation (Yearly)": ["bg"],
   "Virtual Screening": ["bg"],
+  "Virtual Screening Episode": ["bg"],
   "Trailer": ["bg"],
   "Extras": ["bg"],
   "Carousel": ["ca"],
@@ -125,6 +131,7 @@ const ART_TASKS = {
   "Original Premium Series (Yearly)": ["title", "year", "episode", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Exclusive Conversation (Yearly)": ["year", "episode", "interviewees", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Virtual Screening": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
+  "Virtual Screening Episode": ["title", "season", "episode", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Trailer": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Extras": ["title", "language", "extra_usage", "art_tag", "aspect_ratio", "dimensions"],
   "Carousel": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
@@ -405,6 +412,22 @@ export function buildNebFilename(task, rawFields) {
     return `${title}_virtual_screening_${resolution}_${house}.mov`;
   }
 
+  if (task === "Virtual Screening Episode") {
+    const title = normalizeNebTitle(rawFields.title);
+    const season = normalizeNebSeason(rawFields.season);
+    const episode = normalizeNebEpisode(rawFields.episode);
+    return `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}.mov`;
+  }
+
+  if (task === "Virtual Screening Episode Caption") {
+    const title = normalizeNebTitle(rawFields.title);
+    const language = normalizeNebLanguage(rawFields.language);
+    const subtitleType = normalizeSubtitleType((rawFields.subtitle_type || SUBTITLE_DEFAULT_BY_LANGUAGE[language]).toLowerCase());
+    const season = normalizeNebSeason(rawFields.season);
+    const episode = normalizeNebEpisode(rawFields.episode);
+    return `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${subtitleType}_${language === "Spanish" ? "las" : "eng"}.vtt`;
+  }
+
   if (task === "Trailer") {
     const title = normalizeNebTitle(rawFields.title);
     return `${title}_trailer_${resolution}_${house}.mov`;
@@ -477,6 +500,13 @@ export function buildArtFilename(task, rawFields) {
   if (task === "Virtual Screening") {
     const title = normalizeArtTitle(rawFields.title);
     return `${title}_virtual_screening${languageSegment}_${artTag}_${aspectRatio}_${dimensions}.${extension}`;
+  }
+
+  if (task === "Virtual Screening Episode") {
+    const title = normalizeArtTitle(rawFields.title);
+    const season = normalizeNebSeason(rawFields.season);
+    const episode = normalizeArtEpisode(rawFields.episode);
+    return `${title}_${season}_${episode}_virtual_screening${languageSegment}_${artTag}_${aspectRatio}_${dimensions}.${extension}`;
   }
 
   if (task === "Trailer") {

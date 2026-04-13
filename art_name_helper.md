@@ -18,6 +18,7 @@ Updated art naming app so apostrophes are removed cleanly during slug creation i
 - `Original Premium Series (Yearly)`
 - `Exclusive Conversation (Yearly)`
 - `Virtual Screening`
+- `Virtual Screening Episode`
 - `Trailer`
 - `Extras`
 

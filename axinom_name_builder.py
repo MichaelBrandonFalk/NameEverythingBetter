@@ -44,6 +44,12 @@ TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
     "Episode Caption": {
         FIELD_TITLE: "Series Title *",
     },
+    "Virtual Screening Episode": {
+        FIELD_TITLE: "Series Title *",
+    },
+    "Virtual Screening Episode Caption": {
+        FIELD_TITLE: "Series Title *",
+    },
 }
 
 LANGUAGE_OPTIONS = ("English", "Spanish")
@@ -111,6 +117,24 @@ TASKS: dict[str, dict[str, object]] = {
         "fields": (FIELD_TITLE, FIELD_RESOLUTION, FIELD_HOUSE),
         "house_prefixes": ("PFP",),
         "bulk_group": "virtual_screening",
+    },
+    "Virtual Screening Episode": {
+        "fields": (FIELD_TITLE, FIELD_SEASON, FIELD_EPISODE, FIELD_RESOLUTION, FIELD_HOUSE),
+        "house_prefixes": ("PFP",),
+        "bulk_group": "virtual_screening_episode",
+    },
+    "Virtual Screening Episode Caption": {
+        "fields": (
+            FIELD_TITLE,
+            FIELD_LANGUAGE,
+            FIELD_SUBTITLE_TYPE,
+            FIELD_SEASON,
+            FIELD_EPISODE,
+            FIELD_RESOLUTION,
+            FIELD_HOUSE,
+        ),
+        "house_prefixes": ("PFP",),
+        "bulk_group": "virtual_screening_episode",
     },
     "Trailer": {
         "fields": (FIELD_TITLE, FIELD_RESOLUTION, FIELD_HOUSE),
@@ -352,6 +376,27 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         if not title:
             raise ValueError("Title is required.")
         return f"{title}_virtual_screening_{resolution}_{house}.mov"
+
+    if task == "Virtual Screening Episode":
+        title = slugify(raw_fields.get(FIELD_TITLE, ""))
+        if not title:
+            raise ValueError("Series Title is required.")
+        season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
+        episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
+        return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}.mov"
+
+    if task == "Virtual Screening Episode Caption":
+        title = slugify(raw_fields.get(FIELD_TITLE, ""))
+        if not title:
+            raise ValueError("Series Title is required.")
+        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
+        subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
+        subtitle_type = normalize_subtitle_type(subtitle_raw)
+        season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
+        episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
+        if language == "Spanish":
+            return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{subtitle_type}_las.vtt"
+        return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Trailer":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
@@ -706,7 +751,7 @@ class NebFilenameAssistant:
             f"CSV headers for this template: {', '.join(headers)}",
             "The output CSV will add a single `filename` column at the front.",
         ]
-        if task_name in {"Episode", "Episode Caption"}:
+        if task_name in {"Episode", "Episode Caption", "Virtual Screening Episode", "Virtual Screening Episode Caption"}:
             lines.append("For episode filenames, `title` should be the series title.")
         if FIELD_SUBTITLE_TYPE in TASKS[task_name]["fields"]:  # type: ignore[index]
             lines.append("If `caption_type` is blank, the app defaults it from `language`: English -> cc, Spanish -> cc.")
@@ -762,6 +807,15 @@ class NebFilenameAssistant:
             second_row[CSV_TITLE] = "county rescue"
             first_row[CSV_HOUSE] = "PUR0000363"
             second_row[CSV_HOUSE] = "PUR0000364"
+        elif task_name in {"Virtual Screening Episode", "Virtual Screening Episode Caption"}:
+            first_row[CSV_TITLE] = "when hope calls"
+            second_row[CSV_TITLE] = "when hope calls"
+            first_row[CSV_SEASON] = "03"
+            second_row[CSV_SEASON] = "03"
+            first_row[CSV_EPISODE] = "02"
+            second_row[CSV_EPISODE] = "03"
+            first_row[CSV_HOUSE] = "PFP1234567"
+            second_row[CSV_HOUSE] = "PFP1234568"
         elif task_name in {"Trailer", "Trailer Caption"}:
             first_row[CSV_TITLE] = "gods not dead"
             second_row[CSV_TITLE] = "gods not dead"

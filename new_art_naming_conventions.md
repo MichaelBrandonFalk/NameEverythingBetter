@@ -52,6 +52,7 @@ These are the three art types currently used in the standard:
 | Original Premium Series (Yearly) | `bg` |
 | Exclusive Conversation (Yearly) | `bg` |
 | Virtual Screening | `bg` |
+| Virtual Screening Episode | `bg` |
 | Trailer | `bg` |
 | Extras | `bg` |
 | Carousel | `ca` |
@@ -243,6 +244,26 @@ Example:
 
 `wild_like_me_virtual_screening_eng_bg_16x9_1920x1080.jpg`
 
+### Virtual Screening Episode
+
+Formula:
+
+`[series_name]_s[xx]_e[xx]_virtual_screening_[language]_[art_tag]_[aspect_ratio]_[dimensions].[extension]`
+
+Required fields:
+
+- Series Name
+- Season
+- Episode
+- Language
+- Art Tag
+- Aspect Ratio
+- Dimensions
+
+Example:
+
+`when_hope_calls_s03_e02_virtual_screening_eng_bg_16x9_1920x1080.jpg`
+
 ### Trailer
 
 Formula:
@@ -340,6 +361,7 @@ These are the approved pixel sizes the app should present after an aspect ratio 
 | Original Premium Series (Yearly) | `title`, `year`, `episode`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Exclusive Conversation (Yearly) | `year`, `episode`, `interviewees`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Virtual Screening | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
+| Virtual Screening Episode | `title`, `season`, `episode`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Trailer | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Extras | `title`, `language`, `extra_usage`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Carousel | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |

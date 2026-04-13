@@ -44,6 +44,9 @@ TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
     "Episode": {
         FIELD_TITLE: "Series Title *",
     },
+    "Virtual Screening Episode": {
+        FIELD_TITLE: "Series Title *",
+    },
 }
 LANGUAGE_OPTIONS = ("English", "Spanish")
 
@@ -73,6 +76,7 @@ TASK_ART_TAG_CODES: dict[str, tuple[str, ...]] = {
     "Original Premium Series (Yearly)": ("bg",),
     "Exclusive Conversation (Yearly)": ("bg",),
     "Virtual Screening": ("bg",),
+    "Virtual Screening Episode": ("bg",),
     "Trailer": ("bg",),
     "Extras": ("bg",),
     "Carousel": ("ca",),
@@ -154,6 +158,7 @@ TASKS: dict[str, tuple[str, ...]] = {
     "Original Premium Series (Yearly)": (FIELD_TITLE, FIELD_YEAR, FIELD_EPISODE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Exclusive Conversation (Yearly)": (FIELD_YEAR, FIELD_EPISODE, FIELD_INTERVIEWEES, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Virtual Screening": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
+    "Virtual Screening Episode": (FIELD_TITLE, FIELD_SEASON, FIELD_EPISODE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Trailer": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Extras": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_EXTRA_USAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Carousel": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
@@ -372,6 +377,12 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
     if task == "Virtual Screening":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}_virtual_screening{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
+
+    if task == "Virtual Screening Episode":
+        title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
+        season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
+        episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
+        return f"{title}_{season}_{episode}_virtual_screening{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
     if task == "Trailer":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
@@ -731,7 +742,7 @@ class ArtNameHelperApp:
             "`tt` always outputs `.png`. `ca` and `bg` output `.jpg`.",
             "Dimensions must match the selected Aspect Ratio.",
         ]
-        if task_name in {"Season Placeholder", "Episode"}:
+        if task_name in {"Season Placeholder", "Episode", "Virtual Screening Episode"}:
             lines.append("For this art type, `title` should be the series title.")
         return "\n".join(lines)
 
@@ -785,6 +796,13 @@ class ArtNameHelperApp:
             second_row[CSV_SEASON] = ""
             first_row[CSV_EPISODE] = ""
             second_row[CSV_EPISODE] = ""
+        elif task_name == "Virtual Screening Episode":
+            first_row[CSV_TITLE] = "when hope calls"
+            second_row[CSV_TITLE] = "when hope calls"
+            first_row[CSV_SEASON] = "03"
+            second_row[CSV_SEASON] = "03"
+            first_row[CSV_EPISODE] = "02"
+            second_row[CSV_EPISODE] = "03"
             first_row[CSV_YEAR] = ""
             second_row[CSV_YEAR] = ""
             first_row[CSV_INTERVIEWEES] = ""
