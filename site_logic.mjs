@@ -909,15 +909,11 @@ function downloadCurrentOutput() {
   const titleSlug = slugify(state.art.values.title || "") || "art_names";
   const taskSlug = slugify(state.art.task) || "art";
   const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
-  const filename = `${titleSlug}_${taskSlug}_${suffix}.xml`;
-  const xmlEscape = (value) => value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
   const rows = text.split("\n").filter(Boolean);
-  const xml = `<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n xmlns:o="urn:schemas-microsoft-com:office:office"\n xmlns:x="urn:schemas-microsoft-com:office:excel"\n xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n <Worksheet ss:Name="Art Names">\n  <Table>\n   <Row><Cell><Data ss:Type="String">filename</Data></Cell></Row>\n${rows.map((row) => `   <Row><Cell><Data ss:Type="String">${xmlEscape(row)}</Data></Cell></Row>`).join("\n")}\n  </Table>\n </Worksheet>\n</Workbook>\n`;
-  const blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+  const csvEscape = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const csv = ["filename", ...rows].map(csvEscape).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -926,7 +922,7 @@ function downloadCurrentOutput() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  setStatus("Art name spreadsheet downloaded.", "success");
+  setStatus("Art name CSV downloaded.", "success");
 }
 
 function init() {
