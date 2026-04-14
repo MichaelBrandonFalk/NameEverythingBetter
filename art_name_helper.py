@@ -8,6 +8,7 @@ import unicodedata
 from pathlib import Path
 from typing import Callable
 import tkinter as tk
+from openpyxl import Workbook
 from tkinter import filedialog, messagebox, ttk
 
 APP_TITLE = "Verso - Art Naming Tool"
@@ -533,7 +534,7 @@ class ArtNameHelperApp:
         self.single_output_text.configure(state="disabled")
         output_button_row = ttk.Frame(self.single_output_frame)
         output_button_row.grid(row=1, column=0, sticky="e", padx=(10, 10), pady=(0, 10))
-        ttk.Button(output_button_row, text="Download List", command=self._download_single_output).pack(side="right")
+        ttk.Button(output_button_row, text="Download Spreadsheet", command=self._download_single_output).pack(side="right")
         ttk.Button(output_button_row, text="Copy All", command=self._copy_single).pack(side="right", padx=(0, 8))
 
         self.multi_frame = ttk.Frame(self.builder_frame)
@@ -777,26 +778,31 @@ class ArtNameHelperApp:
         return "\n".join(self.single_output_lines)
 
     def _download_single_output(self) -> None:
-        payload = self._single_output_payload().strip()
+        payload = [line for line in self.single_output_lines if line.strip()]
         if not payload:
             messagebox.showwarning(APP_TITLE, "No names to download.")
             return
         task_slug = slugify(self.task_var.get()) or "art_names"
         title_slug = slugify(self.field_vars[FIELD_TITLE].get()) or "art_names"
-        default_name = f"{title_slug}_{task_slug}_names.txt"
+        default_name = f"{title_slug}_{task_slug}_names.xlsx"
         path = filedialog.asksaveasfilename(
-            title="Save Art Name List",
-            defaultextension=".txt",
+            title="Save Art Name Spreadsheet",
+            defaultextension=".xlsx",
             initialfile=default_name,
-            filetypes=[("Text files", "*.txt")],
+            filetypes=[("Excel files", "*.xlsx")],
         )
         if not path:
             self.status_var.set("Download canceled.")
             return
-        with open(path, "w", encoding="utf-8") as handle:
-            handle.write(payload)
-            handle.write("\n")
-        self.status_var.set("Art name list saved.")
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Art Names"
+        sheet["A1"] = "filename"
+        for index, line in enumerate(payload, start=2):
+            sheet.cell(row=index, column=1, value=line)
+        sheet.column_dimensions["A"].width = max(18, min(120, max(len("filename"), *(len(line) for line in payload)) + 2))
+        workbook.save(path)
+        self.status_var.set("Art name spreadsheet saved.")
 
     def _multi_fields_for_task(self, task_name: str) -> list[str]:
         return list(TASKS[task_name])

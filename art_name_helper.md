@@ -6,7 +6,7 @@ Updated the art naming flow so the default path generates the full required art 
 
 - The main Verso flow now generates all required art names for the selected media type.
 - It uses only the highest resolution for each required art-tag and aspect-ratio combination.
-- The generated list is easy to copy and can be downloaded as a text file.
+- The generated list is easy to copy and can be downloaded as a spreadsheet.
 
 ## Slug Behavior
 
