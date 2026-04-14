@@ -283,6 +283,7 @@
 
     .filename {
       word-break: break-all;
+      white-space: pre-wrap;
       font-family: "SFMono-Regular", Menlo, Consolas, monospace;
       font-size: 0.95rem;
       color: var(--ink);
@@ -421,6 +422,10 @@
               <label id="task-label" for="task-select"></label>
               <select id="task-select"></select>
             </div>
+            <div id="art-mode-wrap" class="field hidden">
+              <label for="art-mode-select">Output Mode</label>
+              <select id="art-mode-select"></select>
+            </div>
             <div id="fields" class="field-grid" style="margin-top: 16px;"></div>
             <div class="action-row">
               <button id="generate-btn" class="action-btn primary" type="button">Generate Name</button>
@@ -433,10 +438,10 @@
         <aside class="stack">
           <div class="output-card">
             <h3>Generated Names</h3>
-            <p class="note" style="margin-top: 10px;">For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.</p>
+            <p id="output-note" class="note" style="margin-top: 10px;">For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.</p>
             <div class="output-stack">
               <div id="output-video-wrap" class="output-item">
-                <strong>MOV Name</strong>
+                <strong id="output-video-label">MOV Name</strong>
                 <div id="filename-output-video" class="filename"></div>
               </div>
               <div id="output-caption-eng-wrap" class="output-item hidden">
@@ -450,6 +455,7 @@
             </div>
           <div class="action-row">
               <button id="copy-btn" class="action-btn secondary" type="button">Copy All Names</button>
+              <button id="download-btn" class="action-btn secondary hidden" type="button">Download List</button>
               <a class="link-btn secondary" href="conventions.html">Read Naming Conventions Document</a>
             </div>
           </div>
@@ -468,18 +474,18 @@
       <h2>Downloads</h2>
       <div class="downloads">
         <div class="download-card">
-          <strong>Name Everything Better V1_27</strong>
+          <strong>Name Everything Better V1_28</strong>
           <p>Combined Mac app for movies, captions, and art naming.</p>
           <div class="download-actions">
-            <a class="link-btn primary" href="downloads/Name%20Everything%20Better%20V1_27.zip">Download ZIP</a>
+            <a class="link-btn primary" href="downloads/Name%20Everything%20Better%20V1_28.zip">Download ZIP</a>
           </div>
         </div>
 
         <div class="download-card">
-          <strong>Verso - Art Naming Tool V1_13</strong>
+          <strong>Verso - Art Naming Tool V1_14</strong>
           <p>Full art naming app, including the bulk workflow.</p>
           <div class="download-actions">
-            <a class="link-btn primary" href="downloads/Verso%20-%20Art%20Naming%20Tool%20V1_13.zip">Download ZIP</a>
+            <a class="link-btn primary" href="downloads/Verso%20-%20Art%20Naming%20Tool%20V1_14.zip">Download ZIP</a>
             <a class="link-btn secondary" href="downloads/Verso%20-%20Art%20Naming%20Tool%20-%20Single%20V1_5.zip">Single-Item ZIP</a>
           </div>
         </div>

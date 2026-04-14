@@ -1,6 +1,12 @@
-# Art Naming Helper V1_4 (macOS)
+# Verso - Art Naming Tool V1_14 (macOS)
 
-Updated art naming app so apostrophes are removed cleanly during slug creation instead of being converted into extra underscores.
+Updated the art naming flow so the default path generates the full required art name set for a title, while still keeping a one-at-a-time option.
+
+## Full Required Art Set
+
+- The main Verso flow now generates all required art names for the selected media type.
+- It uses only the highest resolution for each required art-tag and aspect-ratio combination.
+- The generated list is easy to copy and can be downloaded as a text file.
 
 ## Slug Behavior
 

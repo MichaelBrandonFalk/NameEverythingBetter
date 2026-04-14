@@ -13,6 +13,9 @@ from tkinter import filedialog, messagebox, ttk
 APP_TITLE = "Verso - Art Naming Tool"
 WINDOW_WIDTH = 940
 WINDOW_HEIGHT = 720
+MODE_REQUIRED_SET = "set"
+MODE_SINGLE = "single"
+MODE_MULTI = "multi"
 
 FIELD_TITLE = "title"
 FIELD_LANGUAGE = "language"
@@ -163,6 +166,7 @@ TASKS: dict[str, tuple[str, ...]] = {
     "Extras": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_EXTRA_USAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Carousel": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
 }
+ART_DETAIL_FIELDS = {FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS}
 
 DEFAULT_VALUES = {
     FIELD_TITLE: "",
@@ -333,6 +337,29 @@ def extension_for_art_tag(art_tag: str) -> str:
     return "png" if art_tag == "tt" else "jpg"
 
 
+def required_art_fields(task: str) -> tuple[str, ...]:
+    return tuple(field for field in TASKS[task] if field not in ART_DETAIL_FIELDS)
+
+
+def required_art_specs(task: str) -> tuple[tuple[str, str, str], ...]:
+    specs: list[tuple[str, str, str]] = []
+    for art_tag in allowed_art_tag_codes(task):
+        for aspect_ratio, dimensions in APPROVED_ART_SIZES[art_tag].items():
+            specs.append((art_tag, aspect_ratio, dimensions[0]))
+    return tuple(specs)
+
+
+def build_required_filenames(task: str, raw_fields: dict[str, str]) -> tuple[str, ...]:
+    filenames: list[str] = []
+    for art_tag, aspect_ratio, dimensions in required_art_specs(task):
+        item_fields = dict(raw_fields)
+        item_fields[FIELD_ART_TAG] = ART_TAG_CODE_TO_LABEL[art_tag]
+        item_fields[FIELD_ASPECT_RATIO] = aspect_ratio
+        item_fields[FIELD_DIMENSIONS] = dimensions
+        filenames.append(build_filename(task, item_fields))
+    return tuple(filenames)
+
+
 def build_filename(task: str, raw_fields: dict[str, str]) -> str:
     art_tag = normalize_art_tag(raw_fields.get(FIELD_ART_TAG, ""))
     if art_tag not in allowed_art_tag_codes(task):
@@ -412,7 +439,7 @@ class ArtNameHelperApp:
         self.task_var = tk.StringVar(value=next(iter(TASKS.keys())))
         self.multi_task_var = tk.StringVar(value=next(iter(TASKS.keys())))
         self.status_var = tk.StringVar(value="")
-        self.single_output_var = tk.StringVar(value="")
+        self.single_output_lines: list[str] = []
         self.batch_input_path_var = tk.StringVar(value="No CSV selected.")
         self.batch_output_path_var = tk.StringVar(value="")
         self.multi_help_var = tk.StringVar(value=self._multi_help_text(self.multi_task_var.get()))
@@ -436,7 +463,7 @@ class ArtNameHelperApp:
 
         welcome_label = ttk.Label(
             self.welcome_frame,
-            text="Hi, I'm Verso. Would you like to name one thing at a time or multiple things?",
+            text="Hi, I'm Verso. Would you like the full required art set, one thing at a time, or multiple things?",
             font=("", 13, "bold"),
             wraplength=760,
             justify="center",
@@ -447,14 +474,20 @@ class ArtNameHelperApp:
         button_row.pack()
         ttk.Button(
             button_row,
-            text="One Thing At A Time",
-            command=lambda: self._choose_mode("single"),
+            text="Full Required Art Set",
+            command=lambda: self._choose_mode(MODE_REQUIRED_SET),
             width=26,
         ).pack(side="left", padx=8)
         ttk.Button(
             button_row,
+            text="One Thing At A Time",
+            command=lambda: self._choose_mode(MODE_SINGLE),
+            width=24,
+        ).pack(side="left", padx=8)
+        ttk.Button(
+            button_row,
             text="Multiple Things",
-            command=lambda: self._choose_mode("multi"),
+            command=lambda: self._choose_mode(MODE_MULTI),
             width=20,
         ).pack(side="left", padx=8)
 
@@ -487,18 +520,21 @@ class ArtNameHelperApp:
 
         single_buttons = ttk.Frame(self.single_frame)
         single_buttons.pack(fill="x", pady=(10, 6))
-        ttk.Button(single_buttons, text="Generate Filename", command=self._generate_single).pack(side="right")
+        self.generate_single_button = ttk.Button(single_buttons, text="Generate Names", command=self._generate_single)
+        self.generate_single_button.pack(side="right")
         ttk.Button(single_buttons, text="Clear", command=self._clear_single_fields).pack(side="right", padx=(0, 8))
 
-        single_output_frame = ttk.LabelFrame(self.single_frame, text="Filename")
-        single_output_frame.pack(fill="x")
-        single_output_frame.columnconfigure(0, weight=1)
-        ttk.Entry(single_output_frame, textvariable=self.single_output_var, state="readonly").grid(
-            row=0, column=0, sticky="ew", padx=(10, 8), pady=10
-        )
-        ttk.Button(single_output_frame, text="Copy", command=self._copy_single).grid(
-            row=0, column=1, sticky="e", padx=(0, 10), pady=10
-        )
+        self.single_output_frame = ttk.LabelFrame(self.single_frame, text="Generated Names")
+        self.single_output_frame.pack(fill="both", expand=True)
+        self.single_output_frame.columnconfigure(0, weight=1)
+        self.single_output_frame.rowconfigure(0, weight=1)
+        self.single_output_text = tk.Text(self.single_output_frame, height=12, wrap="word")
+        self.single_output_text.grid(row=0, column=0, sticky="nsew", padx=(10, 8), pady=10)
+        self.single_output_text.configure(state="disabled")
+        output_button_row = ttk.Frame(self.single_output_frame)
+        output_button_row.grid(row=1, column=0, sticky="e", padx=(10, 10), pady=(0, 10))
+        ttk.Button(output_button_row, text="Download List", command=self._download_single_output).pack(side="right")
+        ttk.Button(output_button_row, text="Copy All", command=self._copy_single).pack(side="right", padx=(0, 8))
 
         self.multi_frame = ttk.Frame(self.builder_frame)
         ttk.Label(
@@ -671,11 +707,13 @@ class ArtNameHelperApp:
         self.welcome_frame.pack_forget()
         self.builder_frame.pack(fill="both", expand=True)
         self._refresh_task_ui()
-        if mode == "single":
-            self.status_var.set("Fill required fields and click Generate Filename.")
-        else:
+        if mode == MODE_MULTI:
             self.multi_help_var.set(self._multi_help_text(self.multi_task_var.get()))
             self.status_var.set("Choose one art type, then download the custom template.")
+        elif mode == MODE_SINGLE:
+            self.status_var.set("Fill required fields and click Generate Filename.")
+        else:
+            self.status_var.set("Fill required fields and click Generate Names.")
 
     def _go_home(self) -> None:
         if self.home_callback is not None:
@@ -689,20 +727,27 @@ class ArtNameHelperApp:
         self.batch_output_path_var.set("")
 
     def _refresh_task_ui(self) -> None:
-        if self.mode_var.get() == "multi":
+        if self.mode_var.get() == MODE_MULTI:
             self.mode_prompt_label.config(text="Great, let's do multiple art filenames.")
             self.task_row.pack_forget()
             self.single_frame.pack_forget()
             self.multi_frame.pack(fill="both", expand=True, pady=(0, 8))
         else:
             task = self.task_var.get()
-            required_fields = TASKS[task]
-            self.mode_prompt_label.config(text="Great, which art filename do you need?")
+            if self.mode_var.get() == MODE_SINGLE:
+                required_fields = TASKS[task]
+                self.mode_prompt_label.config(text="Great, which art filename do you need?")
+                self.single_output_frame.config(text="Filename")
+                self.generate_single_button.config(text="Generate Filename")
+            else:
+                required_fields = required_art_fields(task)
+                self.mode_prompt_label.config(text="Great, which art set do you need?")
+                self.single_output_frame.config(text="Required Art Names")
+                self.generate_single_button.config(text="Generate Names")
             self.task_row.pack(fill="x", pady=(0, 10))
             self.multi_frame.pack_forget()
-            self.single_frame.pack(fill="x", pady=(0, 10))
+            self.single_frame.pack(fill="both", expand=True, pady=(0, 10))
             self._refresh_field_labels(task)
-            self._refresh_art_tag_dropdown()
             self._render_single_rows(required_fields)
 
     def _refresh_field_labels(self, task: str) -> None:
@@ -715,8 +760,43 @@ class ArtNameHelperApp:
             row.pack_forget()
         for field in required_fields:
             self.field_rows[field].pack(fill="x", pady=4)
-        self._refresh_size_dropdowns()
-        self.single_output_var.set("")
+        if self.mode_var.get() == MODE_SINGLE:
+            self._refresh_art_tag_dropdown()
+            self._refresh_size_dropdowns()
+        self._set_single_output([])
+
+    def _set_single_output(self, lines: list[str] | tuple[str, ...]) -> None:
+        self.single_output_lines = list(lines)
+        self.single_output_text.configure(state="normal")
+        self.single_output_text.delete("1.0", "end")
+        if self.single_output_lines:
+            self.single_output_text.insert("1.0", "\n".join(self.single_output_lines))
+        self.single_output_text.configure(state="disabled")
+
+    def _single_output_payload(self) -> str:
+        return "\n".join(self.single_output_lines)
+
+    def _download_single_output(self) -> None:
+        payload = self._single_output_payload().strip()
+        if not payload:
+            messagebox.showwarning(APP_TITLE, "No names to download.")
+            return
+        task_slug = slugify(self.task_var.get()) or "art_names"
+        title_slug = slugify(self.field_vars[FIELD_TITLE].get()) or "art_names"
+        default_name = f"{title_slug}_{task_slug}_names.txt"
+        path = filedialog.asksaveasfilename(
+            title="Save Art Name List",
+            defaultextension=".txt",
+            initialfile=default_name,
+            filetypes=[("Text files", "*.txt")],
+        )
+        if not path:
+            self.status_var.set("Download canceled.")
+            return
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.write("\n")
+        self.status_var.set("Art name list saved.")
 
     def _multi_fields_for_task(self, task_name: str) -> list[str]:
         return list(TASKS[task_name])
@@ -747,23 +827,29 @@ class ArtNameHelperApp:
         return "\n".join(lines)
 
     def _raw_fields_for_task(self) -> dict[str, str]:
-        fields = TASKS[self.task_var.get()]
+        if self.mode_var.get() == MODE_SINGLE:
+            fields = TASKS[self.task_var.get()]
+        else:
+            fields = required_art_fields(self.task_var.get())
         return {field: self.field_vars[field].get().strip() for field in fields}
 
     def _generate_single(self) -> None:
         task = self.task_var.get()
         raw_fields = self._raw_fields_for_task()
         try:
-            filename = build_filename(task, raw_fields)
+            if self.mode_var.get() == MODE_SINGLE:
+                output_lines = [build_filename(task, raw_fields)]
+            else:
+                output_lines = list(build_required_filenames(task, raw_fields))
         except ValueError as error:
-            self.single_output_var.set("")
+            self._set_single_output([])
             self.status_var.set(str(error))
             return
-        self.single_output_var.set(filename)
+        self._set_single_output(output_lines)
         if plus_warning_needed(raw_fields):
-            self.status_var.set(f'Filename generated. {PLUS_WARNING_MESSAGE}')
+            self.status_var.set(f'Names generated. {PLUS_WARNING_MESSAGE}')
         else:
-            self.status_var.set("Filename generated.")
+            self.status_var.set("Names generated.")
 
     def _template_example_rows(self, headers: list[str], task_name: str) -> list[dict[str, str]]:
         default_art_tag = allowed_art_tag_codes(task_name)[0]
@@ -990,20 +1076,21 @@ class ArtNameHelperApp:
             self.status_var.set(f"Generated {len(generated_rows)} filename(s) into a new CSV.")
 
     def _copy_single(self) -> None:
-        value = self.single_output_var.get().strip()
+        value = self._single_output_payload().strip()
         if not value:
-            messagebox.showwarning(APP_TITLE, "No filename to copy.")
+            messagebox.showwarning(APP_TITLE, "No names to copy.")
             return
         self.root.clipboard_clear()
         self.root.clipboard_append(value)
-        self.status_var.set("Copied filename.")
+        self.status_var.set("Copied generated names.")
 
     def _clear_single_fields(self) -> None:
         for field, variable in self.field_vars.items():
             variable.set(DEFAULT_VALUES[field])
-        self._refresh_art_tag_dropdown()
-        self._refresh_size_dropdowns()
-        self.single_output_var.set("")
+        if self.mode_var.get() == MODE_SINGLE:
+            self._refresh_art_tag_dropdown()
+            self._refresh_size_dropdowns()
+        self._set_single_output([])
         self.status_var.set("Single-item fields cleared.")
 
 

@@ -148,6 +148,11 @@ const ART_TASKS = {
   "Extras": ["title", "language", "extra_usage", "art_tag", "aspect_ratio", "dimensions"],
   "Carousel": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
 };
+const ART_DETAIL_FIELDS = new Set(["art_tag", "aspect_ratio", "dimensions"]);
+const ART_OUTPUT_MODES = {
+  set: "Full Required Art Set",
+  single: "One At A Time",
+};
 
 const ART_DEFAULTS = {
   title: "",
@@ -165,7 +170,7 @@ const ART_DEFAULTS = {
 const state = {
   domain: null,
   neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false },
-  art: { task: "Movie", values: { ...ART_DEFAULTS } },
+  art: { task: "Movie", values: { ...ART_DEFAULTS }, outputMode: "set" },
 };
 
 function slugify(value, { collapseVeggieTales = false } = {}) {
@@ -355,6 +360,31 @@ function normalizeDimensions(value, aspectRatio, artTag) {
 
 function extensionForArtTag(artTag) {
   return artTag === "tt" ? "png" : "jpg";
+}
+
+function requiredArtFields(task) {
+  return ART_TASKS[task].filter((field) => !ART_DETAIL_FIELDS.has(field));
+}
+
+function requiredArtSpecs(task) {
+  const specs = [];
+  for (const artTag of allowedArtTagCodes(task)) {
+    for (const [aspectRatio, dimensions] of Object.entries(APPROVED_ART_SIZES[artTag] || {})) {
+      specs.push({ artTag, aspectRatio, dimensions: dimensions[0] });
+    }
+  }
+  return specs;
+}
+
+function buildRequiredArtFilenames(task, rawFields) {
+  return requiredArtSpecs(task).map(({ artTag, aspectRatio, dimensions }) => (
+    buildArtFilename(task, {
+      ...rawFields,
+      art_tag: ART_TAG_CODE_TO_LABEL[artTag],
+      aspect_ratio: aspectRatio,
+      dimensions,
+    })
+  ));
 }
 
 export function buildNebFilename(task, rawFields) {
@@ -631,6 +661,8 @@ function renderBuilder() {
   const chooser = document.getElementById("domain-chooser");
   const taskLabel = document.getElementById("task-label");
   const taskSelect = document.getElementById("task-select");
+  const artModeWrap = document.getElementById("art-mode-wrap");
+  const artModeSelect = document.getElementById("art-mode-select");
   const fields = document.getElementById("fields");
   const eyebrow = document.getElementById("builder-eyebrow");
   const title = document.getElementById("builder-title");
@@ -650,7 +682,19 @@ function renderBuilder() {
   taskSelect.innerHTML = taskNames.map((taskName) => `<option value="${taskName}">${taskName}</option>`).join("");
   taskSelect.value = domainState.task;
 
-  const taskFields = taskMap[domainState.task].fields || taskMap[domainState.task];
+  if (state.domain === "art") {
+    artModeWrap.classList.remove("hidden");
+    artModeSelect.innerHTML = Object.entries(ART_OUTPUT_MODES)
+      .map(([value, label]) => `<option value="${value}">${label}</option>`)
+      .join("");
+    artModeSelect.value = domainState.outputMode;
+  } else {
+    artModeWrap.classList.add("hidden");
+  }
+
+  const taskFields = state.domain === "art"
+    ? (domainState.outputMode === "set" ? requiredArtFields(domainState.task) : taskMap[domainState.task])
+    : (taskMap[domainState.task].fields || taskMap[domainState.task]);
   fields.innerHTML = taskFields.map((field) => renderField(field, domainState)).join("");
   bindFieldHandlers(taskFields);
   refreshOutputVisibility();
@@ -694,9 +738,31 @@ function escapeHtml(value) {
 
 function refreshOutputVisibility() {
   const hasCompanionCaptions = state.domain === "neb" && Boolean(COMPANION_CAPTION_TASKS[getDomainState().task]);
+  const outputLabel = document.getElementById("output-video-label");
+  const outputNote = document.getElementById("output-note");
+  const downloadBtn = document.getElementById("download-btn");
+  const generateBtn = document.getElementById("generate-btn");
+  const copyBtn = document.getElementById("copy-btn");
   document.getElementById("output-video-wrap").classList.remove("hidden");
-  document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
-  document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+  if (state.domain === "neb") {
+    outputLabel.textContent = "MOV Name";
+    outputNote.textContent = "For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.";
+    downloadBtn.classList.add("hidden");
+    generateBtn.textContent = "Generate Name";
+    copyBtn.textContent = "Copy All Names";
+    document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+    document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+  } else {
+    outputLabel.textContent = getDomainState().outputMode === "set" ? "Required Art Names" : "Art Filename";
+    outputNote.textContent = getDomainState().outputMode === "set"
+      ? "The art side defaults to the full required filename set, using only the highest resolution for each required art type and aspect ratio."
+      : "Switch to one-at-a-time if you need a single custom art filename.";
+    downloadBtn.classList.remove("hidden");
+    generateBtn.textContent = getDomainState().outputMode === "set" ? "Generate Names" : "Generate Name";
+    copyBtn.textContent = getDomainState().outputMode === "set" ? "Copy All Names" : "Copy Name";
+    document.getElementById("output-caption-eng-wrap").classList.add("hidden");
+    document.getElementById("output-caption-las-wrap").classList.add("hidden");
+  }
 }
 
 function bindFieldHandlers(taskFields) {
@@ -744,13 +810,21 @@ function onTaskChange(event) {
   resetOutput();
 }
 
+function onArtModeChange(event) {
+  state.art.outputMode = event.target.value;
+  renderBuilder();
+  resetOutput();
+}
+
 function clearCurrentForm() {
   const defaults = currentDefaults();
   if (state.domain === "neb") {
     state.neb.values = { ...defaults };
     state.neb.subtitleManual = false;
   } else {
+    const currentMode = state.art.outputMode;
     state.art.values = { ...defaults };
+    state.art.outputMode = currentMode;
   }
   renderBuilder();
   resetOutput();
@@ -784,7 +858,9 @@ function generateCurrentFilename() {
       filename = buildNebFilename(domainState.task, domainState.values);
       companionCaptions = companionCaptionOutputs(domainState.task, domainState.values);
     } else {
-      filename = buildArtFilename(domainState.task, domainState.values);
+      filename = domainState.outputMode === "set"
+        ? buildRequiredArtFilenames(domainState.task, domainState.values).join("\n")
+        : buildArtFilename(domainState.task, domainState.values);
     }
 
     document.getElementById("filename-output-video").textContent = filename;
@@ -821,13 +897,40 @@ async function copyFilename() {
   }
 }
 
+function downloadCurrentOutput() {
+  if (state.domain !== "art") {
+    return;
+  }
+  const text = document.getElementById("filename-output-video").textContent.trim();
+  if (!text) {
+    setStatus("Generate names first.", "error");
+    return;
+  }
+  const titleSlug = slugify(state.art.values.title || "") || "art_names";
+  const taskSlug = slugify(state.art.task) || "art";
+  const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
+  const filename = `${titleSlug}_${taskSlug}_${suffix}.txt`;
+  const blob = new Blob([`${text}\n`], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setStatus("Art name list downloaded.", "success");
+}
+
 function init() {
   const chooser = document.getElementById("domain-chooser");
   const taskSelect = document.getElementById("task-select");
+  const artModeSelect = document.getElementById("art-mode-select");
   const backBtn = document.getElementById("back-btn");
   const generateBtn = document.getElementById("generate-btn");
   const clearBtn = document.getElementById("clear-btn");
   const copyBtn = document.getElementById("copy-btn");
+  const downloadBtn = document.getElementById("download-btn");
 
   chooser.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-domain]");
@@ -838,6 +941,7 @@ function init() {
   });
 
   taskSelect.addEventListener("change", onTaskChange);
+  artModeSelect.addEventListener("change", onArtModeChange);
   backBtn.addEventListener("click", () => {
     state.domain = null;
     document.getElementById("builder").classList.add("hidden");
@@ -847,6 +951,7 @@ function init() {
   generateBtn.addEventListener("click", generateCurrentFilename);
   clearBtn.addEventListener("click", clearCurrentForm);
   copyBtn.addEventListener("click", copyFilename);
+  downloadBtn.addEventListener("click", downloadCurrentOutput);
 }
 
 if (typeof document !== "undefined") {
