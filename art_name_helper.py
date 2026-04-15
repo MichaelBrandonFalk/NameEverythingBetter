@@ -219,6 +219,7 @@ def slugify(value: str) -> str:
     lowered = lowered.replace("&", " and ")
     lowered = lowered.replace("@", " at ")
     lowered = lowered.replace("+", " plus ")
+    lowered = re.sub(r"([a-z0-9])\.\.\.(?=[a-z0-9])", r"\1_", lowered)
     lowered = lowered.replace("·", "")
     lowered = lowered.replace("*", "")
     lowered = lowered.replace("!", "")

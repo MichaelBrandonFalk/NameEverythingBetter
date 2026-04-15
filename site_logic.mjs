@@ -180,6 +180,7 @@ function slugify(value, { collapseVeggieTales = false } = {}) {
   lowered = lowered.replace(/&/g, " and ");
   lowered = lowered.replace(/@/g, " at ");
   lowered = lowered.replace(/\+/g, " plus ");
+  lowered = lowered.replace(/([a-z0-9])\.\.\.(?=[a-z0-9])/g, "$1_");
   lowered = lowered.replace(/[·*!.\u00a0]/g, "");
   lowered = lowered.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
   let slug = lowered.replace(/[^a-z0-9]+/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
