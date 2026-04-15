@@ -618,6 +618,17 @@ function resetOutput() {
   });
 }
 
+function goHome() {
+  state.domain = null;
+  document.getElementById("builder").classList.add("hidden");
+  document.getElementById("domain-chooser").classList.remove("hidden");
+  resetOutput();
+  const top = document.getElementById("top");
+  if (top) {
+    top.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function setStatus(message, tone) {
   const status = document.getElementById("status");
   status.textContent = message;
@@ -930,6 +941,8 @@ function init() {
   const taskSelect = document.getElementById("task-select");
   const artModeSelect = document.getElementById("art-mode-select");
   const backBtn = document.getElementById("back-btn");
+  const homeLink = document.getElementById("home-link");
+  const startLink = document.getElementById("start-link");
   const generateBtn = document.getElementById("generate-btn");
   const clearBtn = document.getElementById("clear-btn");
   const copyBtn = document.getElementById("copy-btn");
@@ -945,12 +958,12 @@ function init() {
 
   taskSelect.addEventListener("change", onTaskChange);
   artModeSelect.addEventListener("change", onArtModeChange);
-  backBtn.addEventListener("click", () => {
-    state.domain = null;
-    document.getElementById("builder").classList.add("hidden");
-    document.getElementById("domain-chooser").classList.remove("hidden");
-    resetOutput();
+  backBtn.addEventListener("click", goHome);
+  homeLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    goHome();
   });
+  startLink.addEventListener("click", goHome);
   generateBtn.addEventListener("click", generateCurrentFilename);
   clearBtn.addEventListener("click", clearCurrentForm);
   copyBtn.addEventListener("click", copyFilename);
