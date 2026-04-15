@@ -941,8 +941,6 @@ function init() {
   const taskSelect = document.getElementById("task-select");
   const artModeSelect = document.getElementById("art-mode-select");
   const backBtn = document.getElementById("back-btn");
-  const homeLink = document.getElementById("home-link");
-  const startLink = document.getElementById("start-link");
   const generateBtn = document.getElementById("generate-btn");
   const clearBtn = document.getElementById("clear-btn");
   const copyBtn = document.getElementById("copy-btn");
@@ -959,11 +957,6 @@ function init() {
   taskSelect.addEventListener("change", onTaskChange);
   artModeSelect.addEventListener("change", onArtModeChange);
   backBtn.addEventListener("click", goHome);
-  homeLink.addEventListener("click", (event) => {
-    event.preventDefault();
-    goHome();
-  });
-  startLink.addEventListener("click", goHome);
   generateBtn.addEventListener("click", generateCurrentFilename);
   clearBtn.addEventListener("click", clearCurrentForm);
   copyBtn.addEventListener("click", copyFilename);

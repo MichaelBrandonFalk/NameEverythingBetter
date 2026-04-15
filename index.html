@@ -9,13 +9,10 @@
       --bg: #f6efe6;
       --panel: rgba(255, 251, 245, 0.94);
       --panel-strong: rgba(255, 249, 240, 0.98);
-      --panel-soft: rgba(251, 244, 235, 0.9);
       --ink: #2f241c;
       --muted: #6d5c4e;
       --accent: #b4682b;
       --accent-dark: #8f4f1d;
-      --accent-soft: #f3dec6;
-      --home-bg: rgba(255, 252, 247, 0.88);
       --line: rgba(74, 46, 27, 0.14);
       --shadow: 0 18px 44px rgba(64, 38, 20, 0.12);
       --success-bg: #f2f6ef;
@@ -60,54 +57,6 @@
       padding: 40px;
     }
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding: 16px 20px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: var(--home-bg);
-      box-shadow: 0 12px 28px rgba(64, 38, 20, 0.08);
-      position: sticky;
-      top: 14px;
-      z-index: 5;
-      backdrop-filter: blur(14px);
-    }
-
-    .brand-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--ink);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .brand-mark {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      font-size: 0.9rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .topbar-links {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
     .eyebrow {
       margin: 0 0 10px;
       color: var(--accent-dark);
@@ -148,33 +97,6 @@
     .hero-copy {
       max-width: 60ch;
       margin-top: 16px;
-    }
-
-    .hero-layout {
-      display: grid;
-      gap: 24px;
-      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
-      align-items: start;
-      margin-top: 22px;
-    }
-
-    .hero-side {
-      padding: 22px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-    }
-
-    .hero-side h3 {
-      margin-bottom: 10px;
-    }
-
-    .hero-side p + p {
-      margin-top: 10px;
-    }
-
-    .hero-actions {
-      margin-top: 18px;
     }
 
     .section-label {
@@ -286,12 +208,6 @@
       color: var(--accent-dark);
       font-weight: 700;
       text-decoration: none;
-    }
-
-    .text-btn:hover,
-    .text-btn:focus-visible {
-      text-decoration: underline;
-      outline: none;
     }
 
     .builder-grid {
@@ -561,11 +477,6 @@
     }
 
     @media (max-width: 840px) {
-      .topbar {
-        position: static;
-      }
-
-      .hero-layout,
       .builder-grid {
         grid-template-columns: 1fr;
       }
@@ -593,59 +504,37 @@
 </head>
 <body>
   <main id="top" class="wrap">
-    <header class="topbar">
-      <a id="home-link" class="brand-link" href="#top">
-        <span class="brand-mark">NEB</span>
-        <span>Name Everything Better</span>
-      </a>
-      <nav class="topbar-links" aria-label="Primary">
-        <button id="start-link" class="text-btn" type="button">Start Naming</button>
-        <a class="text-btn" href="conventions.html">Read Naming Conventions</a>
-        <a class="text-btn" href="#downloads">Downloads</a>
-      </nav>
-    </header>
-
     <section class="panel hero">
       <p class="eyebrow">Browser Edition</p>
       <h1>Name Everything Better</h1>
       <p class="hero-copy">
-        Generate movie, caption, and art filenames directly in the browser. The page now
-        mirrors the combined Neb and Verso single-item flow, so someone can choose the
-        naming side they need and copy the result immediately.
+        Pick one of the two options below to start naming immediately. That is the main workflow.
+        Desktop downloads and the conventions document are still available, but they are
+        secondary resources.
       </p>
-      <div class="hero-layout">
-        <div>
-          <p class="section-label">Choose A Naming Path</p>
-          <div id="domain-chooser" class="chooser">
-            <button type="button" data-domain="neb" aria-label="Open Movies and Captions naming">
-              <div class="chooser-head">
-                <span class="chooser-kicker">Primary Tool</span>
-                <span class="chooser-arrow" aria-hidden="true">→</span>
-              </div>
-              <h2>Movies and Captions</h2>
-              <p>Generate delivery names for movies, captions, episodes, trailers, extras, virtual screenings, and related file types.</p>
-              <span class="chooser-cta">Open Movies and Captions</span>
-            </button>
-            <button type="button" data-domain="art" aria-label="Open Art naming">
-              <div class="chooser-head">
-                <span class="chooser-kicker">Primary Tool</span>
-                <span class="chooser-arrow" aria-hidden="true">→</span>
-              </div>
-              <h2>Art</h2>
-              <p>Generate cover art, background art, title treatment, carousel, and other approved art filenames.</p>
-              <span class="chooser-cta">Open Art Naming</span>
-            </button>
+      <div class="action-row">
+        <a class="link-btn secondary" href="conventions.html">Read Naming Conventions Document</a>
+      </div>
+      <p class="section-label">Choose A Naming Path</p>
+      <div id="domain-chooser" class="chooser">
+        <button type="button" data-domain="neb" aria-label="Open Movies and Captions naming">
+          <div class="chooser-head">
+            <span class="chooser-kicker">Primary Tool</span>
+            <span class="chooser-arrow" aria-hidden="true">→</span>
           </div>
-        </div>
-
-        <aside class="hero-side">
-          <h3>Fastest Way To Use This Page</h3>
-          <p>Pick one of the two options on the left to start naming immediately. That is the main workflow.</p>
-          <p>Desktop downloads and the conventions document are still available, but they are secondary resources.</p>
-          <div class="action-row hero-actions">
-            <a class="link-btn secondary" href="conventions.html">Read Naming Conventions Document</a>
+          <h2>Movies and Captions</h2>
+          <p>Generate delivery names for movies, captions, episodes, trailers, extras, virtual screenings, and related file types.</p>
+          <span class="chooser-cta">Open Movies and Captions</span>
+        </button>
+        <button type="button" data-domain="art" aria-label="Open Art naming">
+          <div class="chooser-head">
+            <span class="chooser-kicker">Primary Tool</span>
+            <span class="chooser-arrow" aria-hidden="true">→</span>
           </div>
-        </aside>
+          <h2>Art</h2>
+          <p>Generate cover art, background art, title treatment, carousel, and other approved art filenames.</p>
+          <span class="chooser-cta">Open Art Naming</span>
+        </button>
       </div>
     </section>
 
