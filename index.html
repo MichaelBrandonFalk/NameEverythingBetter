@@ -338,6 +338,41 @@
       gap: 6px;
     }
 
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .copy-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(180, 104, 43, 0.26);
+      background: rgba(255, 247, 238, 0.9);
+      color: var(--accent-dark);
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .copy-icon-btn:hover,
+    .copy-icon-btn:focus-visible {
+      transform: translateY(-1px);
+      background: rgba(255, 242, 228, 1);
+      border-color: rgba(180, 104, 43, 0.4);
+      outline: none;
+    }
+
+    .copy-icon-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
     .output-item.hidden {
       display: none !important;
     }
@@ -544,20 +579,34 @@
             <p id="output-note" class="note" style="margin-top: 10px;">For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.</p>
             <div class="output-stack">
               <div id="output-video-wrap" class="output-item">
-                <strong id="output-video-label">MOV Name</strong>
+                <div class="output-head">
+                  <strong id="output-video-label">MOV Name</strong>
+                  <button id="copy-video-btn" class="copy-icon-btn" type="button" data-copy-target="filename-output-video" data-copy-label="MOV Name" aria-label="Copy MOV Name" title="Copy MOV Name">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h9v14Z"/></svg>
+                  </button>
+                </div>
                 <div id="filename-output-video" class="filename"></div>
               </div>
               <div id="output-caption-eng-wrap" class="output-item hidden">
-                <strong>English Caption</strong>
+                <div class="output-head">
+                  <strong>English Caption</strong>
+                  <button class="copy-icon-btn" type="button" data-copy-target="filename-output-caption-eng" data-copy-label="English Caption" aria-label="Copy English Caption" title="Copy English Caption">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h9v14Z"/></svg>
+                  </button>
+                </div>
                 <div id="filename-output-caption-eng" class="filename"></div>
               </div>
               <div id="output-caption-las-wrap" class="output-item hidden">
-                <strong>Spanish Caption</strong>
+                <div class="output-head">
+                  <strong>Spanish Caption</strong>
+                  <button class="copy-icon-btn" type="button" data-copy-target="filename-output-caption-las" data-copy-label="Spanish Caption" aria-label="Copy Spanish Caption" title="Copy Spanish Caption">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h9v14Z"/></svg>
+                  </button>
+                </div>
                 <div id="filename-output-caption-las" class="filename"></div>
               </div>
             </div>
           <div class="action-row">
-              <button id="copy-btn" class="action-btn secondary" type="button">Copy All Names</button>
               <button id="download-btn" class="action-btn secondary hidden" type="button">Download CSV</button>
               <a class="link-btn secondary" href="conventions.html">Read Naming Conventions Document</a>
             </div>

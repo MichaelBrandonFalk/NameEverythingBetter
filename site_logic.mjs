@@ -754,24 +754,29 @@ function refreshOutputVisibility() {
   const outputNote = document.getElementById("output-note");
   const downloadBtn = document.getElementById("download-btn");
   const generateBtn = document.getElementById("generate-btn");
-  const copyBtn = document.getElementById("copy-btn");
+  const copyVideoBtn = document.getElementById("copy-video-btn");
   document.getElementById("output-video-wrap").classList.remove("hidden");
   if (state.domain === "neb") {
     outputLabel.textContent = "MOV Name";
+    copyVideoBtn.dataset.copyLabel = "MOV Name";
+    copyVideoBtn.setAttribute("aria-label", "Copy MOV Name");
+    copyVideoBtn.setAttribute("title", "Copy MOV Name");
     outputNote.textContent = "For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.";
     downloadBtn.classList.add("hidden");
     generateBtn.textContent = "Generate Name";
-    copyBtn.textContent = "Copy All Names";
     document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
     document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
   } else {
-    outputLabel.textContent = getDomainState().outputMode === "set" ? "Required Art Names" : "Art Filename";
+    const artOutputLabel = getDomainState().outputMode === "set" ? "Required Art Names" : "Art Filename";
+    outputLabel.textContent = artOutputLabel;
+    copyVideoBtn.dataset.copyLabel = artOutputLabel;
+    copyVideoBtn.setAttribute("aria-label", `Copy ${artOutputLabel}`);
+    copyVideoBtn.setAttribute("title", `Copy ${artOutputLabel}`);
     outputNote.textContent = getDomainState().outputMode === "set"
       ? "The art side defaults to the full required filename set, using only the highest resolution for each required art type and aspect ratio."
       : "Switch to one-at-a-time if you need a single custom art filename.";
     downloadBtn.classList.remove("hidden");
     generateBtn.textContent = getDomainState().outputMode === "set" ? "Generate Names" : "Generate Name";
-    copyBtn.textContent = getDomainState().outputMode === "set" ? "Copy All Names" : "Copy Name";
     document.getElementById("output-caption-eng-wrap").classList.add("hidden");
     document.getElementById("output-caption-las-wrap").classList.add("hidden");
   }
@@ -891,21 +896,17 @@ function generateCurrentFilename() {
   }
 }
 
-async function copyFilename() {
-  const text = [
-    document.getElementById("filename-output-video").textContent.trim(),
-    document.getElementById("filename-output-caption-eng").textContent.trim(),
-    document.getElementById("filename-output-caption-las").textContent.trim(),
-  ].filter(Boolean).join("\n");
+async function copyFilename(targetId, label) {
+  const text = document.getElementById(targetId)?.textContent.trim() || "";
   if (!text) {
-    setStatus("Generate names first.", "error");
+    setStatus(`Generate ${label.toLowerCase()} first.`, "error");
     return;
   }
   try {
     await navigator.clipboard.writeText(text);
-    setStatus("Generated names copied.", "success");
+    setStatus(`${label} copied.`, "success");
   } catch {
-    setStatus("Clipboard access was blocked. Copy the generated names manually.", "warning");
+    setStatus(`Clipboard access was blocked. Copy the ${label.toLowerCase()} manually.`, "warning");
   }
 }
 
@@ -944,7 +945,7 @@ function init() {
   const backBtn = document.getElementById("back-btn");
   const generateBtn = document.getElementById("generate-btn");
   const clearBtn = document.getElementById("clear-btn");
-  const copyBtn = document.getElementById("copy-btn");
+  const copyButtons = document.querySelectorAll("[data-copy-target]");
   const downloadBtn = document.getElementById("download-btn");
 
   chooser.addEventListener("click", (event) => {
@@ -960,7 +961,11 @@ function init() {
   backBtn.addEventListener("click", goHome);
   generateBtn.addEventListener("click", generateCurrentFilename);
   clearBtn.addEventListener("click", clearCurrentForm);
-  copyBtn.addEventListener("click", copyFilename);
+  copyButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      copyFilename(button.dataset.copyTarget, button.dataset.copyLabel || "Name");
+    });
+  });
   downloadBtn.addEventListener("click", downloadCurrentOutput);
 }
 
