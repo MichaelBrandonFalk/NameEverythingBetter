@@ -615,6 +615,8 @@ function resetOutput() {
   status.textContent = "";
   status.className = "status hidden";
   outputs.forEach((output) => {
+    delete output.dataset.copyValue;
+    output.innerHTML = "";
     output.textContent = "";
   });
 }
@@ -746,6 +748,35 @@ function escapeHtml(value) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function renderVideoOutput(value) {
+  const output = document.getElementById("filename-output-video");
+  if (state.domain === "art" && getDomainState().outputMode === "set") {
+    const rows = String(value).split("\n").filter(Boolean);
+    output.dataset.copyValue = rows.join("\n");
+    output.innerHTML = `
+      <div class="filename-list">
+        ${rows.map((row) => `
+          <div class="filename-line">
+            <span class="filename-line-text">${escapeHtml(row)}</span>
+            <button class="copy-icon-btn" type="button" data-inline-copy="${escapeHtml(row)}" data-inline-copy-label="Art Filename" aria-label="Copy Art Filename" title="Copy Art Filename">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h9v14Z"/></svg>
+            </button>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    return;
+  }
+  delete output.dataset.copyValue;
+  output.textContent = value;
+}
+
+function outputText(targetId) {
+  const output = document.getElementById(targetId);
+  if (!output) return "";
+  return output.dataset.copyValue || output.textContent.trim();
 }
 
 function refreshOutputVisibility() {
@@ -880,7 +911,7 @@ function generateCurrentFilename() {
         : buildArtFilename(domainState.task, domainState.values);
     }
 
-    document.getElementById("filename-output-video").textContent = filename;
+    renderVideoOutput(filename);
     document.getElementById("filename-output-caption-eng").textContent = companionCaptions?.eng || "";
     document.getElementById("filename-output-caption-las").textContent = companionCaptions?.las || "";
     if (plusWarningNeeded(domainState.values)) {
@@ -889,7 +920,7 @@ function generateCurrentFilename() {
       setStatus("Names generated.", "success");
     }
   } catch (error) {
-    document.getElementById("filename-output-video").textContent = "";
+    renderVideoOutput("");
     document.getElementById("filename-output-caption-eng").textContent = "";
     document.getElementById("filename-output-caption-las").textContent = "";
     setStatus(error.message || "Unable to generate filename.", "error");
@@ -897,7 +928,7 @@ function generateCurrentFilename() {
 }
 
 async function copyFilename(targetId, label) {
-  const text = document.getElementById(targetId)?.textContent.trim() || "";
+  const text = outputText(targetId);
   if (!text) {
     setStatus(`Generate ${label.toLowerCase()} first.`, "error");
     return;
@@ -914,7 +945,7 @@ function downloadCurrentOutput() {
   if (state.domain !== "art") {
     return;
   }
-  const text = document.getElementById("filename-output-video").textContent.trim();
+  const text = outputText("filename-output-video");
   if (!text) {
     setStatus("Generate names first.", "error");
     return;
@@ -947,6 +978,7 @@ function init() {
   const clearBtn = document.getElementById("clear-btn");
   const copyButtons = document.querySelectorAll("[data-copy-target]");
   const downloadBtn = document.getElementById("download-btn");
+  const videoOutput = document.getElementById("filename-output-video");
 
   chooser.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-domain]");
@@ -965,6 +997,14 @@ function init() {
     button.addEventListener("click", () => {
       copyFilename(button.dataset.copyTarget, button.dataset.copyLabel || "Name");
     });
+  });
+  videoOutput.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-inline-copy]");
+    if (!button) return;
+    navigator.clipboard.writeText(button.dataset.inlineCopy || "").then(
+      () => setStatus(`${button.dataset.inlineCopyLabel || "Art Filename"} copied.`, "success"),
+      () => setStatus("Clipboard access was blocked. Copy the art filename manually.", "warning"),
+    );
   });
   downloadBtn.addEventListener("click", downloadCurrentOutput);
 }

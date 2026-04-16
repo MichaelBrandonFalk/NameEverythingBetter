@@ -373,6 +373,37 @@
       fill: currentColor;
     }
 
+    .filename-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .filename-line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(74, 46, 27, 0.08);
+    }
+
+    .filename-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .filename-line-text {
+      flex: 1;
+      min-width: 0;
+      word-break: break-all;
+    }
+
+    .filename-line .copy-icon-btn {
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+    }
+
     .output-item.hidden {
       display: none !important;
     }
