@@ -120,6 +120,41 @@ APPROVED_ART_SIZES: dict[str, dict[str, tuple[str, ...]]] = {
         "9x5": ("1800x1000",),
     },
 }
+AXINOM_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str, str], ...]] = {
+    "Movie": (
+        ("Carousel", "ca", "7x3", "2450x1100"),
+        ("Movie", "ca", "2x3", "2000x3000"),
+        ("Movie", "ca", "3x4", "2400x3200"),
+        ("Movie", "ca", "1x1", "3000x3000"),
+        ("Movie", "ca", "4x3", "3200x2400"),
+        ("Movie", "ca", "16x9", "3840x2160"),
+        ("Movie", "bg", "16x9", "3840x2160"),
+        ("Movie", "bg", "7x3", "2450x1100"),
+        ("Movie", "tt", "9x5", "1800x1000"),
+    ),
+    "Series": (
+        ("Carousel", "ca", "7x3", "2450x1100"),
+        ("Series", "ca", "2x3", "2000x3000"),
+        ("Series", "ca", "3x4", "2400x3200"),
+        ("Series", "ca", "1x1", "3000x3000"),
+        ("Series", "ca", "4x3", "3200x2400"),
+        ("Series", "ca", "16x9", "3840x2160"),
+        ("Series", "bg", "16x9", "3840x2160"),
+        ("Series", "bg", "7x3", "2450x1100"),
+        ("Series", "tt", "9x5", "1800x1000"),
+    ),
+    "Season Placeholder": (
+        ("Season Placeholder", "ca", "16x9", "3840x2160"),
+        ("Season Placeholder", "ca", "4x3", "3200x2400"),
+        ("Season Placeholder", "bg", "16x9", "3840x2160"),
+    ),
+    "Episode": (
+        ("Episode", "bg", "16x9", "1920x1080"),
+    ),
+    "Extras": (
+        ("Extras", "bg", "16x9", "1920x1080"),
+    ),
+}
 SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
     "Movie": (
         ("ca", "16x9", "3840x2160"),
@@ -163,7 +198,7 @@ SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
         ("bg", "16x9", "1920x1080"),
     ),
 }
-SYNDICATION_REQUIRED_ART_TASKS = frozenset(SYNDICATION_REQUIRED_ART_SPECS)
+TAGGED_REQUIRED_ART_TASKS = frozenset({*SYNDICATION_REQUIRED_ART_SPECS, *AXINOM_REQUIRED_ART_SPECS})
 APPROVED_ASPECT_RATIO_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "7x3": ("2450x1100",),
     "16x9": ("3840x2160", "2560x1440", "1920x1080"),
@@ -387,25 +422,45 @@ def required_art_fields(task: str) -> tuple[str, ...]:
     return tuple(field for field in TASKS[task] if field not in ART_DETAIL_FIELDS)
 
 
-def required_art_specs(task: str) -> tuple[tuple[str, str, str], ...]:
-    if task in SYNDICATION_REQUIRED_ART_SPECS:
-        return SYNDICATION_REQUIRED_ART_SPECS[task]
-    specs: list[tuple[str, str, str]] = []
+def base_required_art_specs(task: str) -> tuple[tuple[str, str, str, str], ...]:
+    specs: list[tuple[str, str, str, str]] = []
     for art_tag in allowed_art_tag_codes(task):
         for aspect_ratio, dimensions in APPROVED_ART_SIZES[art_tag].items():
-            specs.append((art_tag, aspect_ratio, dimensions[0]))
+            specs.append((task, art_tag, aspect_ratio, dimensions[0]))
     return tuple(specs)
 
 
+def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[str, object], ...]:
+    merged: dict[tuple[str, str, str, str], dict[str, object]] = {}
+
+    def add_entries(entries: tuple[tuple[str, ...], ...], tag: str = "") -> None:
+        for entry in entries:
+            if len(entry) == 4:
+                target_task, art_tag, aspect_ratio, dimensions = entry
+            else:
+                target_task = task
+                art_tag, aspect_ratio, dimensions = entry
+            key = (target_task, art_tag, aspect_ratio, dimensions)
+            if key not in merged:
+                item_fields = dict(raw_fields)
+                item_fields[FIELD_ART_TAG] = ART_TAG_CODE_TO_LABEL[art_tag]
+                item_fields[FIELD_ASPECT_RATIO] = aspect_ratio
+                item_fields[FIELD_DIMENSIONS] = dimensions
+                merged[key] = {
+                    "filename": build_filename(target_task, item_fields),
+                    "tags": [],
+                }
+            if tag and tag not in merged[key]["tags"]:
+                merged[key]["tags"].append(tag)
+
+    add_entries(base_required_art_specs(task))
+    add_entries(SYNDICATION_REQUIRED_ART_SPECS.get(task, ()), "syndication")
+    add_entries(AXINOM_REQUIRED_ART_SPECS.get(task, ()), "Axinom")
+    return tuple(merged.values())
+
+
 def build_required_filenames(task: str, raw_fields: dict[str, str]) -> tuple[str, ...]:
-    filenames: list[str] = []
-    for art_tag, aspect_ratio, dimensions in required_art_specs(task):
-        item_fields = dict(raw_fields)
-        item_fields[FIELD_ART_TAG] = ART_TAG_CODE_TO_LABEL[art_tag]
-        item_fields[FIELD_ASPECT_RATIO] = aspect_ratio
-        item_fields[FIELD_DIMENSIONS] = dimensions
-        filenames.append(build_filename(task, item_fields))
-    return tuple(filenames)
+    return tuple(str(entry["filename"]) for entry in required_art_entries(task, raw_fields))
 
 
 def build_filename(task: str, raw_fields: dict[str, str]) -> str:
@@ -845,16 +900,24 @@ class ArtNameHelperApp:
         sheet = workbook.active
         sheet.title = "Art Names"
         sheet["A1"] = "filename"
-        include_syndication = self.mode_var.get() != MODE_SINGLE and self.task_var.get() in SYNDICATION_REQUIRED_ART_TASKS
-        if include_syndication:
-            sheet["B1"] = "delivery_type"
+        entries = ()
+        include_tags = False
+        if self.mode_var.get() != MODE_SINGLE:
+            raw_fields = self._raw_fields_for_task()
+            entries = required_art_entries(self.task_var.get(), raw_fields)
+            include_tags = any(entry["tags"] for entry in entries)
+        if include_tags:
+            sheet["B1"] = "tags"
+            payload = [str(entry["filename"]) for entry in entries]
         for index, line in enumerate(payload, start=2):
             sheet.cell(row=index, column=1, value=line)
-            if include_syndication:
-                sheet.cell(row=index, column=2, value="syndication")
+            if include_tags:
+                matching_entry = next((entry for entry in entries if entry["filename"] == line), None)
+                sheet.cell(row=index, column=2, value="; ".join(matching_entry["tags"]) if matching_entry else "")
         sheet.column_dimensions["A"].width = max(18, min(120, max(len("filename"), *(len(line) for line in payload)) + 2))
-        if include_syndication:
-            sheet.column_dimensions["B"].width = max(18, len("delivery_type") + 2, len("syndication") + 2)
+        if include_tags:
+            longest_tag = max((len("; ".join(entry["tags"])) for entry in entries), default=0)
+            sheet.column_dimensions["B"].width = max(18, len("tags") + 2, longest_tag + 2)
         workbook.save(path)
         self.status_var.set("Art name spreadsheet saved.")
 

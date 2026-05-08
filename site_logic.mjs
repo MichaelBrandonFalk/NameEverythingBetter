@@ -135,6 +135,41 @@ const APPROVED_ART_SIZES = {
   },
 };
 
+const AXINOM_REQUIRED_ART_SPECS = {
+  "Movie": [
+    { task: "Carousel", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Movie", artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { task: "Movie", artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
+    { task: "Movie", artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
+    { task: "Movie", artTag: "ca", aspectRatio: "4x3", dimensions: "3200x2400" },
+    { task: "Movie", artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: "Movie", artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: "Movie", artTag: "bg", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Movie", artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  "Series": [
+    { task: "Carousel", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Series", artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { task: "Series", artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
+    { task: "Series", artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
+    { task: "Series", artTag: "ca", aspectRatio: "4x3", dimensions: "3200x2400" },
+    { task: "Series", artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: "Series", artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: "Series", artTag: "bg", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Series", artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  "Season Placeholder": [
+    { task: "Season Placeholder", artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: "Season Placeholder", artTag: "ca", aspectRatio: "4x3", dimensions: "3200x2400" },
+    { task: "Season Placeholder", artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+  ],
+  "Episode": [
+    { task: "Episode", artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+  ],
+  "Extras": [
+    { task: "Extras", artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+  ],
+};
 const SYNDICATION_REQUIRED_ART_SPECS = {
   "Movie": [
     { artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
@@ -178,7 +213,10 @@ const SYNDICATION_REQUIRED_ART_SPECS = {
     { artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
   ],
 };
-const SYNDICATION_ART_TASKS = new Set(Object.keys(SYNDICATION_REQUIRED_ART_SPECS));
+const TAGGED_REQUIRED_ART_TASKS = new Set([
+  ...Object.keys(SYNDICATION_REQUIRED_ART_SPECS),
+  ...Object.keys(AXINOM_REQUIRED_ART_SPECS),
+]);
 
 const ART_TASKS = {
   "Movie": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
@@ -412,28 +450,46 @@ function requiredArtFields(task) {
   return ART_TASKS[task].filter((field) => !ART_DETAIL_FIELDS.has(field));
 }
 
-function requiredArtSpecs(task) {
-  if (SYNDICATION_REQUIRED_ART_SPECS[task]) {
-    return SYNDICATION_REQUIRED_ART_SPECS[task];
-  }
+function baseRequiredArtSpecs(task) {
   const specs = [];
   for (const artTag of allowedArtTagCodes(task)) {
     for (const [aspectRatio, dimensions] of Object.entries(APPROVED_ART_SIZES[artTag] || {})) {
-      specs.push({ artTag, aspectRatio, dimensions: dimensions[0] });
+      specs.push({ task, artTag, aspectRatio, dimensions: dimensions[0], tags: [] });
     }
   }
   return specs;
 }
 
-function buildRequiredArtFilenames(task, rawFields) {
-  return requiredArtSpecs(task).map(({ artTag, aspectRatio, dimensions }) => (
-    buildArtFilename(task, {
+function requiredArtEntries(task, rawFields) {
+  const merged = new Map();
+  const addEntries = (entries, tag) => {
+    for (const entry of entries || []) {
+      const targetTask = entry.task || task;
+      const key = [targetTask, entry.artTag, entry.aspectRatio, entry.dimensions].join("|");
+      if (!merged.has(key)) {
+        merged.set(key, { ...entry, task: targetTask, tags: [] });
+      }
+      if (tag && !merged.get(key).tags.includes(tag)) {
+        merged.get(key).tags.push(tag);
+      }
+    }
+  };
+  addEntries(baseRequiredArtSpecs(task), "");
+  addEntries(SYNDICATION_REQUIRED_ART_SPECS[task], "syndication");
+  addEntries(AXINOM_REQUIRED_ART_SPECS[task], "Axinom");
+  return Array.from(merged.values()).map(({ task: targetTask, artTag, aspectRatio, dimensions, tags }) => ({
+    filename: buildArtFilename(targetTask, {
       ...rawFields,
       art_tag: ART_TAG_CODE_TO_LABEL[artTag],
       aspect_ratio: aspectRatio,
       dimensions,
-    })
-  ));
+    }),
+    tags,
+  }));
+}
+
+function buildRequiredArtFilenames(task, rawFields) {
+  return requiredArtEntries(task, rawFields).map(({ filename }) => filename);
 }
 
 export function buildNebFilename(task, rawFields) {
@@ -852,8 +908,8 @@ function refreshOutputVisibility() {
     copyVideoBtn.setAttribute("aria-label", `Copy ${artOutputLabel}`);
     copyVideoBtn.setAttribute("title", `Copy ${artOutputLabel}`);
     outputNote.textContent = getDomainState().outputMode === "set"
-      ? (SYNDICATION_ART_TASKS.has(getDomainState().task)
-        ? "This required set follows the syndication checklist for this art type, including each listed deliverable."
+      ? (TAGGED_REQUIRED_ART_TASKS.has(getDomainState().task)
+        ? "This required set includes the standard list plus any Axinom and syndication additions for this art type."
         : "This required set uses the highest resolution for each required art type and aspect ratio.")
       : "Switch to one-at-a-time if you need a single custom art filename.";
     downloadBtn.classList.remove("hidden");
@@ -1004,12 +1060,14 @@ function downloadCurrentOutput() {
   const taskSlug = slugify(state.art.task) || "art";
   const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
   const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
-  const rows = text.split("\n").filter(Boolean);
+  const rows = state.art.outputMode === "set"
+    ? requiredArtEntries(state.art.task, state.art.values)
+    : [{ filename: text, tags: [] }];
   const csvEscape = (value) => `"${String(value).replace(/"/g, '""')}"`;
-  const isSyndicationSet = state.art.outputMode === "set" && SYNDICATION_ART_TASKS.has(state.art.task);
-  const csvRows = isSyndicationSet
-    ? [["filename", "delivery_type"], ...rows.map((row) => [row, "syndication"])]
-    : [["filename"], ...rows.map((row) => [row])];
+  const hasTaggedRows = rows.some((row) => row.tags.length);
+  const csvRows = hasTaggedRows
+    ? [["filename", "tags"], ...rows.map((row) => [row.filename, row.tags.join("; ")])]
+    : [["filename"], ...rows.map((row) => [row.filename])];
   const csv = csvRows.map((row) => row.map(csvEscape).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
