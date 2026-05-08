@@ -135,6 +135,51 @@ const APPROVED_ART_SIZES = {
   },
 };
 
+const SYNDICATION_REQUIRED_ART_SPECS = {
+  "Movie": [
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "1600x2400" },
+    { artTag: "ca", aspectRatio: "3x4", dimensions: "1920x2560" },
+    { artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "2560x1440" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "bg", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  "Series": [
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "1600x2400" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "2560x1440" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "bg", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  "Season Placeholder": [
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "ca", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "ca", aspectRatio: "4x3", dimensions: "2560x1920" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { artTag: "ca", aspectRatio: "2x3", dimensions: "1600x2400" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "2560x1440" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  "Episode": [
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "2560x1440" },
+    { artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+  ],
+};
+const SYNDICATION_ART_TASKS = new Set(Object.keys(SYNDICATION_REQUIRED_ART_SPECS));
+
 const ART_TASKS = {
   "Movie": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Series": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
@@ -368,6 +413,9 @@ function requiredArtFields(task) {
 }
 
 function requiredArtSpecs(task) {
+  if (SYNDICATION_REQUIRED_ART_SPECS[task]) {
+    return SYNDICATION_REQUIRED_ART_SPECS[task];
+  }
   const specs = [];
   for (const artTag of allowedArtTagCodes(task)) {
     for (const [aspectRatio, dimensions] of Object.entries(APPROVED_ART_SIZES[artTag] || {})) {
@@ -804,7 +852,9 @@ function refreshOutputVisibility() {
     copyVideoBtn.setAttribute("aria-label", `Copy ${artOutputLabel}`);
     copyVideoBtn.setAttribute("title", `Copy ${artOutputLabel}`);
     outputNote.textContent = getDomainState().outputMode === "set"
-      ? "The art side defaults to the full required filename set, using only the highest resolution for each required art type and aspect ratio."
+      ? (SYNDICATION_ART_TASKS.has(getDomainState().task)
+        ? "This required set follows the syndication checklist for this art type, including each listed deliverable."
+        : "This required set uses the highest resolution for each required art type and aspect ratio.")
       : "Switch to one-at-a-time if you need a single custom art filename.";
     downloadBtn.classList.remove("hidden");
     generateBtn.textContent = getDomainState().outputMode === "set" ? "Generate Names" : "Generate Name";
@@ -956,7 +1006,11 @@ function downloadCurrentOutput() {
   const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
   const rows = text.split("\n").filter(Boolean);
   const csvEscape = (value) => `"${String(value).replace(/"/g, '""')}"`;
-  const csv = ["filename", ...rows].map(csvEscape).join("\n");
+  const isSyndicationSet = state.art.outputMode === "set" && SYNDICATION_ART_TASKS.has(state.art.task);
+  const csvRows = isSyndicationSet
+    ? [["filename", "delivery_type"], ...rows.map((row) => [row, "syndication"])]
+    : [["filename"], ...rows.map((row) => [row])];
+  const csv = csvRows.map((row) => row.map(csvEscape).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

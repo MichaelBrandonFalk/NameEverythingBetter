@@ -120,6 +120,50 @@ APPROVED_ART_SIZES: dict[str, dict[str, tuple[str, ...]]] = {
         "9x5": ("1800x1000",),
     },
 }
+SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "Movie": (
+        ("ca", "16x9", "3840x2160"),
+        ("ca", "16x9", "1920x1080"),
+        ("ca", "2x3", "2000x3000"),
+        ("ca", "2x3", "1600x2400"),
+        ("ca", "3x4", "1920x2560"),
+        ("ca", "3x4", "2400x3200"),
+        ("bg", "16x9", "3840x2160"),
+        ("bg", "16x9", "2560x1440"),
+        ("bg", "16x9", "1920x1080"),
+        ("bg", "2x3", "2000x3000"),
+        ("tt", "9x5", "1800x1000"),
+    ),
+    "Series": (
+        ("ca", "16x9", "3840x2160"),
+        ("ca", "16x9", "1920x1080"),
+        ("ca", "1x1", "3000x3000"),
+        ("ca", "2x3", "2000x3000"),
+        ("ca", "2x3", "1600x2400"),
+        ("bg", "16x9", "3840x2160"),
+        ("bg", "16x9", "2560x1440"),
+        ("bg", "16x9", "1920x1080"),
+        ("bg", "2x3", "2000x3000"),
+        ("tt", "9x5", "1800x1000"),
+    ),
+    "Season Placeholder": (
+        ("ca", "16x9", "3840x2160"),
+        ("ca", "16x9", "1920x1080"),
+        ("ca", "4x3", "2560x1920"),
+        ("ca", "2x3", "2000x3000"),
+        ("ca", "2x3", "1600x2400"),
+        ("bg", "16x9", "3840x2160"),
+        ("bg", "16x9", "2560x1440"),
+        ("bg", "16x9", "1920x1080"),
+        ("tt", "9x5", "1800x1000"),
+    ),
+    "Episode": (
+        ("bg", "16x9", "3840x2160"),
+        ("bg", "16x9", "2560x1440"),
+        ("bg", "16x9", "1920x1080"),
+    ),
+}
+SYNDICATION_REQUIRED_ART_TASKS = frozenset(SYNDICATION_REQUIRED_ART_SPECS)
 APPROVED_ASPECT_RATIO_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "7x3": ("2450x1100",),
     "16x9": ("3840x2160", "2560x1440", "1920x1080"),
@@ -344,6 +388,8 @@ def required_art_fields(task: str) -> tuple[str, ...]:
 
 
 def required_art_specs(task: str) -> tuple[tuple[str, str, str], ...]:
+    if task in SYNDICATION_REQUIRED_ART_SPECS:
+        return SYNDICATION_REQUIRED_ART_SPECS[task]
     specs: list[tuple[str, str, str]] = []
     for art_tag in allowed_art_tag_codes(task):
         for aspect_ratio, dimensions in APPROVED_ART_SIZES[art_tag].items():
@@ -799,9 +845,16 @@ class ArtNameHelperApp:
         sheet = workbook.active
         sheet.title = "Art Names"
         sheet["A1"] = "filename"
+        include_syndication = self.mode_var.get() != MODE_SINGLE and self.task_var.get() in SYNDICATION_REQUIRED_ART_TASKS
+        if include_syndication:
+            sheet["B1"] = "delivery_type"
         for index, line in enumerate(payload, start=2):
             sheet.cell(row=index, column=1, value=line)
+            if include_syndication:
+                sheet.cell(row=index, column=2, value="syndication")
         sheet.column_dimensions["A"].width = max(18, min(120, max(len("filename"), *(len(line) for line in payload)) + 2))
+        if include_syndication:
+            sheet.column_dimensions["B"].width = max(18, len("delivery_type") + 2, len("syndication") + 2)
         workbook.save(path)
         self.status_var.set("Art name spreadsheet saved.")
 
