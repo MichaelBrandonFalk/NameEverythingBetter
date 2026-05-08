@@ -75,7 +75,7 @@ ART_TAG_CODE_TO_LABEL = {
 TASK_ART_TAG_CODES: dict[str, tuple[str, ...]] = {
     "Movie": ("ca", "bg", "tt"),
     "Series": ("ca", "bg", "tt"),
-    "Season Placeholder": ("ca", "bg"),
+    "Season Placeholder": ("ca", "bg", "tt"),
     "Episode": ("bg",),
     "Original Premium Series (Yearly)": ("bg",),
     "Exclusive Conversation (Yearly)": ("bg",),

@@ -104,7 +104,7 @@ const ART_TAG_CODE_TO_LABEL = {
 const TASK_ART_TAG_CODES = {
   "Movie": ["ca", "bg", "tt"],
   "Series": ["ca", "bg", "tt"],
-  "Season Placeholder": ["ca", "bg"],
+  "Season Placeholder": ["ca", "bg", "tt"],
   "Episode": ["bg"],
   "Original Premium Series (Yearly)": ["bg"],
   "Exclusive Conversation (Yearly)": ["bg"],
