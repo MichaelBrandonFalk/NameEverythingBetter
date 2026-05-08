@@ -137,7 +137,7 @@ const APPROVED_ART_SIZES = {
 
 const AXINOM_REQUIRED_ART_SPECS = {
   "Movie": [
-    { task: "Carousel", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Movie", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
     { task: "Movie", artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
     { task: "Movie", artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
     { task: "Movie", artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
@@ -148,7 +148,7 @@ const AXINOM_REQUIRED_ART_SPECS = {
     { task: "Movie", artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
   ],
   "Series": [
-    { task: "Carousel", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: "Series", artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
     { task: "Series", artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
     { task: "Series", artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
     { task: "Series", artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
@@ -477,7 +477,7 @@ function requiredArtEntries(task, rawFields) {
   addEntries(baseRequiredArtSpecs(task), "");
   addEntries(SYNDICATION_REQUIRED_ART_SPECS[task], "syndication");
   addEntries(AXINOM_REQUIRED_ART_SPECS[task], "Axinom");
-  return Array.from(merged.values()).map(({ task: targetTask, artTag, aspectRatio, dimensions, tags }) => ({
+  const entries = Array.from(merged.values()).map(({ task: targetTask, artTag, aspectRatio, dimensions, tags }) => ({
     filename: buildArtFilename(targetTask, {
       ...rawFields,
       art_tag: ART_TAG_CODE_TO_LABEL[artTag],
@@ -486,6 +486,9 @@ function requiredArtEntries(task, rawFields) {
     }),
     tags,
   }));
+  return TAGGED_REQUIRED_ART_TASKS.has(task)
+    ? entries.filter((entry) => entry.tags.length)
+    : entries;
 }
 
 function buildRequiredArtFilenames(task, rawFields) {

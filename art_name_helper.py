@@ -122,7 +122,7 @@ APPROVED_ART_SIZES: dict[str, dict[str, tuple[str, ...]]] = {
 }
 AXINOM_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str, str], ...]] = {
     "Movie": (
-        ("Carousel", "ca", "7x3", "2450x1100"),
+        ("Movie", "ca", "7x3", "2450x1100"),
         ("Movie", "ca", "2x3", "2000x3000"),
         ("Movie", "ca", "3x4", "2400x3200"),
         ("Movie", "ca", "1x1", "3000x3000"),
@@ -133,7 +133,7 @@ AXINOM_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str, str], ...]] = {
         ("Movie", "tt", "9x5", "1800x1000"),
     ),
     "Series": (
-        ("Carousel", "ca", "7x3", "2450x1100"),
+        ("Series", "ca", "7x3", "2450x1100"),
         ("Series", "ca", "2x3", "2000x3000"),
         ("Series", "ca", "3x4", "2400x3200"),
         ("Series", "ca", "1x1", "3000x3000"),
@@ -456,7 +456,10 @@ def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[st
     add_entries(base_required_art_specs(task))
     add_entries(SYNDICATION_REQUIRED_ART_SPECS.get(task, ()), "syndication")
     add_entries(AXINOM_REQUIRED_ART_SPECS.get(task, ()), "Axinom")
-    return tuple(merged.values())
+    entries = tuple(merged.values())
+    if task in TAGGED_REQUIRED_ART_TASKS:
+        return tuple(entry for entry in entries if entry["tags"])
+    return entries
 
 
 def build_required_filenames(task: str, raw_fields: dict[str, str]) -> tuple[str, ...]:
