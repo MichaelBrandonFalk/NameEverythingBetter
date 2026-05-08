@@ -908,6 +908,8 @@ class ArtNameHelperApp:
         if self.mode_var.get() != MODE_SINGLE:
             raw_fields = self._raw_fields_for_task()
             entries = required_art_entries(self.task_var.get(), raw_fields)
+            if self.task_var.get() in TAGGED_REQUIRED_ART_TASKS:
+                entries = tuple(entry for entry in entries if entry["tags"])
             include_tags = any(entry["tags"] for entry in entries)
         if include_tags:
             sheet["B1"] = "tags"

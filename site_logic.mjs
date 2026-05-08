@@ -1063,9 +1063,12 @@ function downloadCurrentOutput() {
   const taskSlug = slugify(state.art.task) || "art";
   const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
   const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
-  const rows = state.art.outputMode === "set"
+  let rows = state.art.outputMode === "set"
     ? requiredArtEntries(state.art.task, state.art.values)
     : [{ filename: text, tags: [] }];
+  if (state.art.outputMode === "set" && TAGGED_REQUIRED_ART_TASKS.has(state.art.task)) {
+    rows = rows.filter((row) => row.tags.length);
+  }
   const csvEscape = (value) => `"${String(value).replace(/"/g, '""')}"`;
   const hasTaggedRows = rows.some((row) => row.tags.length);
   const csvRows = hasTaggedRows
