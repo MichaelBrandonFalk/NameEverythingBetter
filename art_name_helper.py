@@ -430,6 +430,23 @@ def base_required_art_specs(task: str) -> tuple[tuple[str, str, str, str], ...]:
     return tuple(specs)
 
 
+def _dimension_area(dimensions: str) -> tuple[int, int, int]:
+    width_text, _, height_text = dimensions.partition("x")
+    width = int(width_text or "0")
+    height = int(height_text or "0")
+    return width * height, width, height
+
+
+def _is_larger_dimensions(candidate: str, current: str) -> bool:
+    candidate_area, candidate_width, candidate_height = _dimension_area(candidate)
+    current_area, current_width, current_height = _dimension_area(current)
+    if candidate_area != current_area:
+        return candidate_area > current_area
+    if candidate_width != current_width:
+        return candidate_width > current_width
+    return candidate_height > current_height
+
+
 def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[str, object], ...]:
     merged: dict[tuple[str, str, str, str], dict[str, object]] = {}
 
@@ -442,12 +459,11 @@ def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[st
                 art_tag, aspect_ratio, dimensions = entry
             key = (target_task, art_tag, aspect_ratio, dimensions)
             if key not in merged:
-                item_fields = dict(raw_fields)
-                item_fields[FIELD_ART_TAG] = ART_TAG_CODE_TO_LABEL[art_tag]
-                item_fields[FIELD_ASPECT_RATIO] = aspect_ratio
-                item_fields[FIELD_DIMENSIONS] = dimensions
                 merged[key] = {
-                    "filename": build_filename(target_task, item_fields),
+                    "task": target_task,
+                    "art_tag": art_tag,
+                    "aspect_ratio": aspect_ratio,
+                    "dimensions": dimensions,
                     "tags": [],
                 }
             if tag and tag not in merged[key]["tags"]:
@@ -456,7 +472,39 @@ def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[st
     add_entries(base_required_art_specs(task))
     add_entries(SYNDICATION_REQUIRED_ART_SPECS.get(task, ()), "syndication")
     add_entries(AXINOM_REQUIRED_ART_SPECS.get(task, ()), "Axinom")
-    entries = tuple(merged.values())
+    consolidated: dict[tuple[str, str, str], dict[str, object]] = {}
+    for entry in merged.values():
+        key = (str(entry["task"]), str(entry["art_tag"]), str(entry["aspect_ratio"]))
+        if key not in consolidated:
+            consolidated[key] = {
+                "task": entry["task"],
+                "art_tag": entry["art_tag"],
+                "aspect_ratio": entry["aspect_ratio"],
+                "dimensions": entry["dimensions"],
+                "tags": list(entry["tags"]),
+            }
+            continue
+        current = consolidated[key]
+        if _is_larger_dimensions(str(entry["dimensions"]), str(current["dimensions"])):
+            current["dimensions"] = entry["dimensions"]
+        for tag in entry["tags"]:
+            if tag not in current["tags"]:
+                current["tags"].append(tag)
+    entries = tuple(
+        {
+            "filename": build_filename(
+                str(entry["task"]),
+                {
+                    **raw_fields,
+                    FIELD_ART_TAG: ART_TAG_CODE_TO_LABEL[str(entry["art_tag"])],
+                    FIELD_ASPECT_RATIO: str(entry["aspect_ratio"]),
+                    FIELD_DIMENSIONS: str(entry["dimensions"]),
+                },
+            ),
+            "tags": entry["tags"],
+        }
+        for entry in consolidated.values()
+    )
     if task in TAGGED_REQUIRED_ART_TASKS:
         return tuple(entry for entry in entries if entry["tags"])
     return entries

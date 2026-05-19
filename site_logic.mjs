@@ -460,6 +460,23 @@ function baseRequiredArtSpecs(task) {
   return specs;
 }
 
+function dimensionArea(dimensions) {
+  const [width, height] = String(dimensions).split("x").map((value) => Number.parseInt(value, 10) || 0);
+  return { width, height, area: width * height };
+}
+
+function isLargerDimensions(candidate, current) {
+  const next = dimensionArea(candidate);
+  const prev = dimensionArea(current);
+  if (next.area !== prev.area) {
+    return next.area > prev.area;
+  }
+  if (next.width !== prev.width) {
+    return next.width > prev.width;
+  }
+  return next.height > prev.height;
+}
+
 function requiredArtEntries(task, rawFields) {
   const merged = new Map();
   const addEntries = (entries, tag) => {
@@ -477,7 +494,24 @@ function requiredArtEntries(task, rawFields) {
   addEntries(baseRequiredArtSpecs(task), "");
   addEntries(SYNDICATION_REQUIRED_ART_SPECS[task], "syndication");
   addEntries(AXINOM_REQUIRED_ART_SPECS[task], "Axinom");
-  const entries = Array.from(merged.values()).map(({ task: targetTask, artTag, aspectRatio, dimensions, tags }) => ({
+  const consolidated = new Map();
+  for (const entry of merged.values()) {
+    const key = [entry.task, entry.artTag, entry.aspectRatio].join("|");
+    if (!consolidated.has(key)) {
+      consolidated.set(key, { ...entry, tags: [...entry.tags] });
+      continue;
+    }
+    const current = consolidated.get(key);
+    if (isLargerDimensions(entry.dimensions, current.dimensions)) {
+      current.dimensions = entry.dimensions;
+    }
+    for (const tag of entry.tags) {
+      if (!current.tags.includes(tag)) {
+        current.tags.push(tag);
+      }
+    }
+  }
+  const entries = Array.from(consolidated.values()).map(({ task: targetTask, artTag, aspectRatio, dimensions, tags }) => ({
     filename: buildArtFilename(targetTask, {
       ...rawFields,
       art_tag: ART_TAG_CODE_TO_LABEL[artTag],
