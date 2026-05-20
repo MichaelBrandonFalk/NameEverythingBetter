@@ -319,8 +319,10 @@ def normalize_interviewees(value: str) -> str:
 def build_filename(task: str, raw_fields: dict[str, str]) -> str:
     allowed_prefixes = TASKS[task]["house_prefixes"]  # type: ignore[index]
     language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
+    house_language_raw = raw_fields.get("house_language", "").strip()
+    house_language = normalize_language(house_language_raw) if house_language_raw else language
     resolution = normalize_resolution(raw_fields.get(FIELD_RESOLUTION, ""))
-    house = normalize_house(raw_fields.get(FIELD_HOUSE, ""), allowed_prefixes, language)  # type: ignore[arg-type]
+    house = normalize_house(raw_fields.get(FIELD_HOUSE, ""), allowed_prefixes, house_language)  # type: ignore[arg-type]
 
     if task == "Movie":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
@@ -816,10 +818,12 @@ class NebFilenameAssistant:
 
         english_fields = dict(raw_fields)
         english_fields[FIELD_LANGUAGE] = "English"
+        english_fields["house_language"] = raw_fields.get(FIELD_LANGUAGE, "")
         english_fields[FIELD_SUBTITLE_TYPE] = SUBTITLE_DEFAULT_BY_LANGUAGE["English"]
 
         spanish_fields = dict(raw_fields)
         spanish_fields[FIELD_LANGUAGE] = "Spanish"
+        spanish_fields["house_language"] = raw_fields.get(FIELD_LANGUAGE, "")
         spanish_fields[FIELD_SUBTITLE_TYPE] = SUBTITLE_DEFAULT_BY_LANGUAGE["Spanish"]
 
         return (

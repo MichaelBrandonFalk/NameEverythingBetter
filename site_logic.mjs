@@ -533,8 +533,9 @@ function buildRequiredArtFilenames(task, rawFields) {
 export function buildNebFilename(task, rawFields) {
   const definition = NEB_TASKS[task];
   const language = normalizeNebLanguage(rawFields.language);
+  const houseLanguage = rawFields.house_language ? normalizeNebLanguage(rawFields.house_language) : language;
   const resolution = normalizeResolution(rawFields.resolution);
-  const house = normalizeHouse(rawFields.house, definition.housePrefixes, language);
+  const house = normalizeHouse(rawFields.house, definition.housePrefixes, houseLanguage);
 
   if (task === "Movie") {
     const title = normalizeNebTitle(rawFields.title);
@@ -1019,11 +1020,13 @@ function companionCaptionOutputs(task, rawFields) {
     eng: buildNebFilename(captionTask, {
       ...rawFields,
       language: "English",
+      house_language: rawFields.language,
       subtitle_type: SUBTITLE_DEFAULT_BY_LANGUAGE.English,
     }),
     las: buildNebFilename(captionTask, {
       ...rawFields,
       language: "Spanish",
+      house_language: rawFields.language,
       subtitle_type: SUBTITLE_DEFAULT_BY_LANGUAGE.Spanish,
     }),
   };
