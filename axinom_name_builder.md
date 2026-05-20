@@ -43,3 +43,4 @@ Output:
 - In the bulk Neb flow, supported video tasks now generate `mov_filename`, `english_caption_filename`, and `spanish_caption_filename` in the output CSV.
 - Neb now applies the `Language` field to all MOV-side filename types, including trailers, extras, virtual screenings, and the yearly types.
 - Spanish captions now default to `sub` again in generated companion caption outputs and blank `caption_type` cases.
+- House Number validation is language-aware: English keeps the task-based prefixes, while Spanish now expects `LAS1234567`.

@@ -254,14 +254,15 @@ def normalize_resolution(value: str) -> str:
     return resolution
 
 
-def normalize_house(value: str, allowed_prefixes: tuple[str, ...]) -> str:
+def normalize_house(value: str, allowed_prefixes: tuple[str, ...], language: str | None = None) -> str:
     house = value.strip().upper()
     match = re.fullmatch(r"([A-Z]{3})(\d{7})", house)
     if not match:
         raise ValueError("House Number must be 3 letters followed by 7 digits.")
     prefix = match.group(1)
-    if prefix not in allowed_prefixes:
-        allowed = ", ".join(allowed_prefixes)
+    expected_prefixes = ("LAS",) if language == "Spanish" else allowed_prefixes
+    if prefix not in expected_prefixes:
+        allowed = ", ".join(expected_prefixes)
         raise ValueError(f"House Number must start with {allowed}.")
     return house
 
@@ -317,14 +318,14 @@ def normalize_interviewees(value: str) -> str:
 
 def build_filename(task: str, raw_fields: dict[str, str]) -> str:
     allowed_prefixes = TASKS[task]["house_prefixes"]  # type: ignore[index]
+    language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
     resolution = normalize_resolution(raw_fields.get(FIELD_RESOLUTION, ""))
-    house = normalize_house(raw_fields.get(FIELD_HOUSE, ""), allowed_prefixes)  # type: ignore[arg-type]
+    house = normalize_house(raw_fields.get(FIELD_HOUSE, ""), allowed_prefixes, language)  # type: ignore[arg-type]
 
     if task == "Movie":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         if language == "Spanish":
             return f"{title}_feature_{resolution}_{house}_las.mov"
         return f"{title}_feature_{resolution}_{house}_eng.mov"
@@ -333,7 +334,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
         subtitle_type = normalize_subtitle_type(subtitle_raw)
         if language == "Spanish":
@@ -344,7 +344,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         if language != "Spanish":
             raise ValueError("Dub Audio is only supported for Spanish in the current Section 7 examples.")
         return f"{title}_feature_{resolution}_{house}_dub_las.wav"
@@ -353,7 +352,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
@@ -364,7 +362,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
         subtitle_type = normalize_subtitle_type(subtitle_raw)
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
@@ -377,13 +374,11 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         return f"{title}_s{year}_{episode}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Exclusive Conversation (Yearly)":
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         interviewees = normalize_interviewees(raw_fields.get(FIELD_INTERVIEWEES, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
@@ -393,14 +388,12 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         return f"{title}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Virtual Screening Episode":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Series Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
@@ -409,7 +402,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Series Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
         subtitle_type = normalize_subtitle_type(subtitle_raw)
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
@@ -422,14 +414,12 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         return f"{title}_trailer_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
 
     if task == "Trailer Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
         subtitle_type = normalize_subtitle_type(subtitle_raw)
         if language == "Spanish":
@@ -440,7 +430,6 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        language = normalize_language(raw_fields.get(FIELD_LANGUAGE, ""))
         usage = raw_fields.get(FIELD_EXTRA_USAGE, "").strip()
         extra_prefix = EXTRA_USAGE_TO_PREFIX.get(usage)
         if not extra_prefix:
