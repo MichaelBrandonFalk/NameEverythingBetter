@@ -164,6 +164,14 @@ COMPANION_CAPTION_TASKS = {
     "Trailer": "Trailer Caption",
     "Virtual Screening Episode": "Virtual Screening Episode Caption",
 }
+EXTERNAL_REFERENCE_EPISODIC_TASKS = {
+    "Episode",
+    "Episode Caption",
+    "Virtual Screening Episode",
+    "Virtual Screening Episode Caption",
+    "Original Premium Series (Yearly)",
+    "Exclusive Conversation (Yearly)",
+}
 
 DEFAULT_VALUES = {
     FIELD_TITLE: "",
@@ -182,6 +190,7 @@ CSV_FILENAME = "filename"
 CSV_MOV_FILENAME = "mov_filename"
 CSV_CAPTION_ENG_FILENAME = "english_caption_filename"
 CSV_CAPTION_LAS_FILENAME = "spanish_caption_filename"
+CSV_EXTERNAL_REFERENCE = "external_reference"
 CSV_TITLE = "title"
 CSV_LANGUAGE = "language"
 CSV_CAPTION_TYPE = "caption_type"
@@ -314,6 +323,68 @@ def normalize_interviewees(value: str) -> str:
     if not interviewees:
         raise ValueError("Interviewee(s) is required.")
     return interviewees
+
+
+def normalize_external_reference_source_title(task: str, raw_fields: dict[str, str]) -> str:
+    if task == "Exclusive Conversation (Yearly)":
+        return "Exclusive Conversations"
+    title = raw_fields.get(FIELD_TITLE, "").strip()
+    if not title:
+        raise ValueError("Title is required.")
+    return title
+
+
+def shorten_external_reference_title(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    without_accents = "".join(char for char in normalized if not unicodedata.combining(char))
+    raw_words = [word.strip() for word in without_accents.split() if word.strip()]
+    if not raw_words:
+        raise ValueError("Title is required.")
+
+    shortened_words: list[str] = []
+    for word in raw_words:
+        cleaned = re.sub(r"[^A-Za-z0-9]", "", word)
+        if not cleaned:
+            continue
+        output: list[str] = []
+        previous_consonant = ""
+        for index, char in enumerate(cleaned):
+            if char.isdigit():
+                output.append(char)
+                previous_consonant = ""
+                continue
+            lower = char.lower()
+            is_vowel = lower in "aeiou"
+            is_consonant = char.isalpha() and not is_vowel
+            if index == 0:
+                output.append(char.upper())
+                previous_consonant = lower if is_consonant else ""
+                continue
+            if not is_consonant:
+                continue
+            if lower == previous_consonant:
+                continue
+            output.append(char)
+            previous_consonant = lower
+        if output:
+            shortened_words.append("".join(output))
+
+    if not shortened_words:
+        raise ValueError("Title is required.")
+    return "".join(shortened_words)
+
+
+def build_external_reference(task: str, raw_fields: dict[str, str]) -> str:
+    shortened_title = shorten_external_reference_title(normalize_external_reference_source_title(task, raw_fields))
+    if task not in EXTERNAL_REFERENCE_EPISODIC_TASKS:
+        return shortened_title
+
+    if task in {"Original Premium Series (Yearly)", "Exclusive Conversation (Yearly)"}:
+        season_token = f"S{normalize_year(raw_fields.get(FIELD_YEAR, ''))}"
+    else:
+        season_token = normalize_season(raw_fields.get(FIELD_SEASON, "")).upper()
+    episode_token = normalize_episode(raw_fields.get(FIELD_EPISODE, "")).upper()
+    return f"{shortened_title}{season_token}{episode_token}"
 
 
 def build_filename(task: str, raw_fields: dict[str, str]) -> str:
@@ -457,6 +528,7 @@ class NebFilenameAssistant:
             "video": tk.StringVar(value=""),
             "caption_eng": tk.StringVar(value=""),
             "caption_las": tk.StringVar(value=""),
+            "external_reference": tk.StringVar(value=""),
         }
         self.batch_input_path_var = tk.StringVar(value="No CSV selected.")
         self.batch_output_path_var = tk.StringVar(value="")
@@ -543,8 +615,11 @@ class NebFilenameAssistant:
         self.single_output_rows["video"] = self._add_output_row(output_frame, 0, "MOV Name", self.single_output_vars["video"])
         self.single_output_rows["caption_eng"] = self._add_output_row(output_frame, 1, "English Caption", self.single_output_vars["caption_eng"])
         self.single_output_rows["caption_las"] = self._add_output_row(output_frame, 2, "Spanish Caption", self.single_output_vars["caption_las"])
+        self.single_output_rows["external_reference"] = self._add_output_row(
+            output_frame, 3, "External Reference", self.single_output_vars["external_reference"]
+        )
         ttk.Button(output_frame, text="Copy All", command=self._copy_single).grid(
-            row=3, column=1, sticky="e", padx=(0, 10), pady=(0, 10)
+            row=4, column=1, sticky="e", padx=(0, 10), pady=(0, 10)
         )
 
         self.multi_frame = ttk.Frame(self.builder_frame)
@@ -784,6 +859,7 @@ class NebFilenameAssistant:
     def _refresh_output_rows(self) -> None:
         has_companion_captions = self.task_var.get() in COMPANION_CAPTION_TASKS
         self.single_output_rows["video"].grid()
+        self.single_output_rows["external_reference"].grid()
         if has_companion_captions:
             self.single_output_rows["caption_eng"].grid()
             self.single_output_rows["caption_las"].grid()
@@ -799,10 +875,10 @@ class NebFilenameAssistant:
         ]
         if task_name in COMPANION_CAPTION_TASKS:
             lines.append(
-                "The output CSV will add `mov_filename`, `english_caption_filename`, and `spanish_caption_filename` at the front."
+                "The output CSV will add `mov_filename`, `english_caption_filename`, `spanish_caption_filename`, and `external_reference` at the front."
             )
         else:
-            lines.append("The output CSV will add a single `filename` column at the front.")
+            lines.append("The output CSV will add `filename` and `external_reference` at the front.")
         if task_name in {"Episode", "Virtual Screening Episode"}:
             lines.append("For episode filenames, `title` should be the series title.")
         return "\n".join(lines)
@@ -837,6 +913,7 @@ class NebFilenameAssistant:
         try:
             filename = build_filename(task, raw_fields)
             companion_captions = self._companion_caption_outputs(task, raw_fields)
+            external_reference = build_external_reference(task, raw_fields)
         except ValueError as error:
             self._clear_single_outputs()
             self.status_var.set(str(error))
@@ -848,6 +925,7 @@ class NebFilenameAssistant:
         else:
             self.single_output_vars["caption_eng"].set("")
             self.single_output_vars["caption_las"].set("")
+        self.single_output_vars["external_reference"].set(external_reference)
         if plus_warning_needed(raw_fields):
             self.status_var.set(f'Names generated. {PLUS_WARNING_MESSAGE}')
         else:
@@ -1034,13 +1112,16 @@ class NebFilenameAssistant:
                 CSV_MOV_FILENAME,
                 CSV_CAPTION_ENG_FILENAME,
                 CSV_CAPTION_LAS_FILENAME,
+                CSV_EXTERNAL_REFERENCE,
             ] + [
                 header
                 for header in input_headers
-                if header not in {CSV_MOV_FILENAME, CSV_CAPTION_ENG_FILENAME, CSV_CAPTION_LAS_FILENAME}
+                if header not in {CSV_MOV_FILENAME, CSV_CAPTION_ENG_FILENAME, CSV_CAPTION_LAS_FILENAME, CSV_EXTERNAL_REFERENCE}
             ]
         else:
-            output_headers = [CSV_FILENAME] + [header for header in input_headers if header != CSV_FILENAME]
+            output_headers = [CSV_FILENAME, CSV_EXTERNAL_REFERENCE] + [
+                header for header in input_headers if header not in {CSV_FILENAME, CSV_EXTERNAL_REFERENCE}
+            ]
         generated_rows: list[dict[str, str]] = []
         generated_count = 0
         saw_plus_warning = False
@@ -1050,6 +1131,7 @@ class NebFilenameAssistant:
             output_row = {header: row.get(header, "") for header in output_headers}
             try:
                 main_filename = build_filename(selected_task, task_fields)
+                external_reference = build_external_reference(selected_task, task_fields)
                 if companion_caption_task is not None:
                     companion_captions = self._companion_caption_outputs(selected_task, task_fields)
                     if companion_captions is None:
@@ -1057,8 +1139,10 @@ class NebFilenameAssistant:
                     output_row[CSV_MOV_FILENAME] = main_filename
                     output_row[CSV_CAPTION_ENG_FILENAME] = companion_captions[0]
                     output_row[CSV_CAPTION_LAS_FILENAME] = companion_captions[1]
+                    output_row[CSV_EXTERNAL_REFERENCE] = external_reference
                 else:
                     output_row[CSV_FILENAME] = main_filename
+                    output_row[CSV_EXTERNAL_REFERENCE] = external_reference
             except ValueError as error:
                 self.status_var.set(f"CSV row {index} ({selected_task}): {error}")
                 return
@@ -1094,6 +1178,7 @@ class NebFilenameAssistant:
             self.single_output_vars["video"].get().strip(),
             self.single_output_vars["caption_eng"].get().strip(),
             self.single_output_vars["caption_las"].get().strip(),
+            self.single_output_vars["external_reference"].get().strip(),
         ]
         payload = "\n".join(value for value in values if value)
         if not payload:

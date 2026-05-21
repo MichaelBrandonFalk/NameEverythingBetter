@@ -72,6 +72,14 @@ const COMPANION_CAPTION_TASKS = {
   "Trailer": "Trailer Caption",
   "Virtual Screening Episode": "Virtual Screening Episode Caption",
 };
+const EXTERNAL_REFERENCE_EPISODIC_TASKS = new Set([
+  "Episode",
+  "Episode Caption",
+  "Virtual Screening Episode",
+  "Virtual Screening Episode Caption",
+  "Original Premium Series (Yearly)",
+  "Exclusive Conversation (Yearly)",
+]);
 
 const NEB_DEFAULTS = {
   title: "",
@@ -367,6 +375,80 @@ function normalizeNebTitle(value) {
     throw new Error("Title is required.");
   }
   return title;
+}
+
+function normalizeExternalReferenceSourceTitle(task, rawFields) {
+  if (task === "Exclusive Conversation (Yearly)") {
+    return "Exclusive Conversations";
+  }
+  const title = String(rawFields.title || "").trim();
+  if (!title) {
+    throw new Error("Title is required.");
+  }
+  return title;
+}
+
+function shortenExternalReferenceTitle(value) {
+  const normalized = String(value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const rawWords = normalized.split(/\s+/).map((word) => word.trim()).filter(Boolean);
+  if (!rawWords.length) {
+    throw new Error("Title is required.");
+  }
+
+  const shortenedWords = rawWords
+    .map((word) => {
+      const cleaned = word.replace(/[^A-Za-z0-9]/g, "");
+      if (!cleaned) {
+        return "";
+      }
+      let output = "";
+      let previousConsonant = "";
+      [...cleaned].forEach((char, index) => {
+        if (/\d/.test(char)) {
+          output += char;
+          previousConsonant = "";
+          return;
+        }
+        const lower = char.toLowerCase();
+        const isVowel = "aeiou".includes(lower);
+        const isConsonant = /[a-z]/i.test(char) && !isVowel;
+        if (index === 0) {
+          output += char.toUpperCase();
+          previousConsonant = isConsonant ? lower : "";
+          return;
+        }
+        if (!isConsonant) {
+          return;
+        }
+        if (lower === previousConsonant) {
+          return;
+        }
+        output += char;
+        previousConsonant = lower;
+      });
+      return output;
+    })
+    .filter(Boolean);
+
+  if (!shortenedWords.length) {
+    throw new Error("Title is required.");
+  }
+  return shortenedWords.join("");
+}
+
+export function buildNebExternalReference(task, rawFields) {
+  const shortenedTitle = shortenExternalReferenceTitle(normalizeExternalReferenceSourceTitle(task, rawFields));
+  if (!EXTERNAL_REFERENCE_EPISODIC_TASKS.has(task)) {
+    return shortenedTitle;
+  }
+
+  const seasonToken = task === "Original Premium Series (Yearly)" || task === "Exclusive Conversation (Yearly)"
+    ? `S${normalizeYear(rawFields.year)}`
+    : normalizeNebSeason(rawFields.season).toUpperCase();
+  const episodeToken = normalizeNebEpisode(rawFields.episode).toUpperCase();
+  return `${shortenedTitle}${seasonToken}${episodeToken}`;
 }
 
 function normalizeArtTitle(value) {
@@ -742,6 +824,7 @@ function resetOutput() {
     document.getElementById("filename-output-video"),
     document.getElementById("filename-output-caption-eng"),
     document.getElementById("filename-output-caption-las"),
+    document.getElementById("filename-output-external-reference"),
   ];
   status.textContent = "";
   status.className = "status hidden";
@@ -923,11 +1006,12 @@ function refreshOutputVisibility() {
     copyVideoBtn.dataset.copyLabel = "MOV Name";
     copyVideoBtn.setAttribute("aria-label", "Copy MOV Name");
     copyVideoBtn.setAttribute("title", "Copy MOV Name");
-    outputNote.textContent = "For supported video tasks, the tool shows the MOV name plus English and Spanish caption names together.";
+    outputNote.textContent = "For supported video tasks, the tool shows the MOV name, both caption names, and the external reference together.";
     downloadBtn.classList.add("hidden");
     generateBtn.textContent = "Generate Name";
     document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
     document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+    document.getElementById("output-external-reference-wrap").classList.remove("hidden");
   } else {
     const artOutputLabel = getDomainState().outputMode === "set" ? "Required Art Names" : "Art Filename";
     outputLabel.textContent = artOutputLabel;
@@ -943,6 +1027,7 @@ function refreshOutputVisibility() {
     generateBtn.textContent = getDomainState().outputMode === "set" ? "Generate Names" : "Generate Name";
     document.getElementById("output-caption-eng-wrap").classList.add("hidden");
     document.getElementById("output-caption-las-wrap").classList.add("hidden");
+    document.getElementById("output-external-reference-wrap").classList.add("hidden");
   }
 }
 
@@ -1037,9 +1122,11 @@ function generateCurrentFilename() {
   try {
     let filename;
     let companionCaptions = null;
+    let externalReference = "";
     if (state.domain === "neb") {
       filename = buildNebFilename(domainState.task, domainState.values);
       companionCaptions = companionCaptionOutputs(domainState.task, domainState.values);
+      externalReference = buildNebExternalReference(domainState.task, domainState.values);
     } else {
       filename = domainState.outputMode === "set"
         ? buildRequiredArtFilenames(domainState.task, domainState.values).join("\n")
@@ -1049,6 +1136,7 @@ function generateCurrentFilename() {
     renderVideoOutput(filename);
     document.getElementById("filename-output-caption-eng").textContent = companionCaptions?.eng || "";
     document.getElementById("filename-output-caption-las").textContent = companionCaptions?.las || "";
+    document.getElementById("filename-output-external-reference").textContent = externalReference;
     if (plusWarningNeeded(domainState.values)) {
       setStatus(`Names generated. ${PLUS_WARNING_MESSAGE}`, "warning");
     } else {
@@ -1058,6 +1146,7 @@ function generateCurrentFilename() {
     renderVideoOutput("");
     document.getElementById("filename-output-caption-eng").textContent = "";
     document.getElementById("filename-output-caption-las").textContent = "";
+    document.getElementById("filename-output-external-reference").textContent = "";
     setStatus(error.message || "Unable to generate filename.", "error");
   }
 }

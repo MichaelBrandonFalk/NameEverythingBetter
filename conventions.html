@@ -210,6 +210,16 @@
           prefixes such as <code>PUR</code>, <code>PFP</code>, <code>TRL</code>, and <code>EXT</code>.
           Spanish now expects <code>LAS1234567</code>.
         </p>
+        <p>
+          The tool also generates an External Reference. Movie-level assets use the shortened title
+          only. Episodic assets append season and episode markers, such as <code>S01</code> and
+          <code>E01</code>.
+        </p>
+        <p>
+          External Reference shortening rules: keep the first character of each word, keep the
+          remaining consonants, keep digits, drop vowels after the first character of a word, reduce
+          repeated consonants to one occurrence, and remove punctuation.
+        </p>
         <table>
           <thead>
             <tr>
@@ -231,6 +241,21 @@
             <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
             <tr><td>Trailer Caption</td><td><code>[title]_trailer[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
             <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>External Reference Type</th>
+              <th>Formula</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Movie / Program / Series</td><td><code>[shortened_title]</code></td><td><code>AnslyMcGrgrMystrsACsFrThWnmkr</code></td></tr>
+            <tr><td>Season-Level</td><td><code>[shortened_title]S[xx]</code></td><td><code>AlhBldsS01</code></td></tr>
+            <tr><td>Episode-Level</td><td><code>[shortened_title]S[xx]E[xx]</code></td><td><code>AlhBldsS01E01</code></td></tr>
+            <tr><td>Yearly Episodic</td><td><code>[shortened_title]S[yyyy]E[xx]</code></td><td><code>PrDvtnsS2025E01</code></td></tr>
           </tbody>
         </table>
       </div>
