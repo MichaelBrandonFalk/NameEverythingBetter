@@ -225,6 +225,9 @@ const TAGGED_REQUIRED_ART_TASKS = new Set([
   ...Object.keys(SYNDICATION_REQUIRED_ART_SPECS),
   ...Object.keys(AXINOM_REQUIRED_ART_SPECS),
 ]);
+const PRESERVED_REQUIRED_ART_VARIANTS = new Set([
+  "Episode|bg|16x9|1920x1080",
+]);
 
 const ART_TASKS = {
   "Movie": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
@@ -560,6 +563,14 @@ function isLargerDimensions(candidate, current) {
   return next.height > prev.height;
 }
 
+function requiredArtConsolidationKey(entry) {
+  const variantKey = [entry.task, entry.artTag, entry.aspectRatio, entry.dimensions].join("|");
+  if (PRESERVED_REQUIRED_ART_VARIANTS.has(variantKey)) {
+    return variantKey;
+  }
+  return [entry.task, entry.artTag, entry.aspectRatio, ""].join("|");
+}
+
 function requiredArtEntries(task, rawFields) {
   const merged = new Map();
   const addEntries = (entries, tag) => {
@@ -579,7 +590,7 @@ function requiredArtEntries(task, rawFields) {
   addEntries(AXINOM_REQUIRED_ART_SPECS[task], "Axinom");
   const consolidated = new Map();
   for (const entry of merged.values()) {
-    const key = [entry.task, entry.artTag, entry.aspectRatio].join("|");
+    const key = requiredArtConsolidationKey(entry);
     if (!consolidated.has(key)) {
       consolidated.set(key, { ...entry, tags: [...entry.tags] });
       continue;

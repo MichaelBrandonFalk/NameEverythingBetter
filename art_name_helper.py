@@ -199,6 +199,9 @@ SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
     ),
 }
 TAGGED_REQUIRED_ART_TASKS = frozenset({*SYNDICATION_REQUIRED_ART_SPECS, *AXINOM_REQUIRED_ART_SPECS})
+PRESERVED_REQUIRED_ART_VARIANTS = frozenset({
+    ("Episode", "bg", "16x9", "1920x1080"),
+})
 APPROVED_ASPECT_RATIO_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "7x3": ("2450x1100",),
     "16x9": ("3840x2160", "2560x1440", "1920x1080"),
@@ -447,6 +450,18 @@ def _is_larger_dimensions(candidate: str, current: str) -> bool:
     return candidate_height > current_height
 
 
+def _required_art_consolidation_key(entry: dict[str, object]) -> tuple[str, str, str, str]:
+    variant_key = (
+        str(entry["task"]),
+        str(entry["art_tag"]),
+        str(entry["aspect_ratio"]),
+        str(entry["dimensions"]),
+    )
+    if variant_key in PRESERVED_REQUIRED_ART_VARIANTS:
+        return variant_key
+    return variant_key[0], variant_key[1], variant_key[2], ""
+
+
 def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[str, object], ...]:
     merged: dict[tuple[str, str, str, str], dict[str, object]] = {}
 
@@ -472,9 +487,9 @@ def required_art_entries(task: str, raw_fields: dict[str, str]) -> tuple[dict[st
     add_entries(base_required_art_specs(task))
     add_entries(SYNDICATION_REQUIRED_ART_SPECS.get(task, ()), "syndication")
     add_entries(AXINOM_REQUIRED_ART_SPECS.get(task, ()), "Axinom")
-    consolidated: dict[tuple[str, str, str], dict[str, object]] = {}
+    consolidated: dict[tuple[str, str, str, str], dict[str, object]] = {}
     for entry in merged.values():
-        key = (str(entry["task"]), str(entry["art_tag"]), str(entry["aspect_ratio"]))
+        key = _required_art_consolidation_key(entry)
         if key not in consolidated:
             consolidated[key] = {
                 "task": entry["task"],
