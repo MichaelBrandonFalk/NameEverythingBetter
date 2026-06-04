@@ -57,7 +57,7 @@ SUBTITLE_TYPE_OPTIONS = ("cc", "sub")
 RESOLUTION_OPTIONS = ("hd", "sd", "4k")
 SUBTITLE_DEFAULT_BY_LANGUAGE = {
     "English": "cc",
-    "Spanish": "sub",
+    "Spanish": "cc",
 }
 EXTRA_USAGE_TO_PREFIX = {
     "Behind the Scenes / Making Of": "bts",
@@ -290,6 +290,21 @@ def normalize_subtitle_type(value: str) -> str:
     return subtitle_type
 
 
+def subtitle_type_for_language(language: str, value: str) -> str:
+    if language == "Spanish":
+        return "cc"
+    subtitle_raw = value.strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
+    return normalize_subtitle_type(subtitle_raw)
+
+
+def mov_language_segment(language: str) -> str:
+    return "_las" if language == "Spanish" else ""
+
+
+def language_suffix(language: str) -> str:
+    return "las" if language == "Spanish" else "eng"
+
+
 def normalize_season(value: str) -> str:
     raw = value.strip().lower()
     if raw.startswith("s"):
@@ -399,16 +414,13 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        if language == "Spanish":
-            return f"{title}_feature_{resolution}_{house}_las.mov"
-        return f"{title}_feature_{resolution}_{house}_eng.mov"
+        return f"{title}_feature{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     if task == "Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
-        subtitle_type = normalize_subtitle_type(subtitle_raw)
+        subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         if language == "Spanish":
             return f"{title}_feature_las_{resolution}_{house}_{subtitle_type}_las.vtt"
         return f"{title}_feature_{resolution}_{house}_{subtitle_type}_eng.vtt"
@@ -427,16 +439,13 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
             raise ValueError("Title is required.")
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        if language == "Spanish":
-            return f"{title}_{season}_{episode}_{resolution}_{house}_las.mov"
-        return f"{title}_{season}_{episode}_{resolution}_{house}_eng.mov"
+        return f"{title}_{season}_{episode}{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     if task == "Episode Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
-        subtitle_type = normalize_subtitle_type(subtitle_raw)
+        subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
@@ -449,19 +458,22 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
             raise ValueError("Title is required.")
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"{title}_s{year}_{episode}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return f"{title}_s{year}_{episode}{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     if task == "Exclusive Conversation (Yearly)":
         interviewees = normalize_interviewees(raw_fields.get(FIELD_INTERVIEWEES, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"exclusive_conversations_s{year}_{episode}_{interviewees}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return (
+            f"exclusive_conversations_s{year}_{episode}_{interviewees}"
+            f"{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
+        )
 
     if task == "Virtual Screening":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        return f"{title}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return f"{title}_virtual_screening{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     if task == "Virtual Screening Episode":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
@@ -469,14 +481,16 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
             raise ValueError("Series Title is required.")
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
-        return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return (
+            f"{title}_{season}_{episode}_virtual_screening"
+            f"{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
+        )
 
     if task == "Virtual Screening Episode Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Series Title is required.")
-        subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
-        subtitle_type = normalize_subtitle_type(subtitle_raw)
+        subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
@@ -487,14 +501,13 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        return f"{title}_trailer_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return f"{title}_trailer{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     if task == "Trailer Caption":
         title = slugify(raw_fields.get(FIELD_TITLE, ""))
         if not title:
             raise ValueError("Title is required.")
-        subtitle_raw = raw_fields.get(FIELD_SUBTITLE_TYPE, "").strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
-        subtitle_type = normalize_subtitle_type(subtitle_raw)
+        subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         if language == "Spanish":
             return f"{title}_trailer_las_{resolution}_{house}_{subtitle_type}_las.vtt"
         return f"{title}_trailer_{resolution}_{house}_{subtitle_type}_eng.vtt"
@@ -507,7 +520,7 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         extra_prefix = EXTRA_USAGE_TO_PREFIX.get(usage)
         if not extra_prefix:
             raise ValueError("Choose an Extra Usage from the Section 5.2 list.")
-        return f"{title}_{extra_prefix}_{resolution}_{house}_{'las' if language == 'Spanish' else 'eng'}.mov"
+        return f"{title}_{extra_prefix}{mov_language_segment(language)}_{resolution}_{house}_{language_suffix(language)}.mov"
 
     raise ValueError("Unsupported task type.")
 
@@ -774,6 +787,10 @@ class NebFilenameAssistant:
         self._apply_subtitle_default(force=True)
 
     def _on_language_change(self, *_args: object) -> None:
+        if self.field_vars[FIELD_LANGUAGE].get() == "Spanish":
+            self._subtitle_type_manual_override = False
+            self._apply_subtitle_default(force=True)
+            return
         self._apply_subtitle_default()
 
     def _on_subtitle_type_change(self, *_args: object) -> None:
@@ -947,9 +964,9 @@ class NebFilenameAssistant:
         second_row = {
             CSV_TITLE: "wild like me",
             CSV_LANGUAGE: "Spanish",
-            CSV_CAPTION_TYPE: "sub",
+            CSV_CAPTION_TYPE: "cc",
             CSV_RESOLUTION: "hd",
-            CSV_HOUSE: "PUR0001051",
+            CSV_HOUSE: "LAS0001051",
             CSV_SEASON: "01",
             CSV_EPISODE: "01",
             CSV_INTERVIEWEES: "",
@@ -961,7 +978,7 @@ class NebFilenameAssistant:
             first_row[CSV_TITLE] = "county rescue"
             second_row[CSV_TITLE] = "county rescue"
             first_row[CSV_HOUSE] = "PUR0000363"
-            second_row[CSV_HOUSE] = "PUR0000364"
+            second_row[CSV_HOUSE] = "LAS0000364"
         elif task_name in {"Virtual Screening Episode", "Virtual Screening Episode Caption"}:
             first_row[CSV_TITLE] = "when hope calls"
             second_row[CSV_TITLE] = "when hope calls"
@@ -970,22 +987,22 @@ class NebFilenameAssistant:
             first_row[CSV_EPISODE] = "02"
             second_row[CSV_EPISODE] = "03"
             first_row[CSV_HOUSE] = "PFP1234567"
-            second_row[CSV_HOUSE] = "PFP1234568"
+            second_row[CSV_HOUSE] = "LAS1234568"
         elif task_name in {"Trailer", "Trailer Caption"}:
             first_row[CSV_TITLE] = "gods not dead"
             second_row[CSV_TITLE] = "gods not dead"
             first_row[CSV_HOUSE] = "TRL0001197"
-            second_row[CSV_HOUSE] = "TRL0001198"
+            second_row[CSV_HOUSE] = "LAS0001198"
         elif task_name == "Extras":
             first_row[CSV_TITLE] = "gods not dead"
             second_row[CSV_TITLE] = "gods not dead"
             first_row[CSV_HOUSE] = "EXT0002231"
-            second_row[CSV_HOUSE] = "EXT0002232"
+            second_row[CSV_HOUSE] = "LAS0002232"
         elif task_name == "Original Premium Series (Yearly)":
             first_row[CSV_TITLE] = "pure devotions"
             second_row[CSV_TITLE] = "pure devotions"
             first_row[CSV_HOUSE] = "PFP0008892"
-            second_row[CSV_HOUSE] = "PFP0008893"
+            second_row[CSV_HOUSE] = "LAS0008893"
         elif task_name == "Exclusive Conversation (Yearly)":
             first_row[CSV_YEAR] = "2026"
             second_row[CSV_YEAR] = "2026"
@@ -994,12 +1011,12 @@ class NebFilenameAssistant:
             first_row[CSV_INTERVIEWEES] = "Anthony Hopkins"
             second_row[CSV_INTERVIEWEES] = "Viola Davis"
             first_row[CSV_HOUSE] = "PFP0000155"
-            second_row[CSV_HOUSE] = "PFP0000156"
+            second_row[CSV_HOUSE] = "LAS0000156"
         elif task_name == "Virtual Screening":
             first_row[CSV_TITLE] = "wild like me"
             second_row[CSV_TITLE] = "wild like me"
             first_row[CSV_HOUSE] = "PFP0001060"
-            second_row[CSV_HOUSE] = "PFP0001061"
+            second_row[CSV_HOUSE] = "LAS0001061"
 
         if FIELD_SUBTITLE_TYPE not in TASKS[task_name]["fields"]:  # type: ignore[index]
             first_row[CSV_CAPTION_TYPE] = ""
