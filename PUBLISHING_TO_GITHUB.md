@@ -32,6 +32,9 @@ git add \
   art_name_helper.py \
   art_name_helper.md \
   art_name_helper_single.py \
+  neb_core.mjs \
+  neb_cli.mjs \
+  NEB_MODULAR_CORE.md \
   name_everything_better_combined.py \
   name_everything_better_combined.md \
   "New Art Naming Conventions.docx" \
@@ -59,7 +62,7 @@ GitHub will then publish `index.html` as the public landing page.
 
 ## Current Public Artifacts
 
-- `downloads/Name Everything Better V1_33.zip`
+- `downloads/Name Everything Better V1_34.zip`
 - `downloads/Verso - Art Naming Tool V1_14.zip`
 - `downloads/Verso - Art Naming Tool - Single V1_5.zip`
 - `downloads/New Art Naming Conventions.docx`
