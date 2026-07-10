@@ -57,7 +57,7 @@ SUBTITLE_TYPE_OPTIONS = ("cc", "sub")
 RESOLUTION_OPTIONS = ("hd", "sd", "4k")
 SUBTITLE_DEFAULT_BY_LANGUAGE = {
     "English": "cc",
-    "Spanish": "cc",
+    "Spanish": "sub",
 }
 EXTRA_USAGE_TO_PREFIX = {
     "Behind the Scenes / Making Of": "bts",
@@ -292,7 +292,7 @@ def normalize_subtitle_type(value: str) -> str:
 
 def subtitle_type_for_language(language: str, value: str) -> str:
     if language == "Spanish":
-        return "cc"
+        return "sub"
     subtitle_raw = value.strip().lower() or SUBTITLE_DEFAULT_BY_LANGUAGE[language].lower()
     return normalize_subtitle_type(subtitle_raw)
 
