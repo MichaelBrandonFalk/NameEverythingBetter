@@ -26,7 +26,7 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs";
+} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
 
 export {
   buildArtFilename,
@@ -35,7 +35,7 @@ export {
   buildNebOutputs,
   buildRequiredArtFilenames,
   requiredArtEntries,
-} from "./neb_core.mjs";
+} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
