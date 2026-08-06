@@ -20,6 +20,7 @@ from axinom_name_builder import (
 
 PATHMAKER_BUCKET = "gacm-axinom-staging"
 FIELD_SKU = "sku"
+PATHMAKER_SERIES_TASK = "Series"
 PATHMAKER_DEFAULTS = {
     **DEFAULT_VALUES,
     FIELD_SKU: "",
@@ -33,6 +34,12 @@ PATHMAKER_EXTRA_USAGE_TO_PREFIX = {
     "Promotional Clips": "clp",
 }
 
+PATHMAKER_TASK_FIELDS: dict[str, tuple[str, ...]] = {}
+for task_name, task_definition in TASKS.items():
+    PATHMAKER_TASK_FIELDS[task_name] = tuple(task_definition["fields"])  # type: ignore[index]
+    if task_name == "Movie":
+        PATHMAKER_TASK_FIELDS[PATHMAKER_SERIES_TASK] = (FIELD_TITLE, FIELD_LANGUAGE)
+
 MOVIE_ROOT_TASKS = {
     "Movie",
     "Caption",
@@ -44,6 +51,7 @@ MOVIE_ROOT_TASKS = {
 }
 
 SERIES_ROOT_TASKS = {
+    PATHMAKER_SERIES_TASK,
     "Episode",
     "Episode Caption",
     "Original Premium Series (Yearly)",
@@ -54,13 +62,13 @@ SERIES_ROOT_TASKS = {
 
 
 def pathmaker_task_options() -> tuple[str, ...]:
-    return tuple(task for task in TASKS if task not in SINGLE_HIDDEN_TASKS)
+    return tuple(task for task in PATHMAKER_TASK_FIELDS if task not in SINGLE_HIDDEN_TASKS)
 
 
 def pathmaker_fields_for_task(task: str, *, for_path_only: bool = False) -> tuple[str, ...]:
-    if task not in TASKS:
+    if task not in PATHMAKER_TASK_FIELDS:
         raise ValueError("Unsupported PathMaker task type.")
-    fields = tuple(TASKS[task]["fields"])  # type: ignore[index]
+    fields = PATHMAKER_TASK_FIELDS[task]
     if for_path_only:
         return tuple(field for field in fields if field not in {"resolution", "house", "subtitle_type"}) + (FIELD_SKU,)
     return fields + (FIELD_SKU,)
@@ -135,7 +143,7 @@ def root_for_task(task: str) -> str:
 def project_slug_for_task(task: str, raw_fields: dict[str, str]) -> str:
     if task == "Exclusive Conversation (Yearly)":
         return "exclusive_conversation"
-    label = "Series Title" if "Episode" in task else "Title"
+    label = "Series Title" if task == PATHMAKER_SERIES_TASK or "Episode" in task else "Title"
     return title_slug(raw_fields, label)
 
 
@@ -155,7 +163,7 @@ def extra_folder(raw_fields: dict[str, str]) -> str:
 
 
 def build_pathmaker_path(task: str, raw_fields: dict[str, str]) -> str:
-    if task not in TASKS:
+    if task not in PATHMAKER_TASK_FIELDS:
         raise ValueError("Unsupported PathMaker task type.")
 
     language = normalize_path_language(raw_fields.get(FIELD_LANGUAGE, PATHMAKER_DEFAULTS[FIELD_LANGUAGE]))
@@ -163,6 +171,9 @@ def build_pathmaker_path(task: str, raw_fields: dict[str, str]) -> str:
     root = root_for_task(task)
     project_slug = project_slug_for_task(task, raw_fields)
     base = project_folder(root, project_slug, sku)
+
+    if task == PATHMAKER_SERIES_TASK:
+        return f"{base}/"
 
     if task in {"Movie", "Caption", "Dub Audio"}:
         return f"{base}/{localized_feature_folder(language)}/"

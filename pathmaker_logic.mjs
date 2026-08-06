@@ -14,10 +14,11 @@ import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,
   PATHMAKER_EXTRA_USAGE_TO_PREFIX,
+  PATHMAKER_SERIES_TASK,
   PATHMAKER_TASKS,
   buildPathmakerPath,
   pathmakerFieldsForTask,
-} from "./neb_pathmaker_core.mjs?v=2026-07-10-pathmaker-v1";
+} from "./neb_pathmaker_core.mjs?v=2026-08-06-pathmaker-series-v1";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -34,6 +35,7 @@ const FIELD_CONFIG = {
 };
 
 const TASK_FIELD_LABEL_OVERRIDES = {
+  [PATHMAKER_SERIES_TASK]: { title: "Series Title *" },
   "Episode": { title: "Series Title *" },
   "Episode Caption": { title: "Series Title *" },
   "Virtual Screening Episode": { title: "Series Title *" },
@@ -100,6 +102,10 @@ function bindFieldHandlers(fields) {
   });
 }
 
+function currentTaskIsPathOnly() {
+  return Boolean(PATHMAKER_TASKS[state.task]?.pathOnly);
+}
+
 function renderFields() {
   const fieldsEl = document.getElementById("fields");
   const fields = pathmakerFieldsForTask(state.task);
@@ -133,9 +139,13 @@ function renderFields() {
 }
 
 function refreshOutputVisibility() {
-  const hasCompanionCaptions = Boolean(COMPANION_CAPTION_TASKS[state.task]);
+  const isPathOnly = currentTaskIsPathOnly();
+  const hasCompanionCaptions = !isPathOnly && Boolean(COMPANION_CAPTION_TASKS[state.task]);
+  document.getElementById("generate-btn").classList.toggle("hidden", isPathOnly);
+  document.getElementById("output-video-wrap").classList.toggle("hidden", isPathOnly);
   document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
   document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+  document.getElementById("output-external-reference-wrap").classList.toggle("hidden", isPathOnly);
 }
 
 function onFieldInput(event) {
@@ -167,6 +177,10 @@ function onTaskChange(event) {
 }
 
 function generateName() {
+  if (currentTaskIsPathOnly()) {
+    generatePath();
+    return;
+  }
   try {
     const outputs = buildNebOutputs(state.task, state.values);
     document.getElementById("filename-output-video").textContent = outputs.filename;

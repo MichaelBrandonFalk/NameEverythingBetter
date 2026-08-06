@@ -33,6 +33,7 @@ from neb_pathmaker_core import (
     FIELD_SKU,
     PATHMAKER_DEFAULTS,
     PATHMAKER_EXTRA_USAGE_TO_PREFIX,
+    PATHMAKER_SERIES_TASK,
     build_pathmaker_path,
     pathmaker_fields_for_task,
     pathmaker_task_options,
@@ -54,6 +55,12 @@ FIELD_LABELS = {
     FIELD_YEAR: "Year *",
     FIELD_EXTRA_USAGE: "Extra Type *",
     FIELD_SKU: "SKU / Parent SKU *",
+}
+PATHMAKER_FIELD_LABEL_OVERRIDES = {
+    **TASK_FIELD_LABEL_OVERRIDES,
+    PATHMAKER_SERIES_TASK: {
+        FIELD_TITLE: "Series Title *",
+    },
 }
 
 
@@ -117,7 +124,8 @@ class NebPathMakerApp:
 
         button_row = ttk.Frame(input_frame)
         button_row.grid(row=2, column=0, sticky="w", padx=10, pady=(4, 10))
-        ttk.Button(button_row, text="Generate Name", command=self._generate_name).pack(side="left")
+        self.generate_button = ttk.Button(button_row, text="Generate Name", command=self._generate_name)
+        self.generate_button.pack(side="left")
         ttk.Button(button_row, text="PathMaker", command=self._generate_path).pack(side="left", padx=(8, 0))
         ttk.Button(button_row, text="Clear", command=self._clear_fields).pack(side="left", padx=(8, 0))
 
@@ -183,6 +191,9 @@ class NebPathMakerApp:
     def _task_uses_subtitle_type(self, task: str) -> bool:
         return FIELD_SUBTITLE_TYPE in pathmaker_fields_for_task(task)
 
+    def _task_is_path_only(self) -> bool:
+        return self.task_var.get() == PATHMAKER_SERIES_TASK
+
     def _default_subtitle_type(self) -> str:
         return SUBTITLE_DEFAULT_BY_LANGUAGE[self.field_vars[FIELD_LANGUAGE].get()]
 
@@ -220,7 +231,7 @@ class NebPathMakerApp:
         self._apply_subtitle_default(force=True)
         for row in self.field_rows.values():
             row.pack_forget()
-        overrides = TASK_FIELD_LABEL_OVERRIDES.get(task, {})
+        overrides = PATHMAKER_FIELD_LABEL_OVERRIDES.get(task, {})
         for field in pathmaker_fields_for_task(task):
             self.field_labels[field].config(text=overrides.get(field, FIELD_LABELS[field]))
             self.field_rows[field].pack(fill="x", pady=4)
@@ -228,7 +239,17 @@ class NebPathMakerApp:
         self._refresh_output_rows()
 
     def _refresh_output_rows(self) -> None:
-        has_companion_captions = self.task_var.get() in COMPANION_CAPTION_TASKS
+        is_path_only = self._task_is_path_only()
+        if is_path_only:
+            self.generate_button.state(["disabled"])
+            self.output_rows["video"].grid_remove()
+            self.output_rows["external_reference"].grid_remove()
+        else:
+            self.generate_button.state(["!disabled"])
+            self.output_rows["video"].grid()
+            self.output_rows["external_reference"].grid()
+
+        has_companion_captions = not is_path_only and self.task_var.get() in COMPANION_CAPTION_TASKS
         if has_companion_captions:
             self.output_rows["caption_eng"].grid()
             self.output_rows["caption_las"].grid()
@@ -263,6 +284,9 @@ class NebPathMakerApp:
         )
 
     def _generate_name(self) -> None:
+        if self._task_is_path_only():
+            self._generate_path()
+            return
         task = self.task_var.get()
         raw_fields = self._raw_fields_for_task()
         try:

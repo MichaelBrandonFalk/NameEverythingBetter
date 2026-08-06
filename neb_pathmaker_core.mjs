@@ -8,6 +8,7 @@ import {
 
 const PATHMAKER_BUCKET = "gacm-axinom-staging";
 const FIELD_SKU = "sku";
+const PATHMAKER_SERIES_TASK = "Series";
 
 const PATHMAKER_DEFAULTS = {
   ...NEB_DEFAULTS,
@@ -21,16 +22,21 @@ const PATHMAKER_EXTRA_USAGE_TO_PREFIX = {
   "Promotional Clips": "clp",
 };
 
-const PATHMAKER_TASKS = Object.fromEntries(
-  Object.entries(NEB_TASKS).map(([task, definition]) => [
-    task,
-    {
-      ...definition,
-      fields: [...definition.fields, FIELD_SKU],
-      pathFields: definition.fields.filter((field) => !["resolution", "house", "subtitle_type"].includes(field)).concat(FIELD_SKU),
-    },
-  ]),
-);
+const PATHMAKER_TASKS = {};
+Object.entries(NEB_TASKS).forEach(([task, definition]) => {
+  PATHMAKER_TASKS[task] = {
+    ...definition,
+    fields: [...definition.fields, FIELD_SKU],
+    pathFields: definition.fields.filter((field) => !["resolution", "house", "subtitle_type"].includes(field)).concat(FIELD_SKU),
+  };
+  if (task === "Movie") {
+    PATHMAKER_TASKS[PATHMAKER_SERIES_TASK] = {
+      fields: ["title", "language", FIELD_SKU],
+      pathFields: ["title", "language", FIELD_SKU],
+      pathOnly: true,
+    };
+  }
+});
 
 const MOVIE_ROOT_TASKS = new Set([
   "Movie",
@@ -43,6 +49,7 @@ const MOVIE_ROOT_TASKS = new Set([
 ]);
 
 const SERIES_ROOT_TASKS = new Set([
+  PATHMAKER_SERIES_TASK,
   "Episode",
   "Episode Caption",
   "Original Premium Series (Yearly)",
@@ -137,7 +144,7 @@ function projectSlugForTask(task, rawFields) {
   if (task === "Exclusive Conversation (Yearly)") {
     return "exclusive_conversation";
   }
-  return titleSlug(rawFields, task.includes("Episode") ? "Series Title" : "Title");
+  return titleSlug(rawFields, task === PATHMAKER_SERIES_TASK || task.includes("Episode") ? "Series Title" : "Title");
 }
 
 function pathmakerFieldsForTask(task, { forPathOnly = false } = {}) {
@@ -158,6 +165,10 @@ function buildPathmakerPath(task, rawFields) {
   const root = rootForTask(task);
   const projectSlug = projectSlugForTask(task, rawFields);
   const base = projectFolder(root, projectSlug, sku);
+
+  if (task === PATHMAKER_SERIES_TASK) {
+    return `${base}/`;
+  }
 
   if (task === "Movie" || task === "Caption" || task === "Dub Audio") {
     return `${base}/${localizedFeatureFolder(language)}/`;
@@ -201,6 +212,7 @@ export {
   PATHMAKER_BUCKET,
   PATHMAKER_DEFAULTS,
   PATHMAKER_EXTRA_USAGE_TO_PREFIX,
+  PATHMAKER_SERIES_TASK,
   PATHMAKER_TASKS,
   NEB_SINGLE_HIDDEN_TASKS as PATHMAKER_SINGLE_HIDDEN_TASKS,
   buildPathmakerPath,
