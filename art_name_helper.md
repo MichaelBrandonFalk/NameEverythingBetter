@@ -1,4 +1,4 @@
-# Verso - Art Naming Tool V1_15 (macOS)
+# Verso - Art Naming Tool V1_16 (macOS)
 
 Updated the art naming flow so the default path generates the full required art name set for a title, while still keeping a one-at-a-time option.
 
@@ -36,6 +36,7 @@ Updated the art naming flow so the default path generates the full required art 
 - `Podcast Episodes` uses the episode filename format and adds `bg 1x1 3000x3000` to regular episode art, with the full set tagged Axinom only.
 - `Familia Mini-Novelas Series` uses the series filename format and adds `ca 9x16 2160x3840` and `bg 9x16 2160x3840` to standard series art, with the full set tagged Axinom only.
 - `Familia Mini-Novelas Episodes` uses the episode filename format and adds `bg 9x16 1080x1920` to regular episode art, with the full set tagged Axinom only.
+- Both Familia Mini-Novelas types default the language field to Spanish.
 
 ## Series Title Rule
 

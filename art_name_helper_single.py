@@ -33,6 +33,8 @@ from art_name_helper import (
     plus_warning_needed,
     PLUS_WARNING_MESSAGE,
     TASK_FIELD_LABEL_OVERRIDES,
+    default_overrides_for_task,
+    default_values_for_task,
 )
 
 
@@ -170,12 +172,17 @@ class SingleArtNameHelperApp:
         required_fields = TASKS[task_name]
         for row in self.field_rows.values():
             row.pack_forget()
+        self._apply_task_default_overrides(task_name)
         self._refresh_field_labels(task_name)
         self._refresh_art_tag_dropdown()
         for field in required_fields:
             self.field_rows[field].pack(fill="x", pady=4)
         self._refresh_size_dropdowns()
         self.output_var.set("")
+
+    def _apply_task_default_overrides(self, task_name: str) -> None:
+        for field, value in default_overrides_for_task(task_name).items():
+            self.field_vars[field].set(value)
 
     def _refresh_field_labels(self, task_name: str) -> None:
         overrides = TASK_FIELD_LABEL_OVERRIDES.get(task_name, {})
@@ -210,8 +217,9 @@ class SingleArtNameHelperApp:
         self.status_var.set("Copied filename.")
 
     def _clear_fields(self) -> None:
+        defaults = default_values_for_task(self.task_var.get())
         for field, variable in self.field_vars.items():
-            variable.set(DEFAULT_VALUES[field])
+            variable.set(defaults[field])
         self._refresh_task_ui()
         self.status_var.set("Fields cleared.")
 

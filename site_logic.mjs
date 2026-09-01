@@ -2,6 +2,7 @@ import {
   ART_DEFAULTS,
   ART_OUTPUT_MODES,
   ART_TASKS,
+  ART_TASK_DEFAULT_OVERRIDES,
   COMPANION_CAPTION_TASKS,
   EXTRA_USAGE_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -21,12 +22,13 @@ import {
   buildNebFilename,
   buildNebOutputs,
   buildRequiredArtFilenames,
+  defaultArtValuesForTask,
   normalizeArtTag,
   plusWarningNeeded,
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-09-01-axinom-art-types";
+} from "./neb_core.mjs?v=2026-09-01-familia-spanish-default";
 
 export {
   buildArtFilename,
@@ -34,8 +36,9 @@ export {
   buildNebFilename,
   buildNebOutputs,
   buildRequiredArtFilenames,
+  defaultArtValuesForTask,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-09-01-axinom-art-types";
+} from "./neb_core.mjs?v=2026-09-01-familia-spanish-default";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -145,7 +148,11 @@ function currentVisibleTaskNames() {
 }
 
 function currentDefaults() {
-  return state.domain === "neb" ? NEB_DEFAULTS : ART_DEFAULTS;
+  return state.domain === "neb" ? NEB_DEFAULTS : defaultArtValuesForTask(state.art.task);
+}
+
+function applyArtTaskDefaultOverrides(taskState) {
+  Object.assign(taskState.values, ART_TASK_DEFAULT_OVERRIDES[taskState.task] || {});
 }
 
 function normalizeArtDependentValues(taskState) {
@@ -356,6 +363,8 @@ function onTaskChange(event) {
     domainState.subtitleManual = false;
     const language = domainState.values.language || "English";
     domainState.values.subtitle_type = SUBTITLE_DEFAULT_BY_LANGUAGE[language] || "cc";
+  } else {
+    applyArtTaskDefaultOverrides(domainState);
   }
   renderBuilder();
   resetOutput();

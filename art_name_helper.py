@@ -344,6 +344,27 @@ DEFAULT_VALUES = {
     FIELD_DIMENSIONS: "1920x1080",
 }
 
+TASK_DEFAULT_OVERRIDES: dict[str, dict[str, str]] = {
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: {
+        FIELD_LANGUAGE: "Spanish",
+    },
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: {
+        FIELD_LANGUAGE: "Spanish",
+    },
+}
+
+
+def default_overrides_for_task(task_name: str) -> dict[str, str]:
+    return dict(TASK_DEFAULT_OVERRIDES.get(task_name, {}))
+
+
+def default_values_for_task(task_name: str | None = None) -> dict[str, str]:
+    values = dict(DEFAULT_VALUES)
+    if task_name:
+        values.update(TASK_DEFAULT_OVERRIDES.get(task_name, {}))
+    return values
+
+
 CSV_FILENAME = "filename"
 CSV_TITLE = "title"
 CSV_LANGUAGE = "language"
@@ -1016,8 +1037,13 @@ class ArtNameHelperApp:
             self.task_row.pack(fill="x", pady=(0, 10))
             self.multi_frame.pack_forget()
             self.single_frame.pack(fill="both", expand=True, pady=(0, 10))
+            self._apply_task_default_overrides(task)
             self._refresh_field_labels(task)
             self._render_single_rows(required_fields)
+
+    def _apply_task_default_overrides(self, task: str) -> None:
+        for field, value in default_overrides_for_task(task).items():
+            self.field_vars[field].set(value)
 
     def _refresh_field_labels(self, task: str) -> None:
         overrides = TASK_FIELD_LABEL_OVERRIDES.get(task, {})
@@ -1144,9 +1170,10 @@ class ArtNameHelperApp:
 
     def _template_example_rows(self, headers: list[str], task_name: str) -> list[dict[str, str]]:
         default_art_tag = allowed_art_tag_codes(task_name)[0]
+        task_defaults = default_values_for_task(task_name)
         first_row = {
             CSV_TITLE: "wild like me",
-            CSV_LANGUAGE: "English",
+            CSV_LANGUAGE: task_defaults[FIELD_LANGUAGE],
             CSV_SEASON: "02",
             CSV_EPISODE: "05",
             CSV_YEAR: "2025",
@@ -1158,7 +1185,7 @@ class ArtNameHelperApp:
         }
         second_row = {
             CSV_TITLE: "wild like me",
-            CSV_LANGUAGE: "Spanish",
+            CSV_LANGUAGE: task_defaults[FIELD_LANGUAGE] if task_defaults[FIELD_LANGUAGE] == "Spanish" else "Spanish",
             CSV_SEASON: "02",
             CSV_EPISODE: "05",
             CSV_YEAR: "2025",
@@ -1376,8 +1403,9 @@ class ArtNameHelperApp:
         self.status_var.set("Copied generated names.")
 
     def _clear_single_fields(self) -> None:
+        defaults = default_values_for_task(self.task_var.get())
         for field, variable in self.field_vars.items():
-            variable.set(DEFAULT_VALUES[field])
+            variable.set(defaults[field])
         if self.mode_var.get() == MODE_SINGLE:
             self._refresh_art_tag_dropdown()
             self._refresh_size_dropdowns()

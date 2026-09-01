@@ -313,6 +313,22 @@ const ART_DEFAULTS = {
   dimensions: "1920x1080",
 };
 
+const ART_TASK_DEFAULT_OVERRIDES = {
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: {
+    language: "Spanish",
+  },
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: {
+    language: "Spanish",
+  },
+};
+
+function defaultArtValuesForTask(task) {
+  return {
+    ...ART_DEFAULTS,
+    ...(ART_TASK_DEFAULT_OVERRIDES[task] || {}),
+  };
+}
+
 function slugify(value, { collapseVeggieTales = false } = {}) {
   let lowered = value.trim().toLowerCase();
   lowered = lowered.replace(/['’]/g, "");
@@ -981,6 +997,7 @@ export {
   ART_DETAIL_FIELDS,
   ART_OUTPUT_MODES,
   ART_TASKS,
+  ART_TASK_DEFAULT_OVERRIDES,
   ART_TAG_CODE_TO_LABEL,
   ART_TAG_TO_CODE,
   APPROVED_ART_SIZES,
@@ -1010,6 +1027,7 @@ export {
   buildNebFilename,
   buildNebOutputs,
   buildRequiredArtFilenames,
+  defaultArtValuesForTask,
   extensionForArtTag,
   getTaskFields,
   languageSuffix,

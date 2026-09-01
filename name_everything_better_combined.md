@@ -1,4 +1,4 @@
-# Name Everything Better V1_20 (macOS)
+# Name Everything Better V1_36 (macOS)
 
 This combined version adds a first-step choice between Neb movie/caption naming and Verso art naming.
 
@@ -26,3 +26,4 @@ Output:
 - The combined app keeps Neb and Verso as separate flows behind one launcher.
 - Using `Back` inside either flow returns to the top-level chooser in this combined build.
 - Standalone Neb and standalone Verso builds remain unchanged.
+- The Art flow defaults both Familia Mini-Novelas product types to Spanish.
