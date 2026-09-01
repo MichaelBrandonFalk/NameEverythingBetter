@@ -41,6 +41,14 @@ FIELD_LABELS = {
     FIELD_ASPECT_RATIO: "Aspect Ratio *",
     FIELD_DIMENSIONS: "Dimensions *",
 }
+ART_TASK_PODCAST_EPISODES = "Podcast Episodes"
+ART_TASK_FAMILIA_MINI_NOVELAS_SERIES = "Familia Mini-Novelas Series"
+ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES = "Familia Mini-Novelas Episodes"
+ART_FILENAME_TEMPLATE_TASK = {
+    ART_TASK_PODCAST_EPISODES: "Episode",
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: "Series",
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: "Episode",
+}
 TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
     "Season Placeholder": {
         FIELD_TITLE: "Series Title *",
@@ -49,6 +57,12 @@ TASK_FIELD_LABEL_OVERRIDES: dict[str, dict[str, str]] = {
         FIELD_TITLE: "Series Title *",
     },
     "Virtual Screening Episode": {
+        FIELD_TITLE: "Series Title *",
+    },
+    ART_TASK_PODCAST_EPISODES: {
+        FIELD_TITLE: "Series Title *",
+    },
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: {
         FIELD_TITLE: "Series Title *",
     },
 }
@@ -84,6 +98,9 @@ TASK_ART_TAG_CODES: dict[str, tuple[str, ...]] = {
     "Trailer": ("bg",),
     "Extras": ("bg",),
     "Carousel": ("ca",),
+    ART_TASK_PODCAST_EPISODES: ("bg",),
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: ("ca", "bg", "tt"),
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: ("bg",),
 }
 EXTRA_USAGE_OPTIONS = (
     "Behind the Scenes / Making Of",
@@ -120,6 +137,26 @@ APPROVED_ART_SIZES: dict[str, dict[str, tuple[str, ...]]] = {
         "9x5": ("1800x1000",),
     },
 }
+TASK_ADDITIONAL_ART_SIZES: dict[str, dict[str, dict[str, tuple[str, ...]]]] = {
+    ART_TASK_PODCAST_EPISODES: {
+        "bg": {
+            "1x1": ("3000x3000",),
+        },
+    },
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: {
+        "ca": {
+            "9x16": ("2160x3840",),
+        },
+        "bg": {
+            "9x16": ("2160x3840",),
+        },
+    },
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: {
+        "bg": {
+            "9x16": ("1080x1920",),
+        },
+    },
+}
 AXINOM_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str, str], ...]] = {
     "Movie": (
         ("Movie", "ca", "7x3", "2450x1100"),
@@ -153,6 +190,30 @@ AXINOM_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str, str], ...]] = {
     ),
     "Extras": (
         ("Extras", "bg", "16x9", "1920x1080"),
+    ),
+    ART_TASK_PODCAST_EPISODES: (
+        (ART_TASK_PODCAST_EPISODES, "bg", "16x9", "3840x2160"),
+        (ART_TASK_PODCAST_EPISODES, "bg", "16x9", "1920x1080"),
+        (ART_TASK_PODCAST_EPISODES, "bg", "1x1", "3000x3000"),
+    ),
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: (
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "7x3", "2450x1100"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "2x3", "2000x3000"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "3x4", "2400x3200"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "1x1", "3000x3000"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "4x3", "3200x2400"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "16x9", "3840x2160"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "ca", "9x16", "2160x3840"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "bg", "16x9", "3840x2160"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "bg", "2x3", "2000x3000"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "bg", "7x3", "2450x1100"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "bg", "9x16", "2160x3840"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, "tt", "9x5", "1800x1000"),
+    ),
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: (
+        (ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, "bg", "16x9", "3840x2160"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, "bg", "16x9", "1920x1080"),
+        (ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, "bg", "9x16", "1080x1920"),
     ),
 }
 SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
@@ -201,6 +262,8 @@ SYNDICATION_REQUIRED_ART_SPECS: dict[str, tuple[tuple[str, str, str], ...]] = {
 TAGGED_REQUIRED_ART_TASKS = frozenset({*SYNDICATION_REQUIRED_ART_SPECS, *AXINOM_REQUIRED_ART_SPECS})
 PRESERVED_REQUIRED_ART_VARIANTS = frozenset({
     ("Episode", "bg", "16x9", "1920x1080"),
+    (ART_TASK_PODCAST_EPISODES, "bg", "16x9", "1920x1080"),
+    (ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, "bg", "16x9", "1920x1080"),
 })
 APPROVED_ASPECT_RATIO_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "7x3": ("2450x1100",),
@@ -210,11 +273,17 @@ APPROVED_ASPECT_RATIO_DIMENSIONS: dict[str, tuple[str, ...]] = {
     "2x3": ("2000x3000", "1600x2400"),
     "1x1": ("3000x3000",),
     "9x5": ("1800x1000",),
+    "9x16": ("2160x3840", "1080x1920"),
 }
 ASPECT_RATIO_OPTIONS = tuple(
     aspect_ratio
-    for aspect_ratio in ("7x3", "16x9", "4x3", "3x4", "2x3", "1x1", "9x5")
+    for aspect_ratio in ("7x3", "16x9", "4x3", "3x4", "2x3", "1x1", "9x5", "9x16")
     if any(aspect_ratio in sizes for sizes in APPROVED_ART_SIZES.values())
+    or any(
+        aspect_ratio in sizes
+        for task_sizes in TASK_ADDITIONAL_ART_SIZES.values()
+        for sizes in task_sizes.values()
+    )
 )
 DIMENSION_OPTIONS = tuple(
     dimension
@@ -232,8 +301,16 @@ DIMENSION_OPTIONS = tuple(
         "2560x1440",
         "1800x1000",
         "1440x1080",
+        "2160x3840",
+        "1080x1920",
     )
     if any(dimension in aspect_sizes for sizes in APPROVED_ART_SIZES.values() for aspect_sizes in sizes.values())
+    or any(
+        dimension in aspect_sizes
+        for task_sizes in TASK_ADDITIONAL_ART_SIZES.values()
+        for sizes in task_sizes.values()
+        for aspect_sizes in sizes.values()
+    )
 )
 
 TASKS: dict[str, tuple[str, ...]] = {
@@ -248,6 +325,9 @@ TASKS: dict[str, tuple[str, ...]] = {
     "Trailer": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Extras": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_EXTRA_USAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
     "Carousel": (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
+    ART_TASK_PODCAST_EPISODES: (FIELD_TITLE, FIELD_SEASON, FIELD_EPISODE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
+    ART_TASK_FAMILIA_MINI_NOVELAS_SERIES: (FIELD_TITLE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
+    ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES: (FIELD_TITLE, FIELD_SEASON, FIELD_EPISODE, FIELD_LANGUAGE, FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS),
 }
 ART_DETAIL_FIELDS = {FIELD_ART_TAG, FIELD_ASPECT_RATIO, FIELD_DIMENSIONS}
 
@@ -391,28 +471,46 @@ def allowed_art_tag_labels(task: str) -> tuple[str, ...]:
     return tuple(ART_TAG_CODE_TO_LABEL[code] for code in allowed_art_tag_codes(task))
 
 
-def allowed_aspect_ratios(art_tag: str) -> tuple[str, ...]:
-    return tuple(APPROVED_ART_SIZES.get(art_tag, {}).keys())
+def approved_art_sizes_for_task(task: str | None, art_tag: str) -> dict[str, tuple[str, ...]]:
+    merged: dict[str, list[str]] = {}
+
+    def add_sizes(sizes: dict[str, tuple[str, ...]] | None) -> None:
+        for aspect_ratio, dimensions in (sizes or {}).items():
+            merged.setdefault(aspect_ratio, [])
+            for dimension in dimensions:
+                if dimension not in merged[aspect_ratio]:
+                    merged[aspect_ratio].append(dimension)
+
+    add_sizes(APPROVED_ART_SIZES.get(art_tag))
+    if task is not None:
+        add_sizes(TASK_ADDITIONAL_ART_SIZES.get(task, {}).get(art_tag))
+    return {aspect_ratio: tuple(dimensions) for aspect_ratio, dimensions in merged.items()}
 
 
-def allowed_dimensions(aspect_ratio: str) -> tuple[str, ...]:
+def allowed_aspect_ratios(art_tag: str, task: str | None = None) -> tuple[str, ...]:
+    return tuple(approved_art_sizes_for_task(task, art_tag).keys())
+
+
+def allowed_dimensions(aspect_ratio: str, art_tag: str | None = None, task: str | None = None) -> tuple[str, ...]:
+    if art_tag is not None:
+        return approved_art_sizes_for_task(task, art_tag).get(aspect_ratio, ())
     return APPROVED_ASPECT_RATIO_DIMENSIONS.get(aspect_ratio, ())
 
 
-def normalize_aspect_ratio(value: str, art_tag: str | None = None) -> str:
+def normalize_aspect_ratio(value: str, art_tag: str | None = None, task: str | None = None) -> str:
     aspect_ratio = value.strip().lower()
     if aspect_ratio not in {item.lower() for item in ASPECT_RATIO_OPTIONS}:
         raise ValueError("Choose an Aspect Ratio from the dropdown.")
-    if art_tag and aspect_ratio not in allowed_aspect_ratios(art_tag):
+    if art_tag and aspect_ratio not in allowed_aspect_ratios(art_tag, task):
         raise ValueError("Choose an approved Aspect Ratio for the selected Art Tag.")
     return aspect_ratio
 
 
-def normalize_dimensions(value: str, aspect_ratio: str | None = None) -> str:
+def normalize_dimensions(value: str, aspect_ratio: str | None = None, art_tag: str | None = None, task: str | None = None) -> str:
     dimensions = value.strip().lower()
     if not re.fullmatch(r"\d+x\d+", dimensions):
         raise ValueError("Dimensions must look like 1920x1080.")
-    if aspect_ratio and dimensions not in allowed_dimensions(aspect_ratio):
+    if aspect_ratio and dimensions not in allowed_dimensions(aspect_ratio, art_tag, task):
         raise ValueError("Choose an approved Dimensions value for the selected Aspect Ratio.")
     return dimensions
 
@@ -428,7 +526,7 @@ def required_art_fields(task: str) -> tuple[str, ...]:
 def base_required_art_specs(task: str) -> tuple[tuple[str, str, str, str], ...]:
     specs: list[tuple[str, str, str, str]] = []
     for art_tag in allowed_art_tag_codes(task):
-        for aspect_ratio, dimensions in APPROVED_ART_SIZES[art_tag].items():
+        for aspect_ratio, dimensions in approved_art_sizes_for_task(task, art_tag).items():
             specs.append((task, art_tag, aspect_ratio, dimensions[0]))
     return tuple(specs)
 
@@ -533,63 +631,64 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
     art_tag = normalize_art_tag(raw_fields.get(FIELD_ART_TAG, ""))
     if art_tag not in allowed_art_tag_codes(task):
         raise ValueError("Choose an allowed Art Tag for the selected art type.")
-    aspect_ratio = normalize_aspect_ratio(raw_fields.get(FIELD_ASPECT_RATIO, ""), art_tag)
-    dimensions = normalize_dimensions(raw_fields.get(FIELD_DIMENSIONS, ""), aspect_ratio)
+    aspect_ratio = normalize_aspect_ratio(raw_fields.get(FIELD_ASPECT_RATIO, ""), art_tag, task)
+    dimensions = normalize_dimensions(raw_fields.get(FIELD_DIMENSIONS, ""), aspect_ratio, art_tag, task)
     extension = extension_for_art_tag(art_tag)
     language_code = language_suffix(raw_fields.get(FIELD_LANGUAGE, ""))
     language_segment = f"_{language_code}" if language_code else ""
+    filename_task = ART_FILENAME_TEMPLATE_TASK.get(task, task)
 
-    if task == "Movie":
+    if filename_task == "Movie":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Series":
+    if filename_task == "Series":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Season Placeholder":
+    if filename_task == "Season Placeholder":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         return f"{title}_{season}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Episode":
+    if filename_task == "Episode":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         return f"{title}_{season}_{episode}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Original Premium Series (Yearly)":
+    if filename_task == "Original Premium Series (Yearly)":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         return f"{title}_s{year}_{episode}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Exclusive Conversation (Yearly)":
+    if filename_task == "Exclusive Conversation (Yearly)":
         year = normalize_year(raw_fields.get(FIELD_YEAR, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         interviewees = normalize_interviewees(raw_fields.get(FIELD_INTERVIEWEES, ""))
         return f"exclusive_conversations_s{year}_{episode}_{interviewees}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Virtual Screening":
+    if filename_task == "Virtual Screening":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}_virtual_screening{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Virtual Screening Episode":
+    if filename_task == "Virtual Screening Episode":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         return f"{title}_{season}_{episode}_virtual_screening{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Trailer":
+    if filename_task == "Trailer":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}_trailer{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Extras":
+    if filename_task == "Extras":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         extra_prefix = normalize_extra_usage(raw_fields.get(FIELD_EXTRA_USAGE, ""))
         return f"{title}_{extra_prefix}{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
-    if task == "Carousel":
+    if filename_task == "Carousel":
         title = normalize_title(raw_fields.get(FIELD_TITLE, ""))
         return f"{title}_carousel{language_segment}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}"
 
@@ -841,17 +940,18 @@ class ArtNameHelperApp:
 
     def _refresh_size_dropdowns(self) -> None:
         art_tag = ART_TAG_TO_CODE.get(self.field_vars[FIELD_ART_TAG].get().strip(), "")
+        task_name = self.multi_task_var.get() if self.mode_var.get() == MODE_MULTI else self.task_var.get()
         aspect_combo = self.field_combos.get(FIELD_ASPECT_RATIO)
         dimension_combo = self.field_combos.get(FIELD_DIMENSIONS)
         if not art_tag or aspect_combo is None or dimension_combo is None:
             return
 
-        valid_aspects = allowed_aspect_ratios(art_tag)
+        valid_aspects = allowed_aspect_ratios(art_tag, task_name)
         aspect_combo["values"] = valid_aspects
         if self.field_vars[FIELD_ASPECT_RATIO].get() not in valid_aspects:
             self.field_vars[FIELD_ASPECT_RATIO].set(valid_aspects[0])
 
-        valid_dimensions = allowed_dimensions(self.field_vars[FIELD_ASPECT_RATIO].get())
+        valid_dimensions = allowed_dimensions(self.field_vars[FIELD_ASPECT_RATIO].get(), art_tag, task_name)
         dimension_combo["values"] = valid_dimensions
         if self.field_vars[FIELD_DIMENSIONS].get() not in valid_dimensions:
             self.field_vars[FIELD_DIMENSIONS].set(valid_dimensions[0])

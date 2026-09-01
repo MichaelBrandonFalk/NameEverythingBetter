@@ -147,6 +147,7 @@ class SingleArtNameHelperApp:
             self.field_vars[FIELD_ART_TAG].set(valid_labels[0])
 
     def _refresh_size_dropdowns(self) -> None:
+        task_name = self.task_var.get()
         art_tag_label = self.field_vars[FIELD_ART_TAG].get().strip()
         art_tag_code = art_tag_label.split(" ", 1)[0] if art_tag_label else ""
         aspect_combo = self.field_combos[FIELD_ASPECT_RATIO]
@@ -154,12 +155,12 @@ class SingleArtNameHelperApp:
         if not art_tag_code:
             return
 
-        valid_aspects = allowed_aspect_ratios(art_tag_code)
+        valid_aspects = allowed_aspect_ratios(art_tag_code, task_name)
         aspect_combo["values"] = valid_aspects
         if self.field_vars[FIELD_ASPECT_RATIO].get() not in valid_aspects:
             self.field_vars[FIELD_ASPECT_RATIO].set(valid_aspects[0])
 
-        valid_dimensions = allowed_dimensions(self.field_vars[FIELD_ASPECT_RATIO].get())
+        valid_dimensions = allowed_dimensions(self.field_vars[FIELD_ASPECT_RATIO].get(), art_tag_code, task_name)
         dimension_combo["values"] = valid_dimensions
         if self.field_vars[FIELD_DIMENSIONS].get() not in valid_dimensions:
             self.field_vars[FIELD_DIMENSIONS].set(valid_dimensions[0])

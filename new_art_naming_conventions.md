@@ -56,6 +56,19 @@ These are the three art types currently used in the standard:
 | Trailer | `bg` |
 | Extras | `bg` |
 | Carousel | `ca` |
+| Podcast Episodes | `bg` |
+| Familia Mini-Novelas Series | `ca`, `bg`, `tt` |
+| Familia Mini-Novelas Episodes | `bg` |
+
+## Axinom-Only Additional Art Product Types
+
+These selectors appear at the bottom of the NEB Art type list. They reuse the normal series or episode filename formula, but their full required art set is Axinom-only.
+
+| Product Type | Uses Filename Formula | Additional Axinom Requirements |
+| --- | --- | --- |
+| Podcast Episodes | Episode | `bg 1x1 3000x3000`, plus regular episode art, all tagged Axinom only |
+| Familia Mini-Novelas Series | Series | `ca 9x16 2160x3840` and `bg 9x16 2160x3840`, plus standard series art, all tagged Axinom only |
+| Familia Mini-Novelas Episodes | Episode | `bg 9x16 1080x1920`, plus regular episode art, all tagged Axinom only |
 
 ## General Formatting Rules
 
@@ -365,6 +378,9 @@ These are the approved pixel sizes the app should present after an aspect ratio 
 | Trailer | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Extras | `title`, `language`, `extra_usage`, `art_tag`, `aspect_ratio`, `dimensions` |
 | Carousel | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
+| Podcast Episodes | `title`, `season`, `episode`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
+| Familia Mini-Novelas Series | `title`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
+| Familia Mini-Novelas Episodes | `title`, `season`, `episode`, `language`, `art_tag`, `aspect_ratio`, `dimensions` |
 
 ## Workflow
 

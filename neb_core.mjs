@@ -80,6 +80,15 @@ const ART_TAG_CODE_TO_LABEL = {
   tt: "tt - Title Treatment",
 };
 
+const ART_TASK_PODCAST_EPISODES = "Podcast Episodes";
+const ART_TASK_FAMILIA_MINI_NOVELAS_SERIES = "Familia Mini-Novelas Series";
+const ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES = "Familia Mini-Novelas Episodes";
+const ART_FILENAME_TEMPLATE_TASK = {
+  [ART_TASK_PODCAST_EPISODES]: "Episode",
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: "Series",
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: "Episode",
+};
+
 const TASK_ART_TAG_CODES = {
   "Movie": ["ca", "bg", "tt"],
   "Series": ["ca", "bg", "tt"],
@@ -92,6 +101,9 @@ const TASK_ART_TAG_CODES = {
   "Trailer": ["bg"],
   "Extras": ["bg"],
   "Carousel": ["ca"],
+  [ART_TASK_PODCAST_EPISODES]: ["bg"],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: ["ca", "bg", "tt"],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: ["bg"],
 };
 
 const APPROVED_ART_SIZES = {
@@ -113,6 +125,46 @@ const APPROVED_ART_SIZES = {
     "9x5": ["1800x1000"],
   },
 };
+
+const TASK_ADDITIONAL_ART_SIZES = {
+  [ART_TASK_PODCAST_EPISODES]: {
+    bg: {
+      "1x1": ["3000x3000"],
+    },
+  },
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: {
+    ca: {
+      "9x16": ["2160x3840"],
+    },
+    bg: {
+      "9x16": ["2160x3840"],
+    },
+  },
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: {
+    bg: {
+      "9x16": ["1080x1920"],
+    },
+  },
+};
+
+function approvedArtSizesForTask(task, artTag) {
+  const merged = {};
+  const addSizes = (sizes) => {
+    for (const [aspectRatio, dimensions] of Object.entries(sizes || {})) {
+      if (!merged[aspectRatio]) {
+        merged[aspectRatio] = [];
+      }
+      for (const dimension of dimensions) {
+        if (!merged[aspectRatio].includes(dimension)) {
+          merged[aspectRatio].push(dimension);
+        }
+      }
+    }
+  };
+  addSizes(APPROVED_ART_SIZES[artTag]);
+  addSizes(TASK_ADDITIONAL_ART_SIZES[task]?.[artTag]);
+  return merged;
+}
 
 const AXINOM_REQUIRED_ART_SPECS = {
   "Movie": [
@@ -147,6 +199,30 @@ const AXINOM_REQUIRED_ART_SPECS = {
   ],
   "Extras": [
     { task: "Extras", artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+  ],
+  [ART_TASK_PODCAST_EPISODES]: [
+    { task: ART_TASK_PODCAST_EPISODES, artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: ART_TASK_PODCAST_EPISODES, artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { task: ART_TASK_PODCAST_EPISODES, artTag: "bg", aspectRatio: "1x1", dimensions: "3000x3000" },
+  ],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: [
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "3x4", dimensions: "2400x3200" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "1x1", dimensions: "3000x3000" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "4x3", dimensions: "3200x2400" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "ca", aspectRatio: "9x16", dimensions: "2160x3840" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "bg", aspectRatio: "2x3", dimensions: "2000x3000" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "bg", aspectRatio: "7x3", dimensions: "2450x1100" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "bg", aspectRatio: "9x16", dimensions: "2160x3840" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_SERIES, artTag: "tt", aspectRatio: "9x5", dimensions: "1800x1000" },
+  ],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: [
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, artTag: "bg", aspectRatio: "16x9", dimensions: "3840x2160" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, artTag: "bg", aspectRatio: "16x9", dimensions: "1920x1080" },
+    { task: ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES, artTag: "bg", aspectRatio: "9x16", dimensions: "1080x1920" },
   ],
 };
 const SYNDICATION_REQUIRED_ART_SPECS = {
@@ -198,6 +274,8 @@ const TAGGED_REQUIRED_ART_TASKS = new Set([
 ]);
 const PRESERVED_REQUIRED_ART_VARIANTS = new Set([
   "Episode|bg|16x9|1920x1080",
+  `${ART_TASK_PODCAST_EPISODES}|bg|16x9|1920x1080`,
+  `${ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES}|bg|16x9|1920x1080`,
 ]);
 
 const ART_TASKS = {
@@ -212,6 +290,9 @@ const ART_TASKS = {
   "Trailer": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
   "Extras": ["title", "language", "extra_usage", "art_tag", "aspect_ratio", "dimensions"],
   "Carousel": ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
+  [ART_TASK_PODCAST_EPISODES]: ["title", "season", "episode", "language", "art_tag", "aspect_ratio", "dimensions"],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_SERIES]: ["title", "language", "art_tag", "aspect_ratio", "dimensions"],
+  [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: ["title", "season", "episode", "language", "art_tag", "aspect_ratio", "dimensions"],
 };
 const ART_DETAIL_FIELDS = new Set(["art_tag", "aspect_ratio", "dimensions"]);
 const ART_OUTPUT_MODES = {
@@ -478,31 +559,31 @@ function allowedArtTagLabels(task) {
   return allowedArtTagCodes(task).map((code) => ART_TAG_CODE_TO_LABEL[code]);
 }
 
-function allowedAspectRatios(artTag) {
-  return Object.keys(APPROVED_ART_SIZES[artTag] || {});
+function allowedAspectRatios(artTag, task = null) {
+  return Object.keys(approvedArtSizesForTask(task, artTag));
 }
 
-function allowedDimensions(aspectRatio, artTag = null) {
+function allowedDimensions(aspectRatio, artTag = null, task = null) {
   if (artTag) {
-    return (APPROVED_ART_SIZES[artTag] || {})[aspectRatio] || [];
+    return approvedArtSizesForTask(task, artTag)[aspectRatio] || [];
   }
   return [];
 }
 
-function normalizeAspectRatio(value, artTag) {
+function normalizeAspectRatio(value, artTag, task = null) {
   const ratio = String(value || "").trim().toLowerCase();
-  if (!allowedAspectRatios(artTag).includes(ratio)) {
+  if (!allowedAspectRatios(artTag, task).includes(ratio)) {
     throw new Error("Choose an approved Aspect Ratio for the selected Art Tag.");
   }
   return ratio;
 }
 
-function normalizeDimensions(value, aspectRatio, artTag) {
+function normalizeDimensions(value, aspectRatio, artTag, task = null) {
   const dimensions = String(value || "").trim().toLowerCase();
   if (!/^\d+x\d+$/.test(dimensions)) {
     throw new Error("Dimensions must look like 1920x1080.");
   }
-  if (!allowedDimensions(aspectRatio, artTag).includes(dimensions)) {
+  if (!allowedDimensions(aspectRatio, artTag, task).includes(dimensions)) {
     throw new Error("Choose an approved Dimensions value for the selected Aspect Ratio.");
   }
   return dimensions;
@@ -519,7 +600,7 @@ function requiredArtFields(task) {
 function baseRequiredArtSpecs(task) {
   const specs = [];
   for (const artTag of allowedArtTagCodes(task)) {
-    for (const [aspectRatio, dimensions] of Object.entries(APPROVED_ART_SIZES[artTag] || {})) {
+    for (const [aspectRatio, dimensions] of Object.entries(approvedArtSizesForTask(task, artTag))) {
       specs.push({ task, artTag, aspectRatio, dimensions: dimensions[0], tags: [] });
     }
   }
@@ -712,28 +793,29 @@ function buildArtFilename(task, rawFields) {
     throw new Error("Choose an allowed Art Tag for the selected art type.");
   }
 
-  const aspectRatio = normalizeAspectRatio(rawFields.aspect_ratio, artTag);
-  const dimensions = normalizeDimensions(rawFields.dimensions, aspectRatio, artTag);
+  const aspectRatio = normalizeAspectRatio(rawFields.aspect_ratio, artTag, task);
+  const dimensions = normalizeDimensions(rawFields.dimensions, aspectRatio, artTag, task);
   const extension = extensionForArtTag(artTag);
   const languageSegment = `_${languageSuffix(rawFields.language)}`;
+  const filenameTask = ART_FILENAME_TEMPLATE_TASK[task] || task;
 
-  if (task === "Movie") {
+  if (filenameTask === "Movie") {
     const title = normalizeArtTitle(rawFields.title);
     return `${title}${languageSegment}_${artTag}_${aspectRatio}_${dimensions}.${extension}`;
   }
 
-  if (task === "Series") {
+  if (filenameTask === "Series") {
     const title = normalizeArtTitle(rawFields.title);
     return `${title}${languageSegment}_${artTag}_${aspectRatio}_${dimensions}.${extension}`;
   }
 
-  if (task === "Season Placeholder") {
+  if (filenameTask === "Season Placeholder") {
     const title = normalizeArtTitle(rawFields.title);
     const season = normalizeNebSeason(rawFields.season);
     return `${title}_${season}${languageSegment}_${artTag}_${aspectRatio}_${dimensions}.${extension}`;
   }
 
-  if (task === "Episode") {
+  if (filenameTask === "Episode") {
     const title = normalizeArtTitle(rawFields.title);
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeArtEpisode(rawFields.episode);

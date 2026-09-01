@@ -308,6 +308,12 @@
           the required art set follows the current syndication checklist instead of reducing the list
           to one highest-resolution file per ratio.
         </p>
+        <p>
+          The bottom of the Art type list includes Axinom-only selectors for <code>Podcast Episodes</code>,
+          <code>Familia Mini-Novelas Series</code>, and <code>Familia Mini-Novelas Episodes</code>. These
+          reuse the normal episode or series filename formulas, then add their extra Axinom-only art
+          requirements.
+        </p>
         <table>
           <thead>
             <tr>
@@ -327,6 +333,22 @@
             <tr><td>Trailer</td><td><code>[title]_trailer_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
             <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
             <tr><td>Carousel</td><td><code>[title]_carousel_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Podcast Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Familia Mini-Novelas Series</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Familia Mini-Novelas Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Axinom-Only Type</th>
+              <th>Required Addition</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Podcast Episodes</td><td><code>bg 1x1 3000x3000</code>, plus regular episode art, all tagged Axinom only</td></tr>
+            <tr><td>Familia Mini-Novelas Series</td><td><code>ca 9x16 2160x3840</code> and <code>bg 9x16 2160x3840</code>, plus standard series art, all tagged Axinom only</td></tr>
+            <tr><td>Familia Mini-Novelas Episodes</td><td><code>bg 9x16 1080x1920</code>, plus regular episode art, all tagged Axinom only</td></tr>
           </tbody>
         </table>
         <div class="grid">

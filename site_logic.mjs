@@ -26,7 +26,7 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
+} from "./neb_core.mjs?v=2026-09-01-axinom-art-types";
 
 export {
   buildArtFilename,
@@ -35,7 +35,7 @@ export {
   buildNebOutputs,
   buildRequiredArtFilenames,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
+} from "./neb_core.mjs?v=2026-09-01-axinom-art-types";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -64,6 +64,8 @@ const TASK_FIELD_LABEL_OVERRIDES = {
     "Season Placeholder": { title: "Series Title *" },
     "Episode": { title: "Series Title *" },
     "Virtual Screening Episode": { title: "Series Title *" },
+    "Podcast Episodes": { title: "Series Title *" },
+    "Familia Mini-Novelas Episodes": { title: "Series Title *" },
   },
 };
 
@@ -81,14 +83,14 @@ function optionsForField(domain, field, task, values) {
   if (field === "art_tag") return allowedArtTagLabels(task);
   if (field === "aspect_ratio") {
     const artTag = normalizeArtTag(values.art_tag || allowedArtTagLabels(task)[0]);
-    return allowedAspectRatios(artTag);
+    return allowedAspectRatios(artTag, task);
   }
   if (field === "dimensions") {
     const artTag = normalizeArtTag(values.art_tag || allowedArtTagLabels(task)[0]);
-    const ratio = values.aspect_ratio && allowedAspectRatios(artTag).includes(values.aspect_ratio)
+    const ratio = values.aspect_ratio && allowedAspectRatios(artTag, task).includes(values.aspect_ratio)
       ? values.aspect_ratio
-      : allowedAspectRatios(artTag)[0];
-    return allowedDimensions(ratio, artTag);
+      : allowedAspectRatios(artTag, task)[0];
+    return allowedDimensions(ratio, artTag, task);
   }
   return [];
 }
@@ -153,11 +155,11 @@ function normalizeArtDependentValues(taskState) {
     [taskState.values.art_tag] = allowedTags;
   }
   const artTagCode = normalizeArtTag(taskState.values.art_tag);
-  const ratios = allowedAspectRatios(artTagCode);
+  const ratios = allowedAspectRatios(artTagCode, task);
   if (!ratios.includes(taskState.values.aspect_ratio)) {
     [taskState.values.aspect_ratio] = ratios;
   }
-  const dims = allowedDimensions(taskState.values.aspect_ratio, artTagCode);
+  const dims = allowedDimensions(taskState.values.aspect_ratio, artTagCode, task);
   if (!dims.includes(taskState.values.dimensions)) {
     [taskState.values.dimensions] = dims;
   }
