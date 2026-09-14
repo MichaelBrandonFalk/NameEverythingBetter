@@ -28,7 +28,7 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-09-01-familia-spanish-default";
+} from "./neb_core.mjs?v=2026-09-14-spanish-caption-cc";
 
 export {
   buildArtFilename,
@@ -38,7 +38,7 @@ export {
   buildRequiredArtFilenames,
   defaultArtValuesForTask,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-09-01-familia-spanish-default";
+} from "./neb_core.mjs?v=2026-09-14-spanish-caption-cc";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -80,7 +80,7 @@ const state = {
 
 function optionsForField(domain, field, task, values) {
   if (field === "language") return LANGUAGE_OPTIONS;
-  if (field === "subtitle_type") return domain === "neb" && values.language === "Spanish" ? ["sub"] : SUBTITLE_TYPE_OPTIONS;
+  if (field === "subtitle_type") return domain === "neb" && values.language === "Spanish" ? ["cc"] : SUBTITLE_TYPE_OPTIONS;
   if (field === "resolution") return RESOLUTION_OPTIONS;
   if (field === "extra_usage") return EXTRA_USAGE_OPTIONS;
   if (field === "art_tag") return allowedArtTagLabels(task);

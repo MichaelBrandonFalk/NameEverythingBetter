@@ -9,7 +9,7 @@ import {
   SUBTITLE_TYPE_OPTIONS,
   buildNebOutputs,
   plusWarningNeeded,
-} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
+} from "./neb_core.mjs?v=2026-09-14-spanish-caption-cc";
 import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,
@@ -54,7 +54,7 @@ function taskOptions() {
 
 function optionsForField(field) {
   if (field === "language") return LANGUAGE_OPTIONS;
-  if (field === "subtitle_type") return state.values.language === "Spanish" ? ["sub"] : SUBTITLE_TYPE_OPTIONS;
+  if (field === "subtitle_type") return state.values.language === "Spanish" ? ["cc"] : SUBTITLE_TYPE_OPTIONS;
   if (field === "resolution") return RESOLUTION_OPTIONS;
   if (field === "extra_usage") return EXTRA_USAGE_OPTIONS.filter((option) => PATHMAKER_EXTRA_USAGE_TO_PREFIX[option]);
   return [];

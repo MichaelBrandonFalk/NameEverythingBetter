@@ -3,7 +3,7 @@ const SUBTITLE_TYPE_OPTIONS = ["cc", "sub"];
 const RESOLUTION_OPTIONS = ["hd", "sd", "4k"];
 const SUBTITLE_DEFAULT_BY_LANGUAGE = {
   English: "cc",
-  Spanish: "sub",
+  Spanish: "cc",
 };
 const EXTRA_USAGE_TO_PREFIX = {
   "Behind the Scenes / Making Of": "bts",
@@ -389,7 +389,7 @@ function normalizeSubtitleType(value) {
 
 function subtitleTypeForLanguage(language, value) {
   if (language === "Spanish") {
-    return "sub";
+    return "cc";
   }
   return normalizeSubtitleType((value || SUBTITLE_DEFAULT_BY_LANGUAGE[language]).toLowerCase());
 }

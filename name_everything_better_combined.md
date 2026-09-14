@@ -1,4 +1,4 @@
-# Name Everything Better V1_36 (macOS)
+# Name Everything Better V1_37 (macOS)
 
 This combined version adds a first-step choice between Neb movie/caption naming and Verso art naming.
 
@@ -14,12 +14,12 @@ Choices:
 ## Build
 
 ```bash
-./build_name_everything_better_v1_20.sh
+./build_name_everything_better_v1_37.sh
 ```
 
 Output:
 
-- `dist/Name Everything Better V1_20.app`
+- `dist/Name Everything Better V1_37.app`
 
 ## Notes
 
@@ -27,3 +27,4 @@ Output:
 - Using `Back` inside either flow returns to the top-level chooser in this combined build.
 - Standalone Neb and standalone Verso builds remain unchanged.
 - The Art flow defaults both Familia Mini-Novelas product types to Spanish.
+- Spanish caption filenames now use `_cc_las.vtt`.
