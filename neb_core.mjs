@@ -399,7 +399,7 @@ function movLanguageSegment(language) {
 }
 
 function nebLanguageSuffix(language) {
-  return language === "Spanish" ? "las" : "eng";
+  return language === "Spanish" ? "es" : "eng";
 }
 
 function normalizeNebSeason(value) {
@@ -716,7 +716,7 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const subtitleType = subtitleTypeForLanguage(language, rawFields.subtitle_type);
     return language === "Spanish"
-      ? `${title}_feature_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      ? `${title}_feature_las_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_feature_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -741,7 +741,7 @@ function buildNebFilename(task, rawFields) {
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
     return language === "Spanish"
-      ? `${title}_${season}_${episode}_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      ? `${title}_${season}_${episode}_las_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_${season}_${episode}_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -777,7 +777,7 @@ function buildNebFilename(task, rawFields) {
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
     return language === "Spanish"
-      ? `${title}_${season}_${episode}_virtual_screening_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      ? `${title}_${season}_${episode}_virtual_screening_las_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -790,7 +790,7 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const subtitleType = subtitleTypeForLanguage(language, rawFields.subtitle_type);
     return language === "Spanish"
-      ? `${title}_trailer_las_${resolution}_${house}_${subtitleType}_las.vtt`
+      ? `${title}_trailer_las_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_trailer_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 

@@ -43,6 +43,7 @@ Output:
 - In the bulk Neb flow, supported video tasks now generate `mov_filename`, `english_caption_filename`, and `spanish_caption_filename` in the output CSV.
 - Neb now applies the `Language` field to all MOV-side filename types, including trailers, extras, virtual screenings, and the yearly types.
 - Spanish captions now output `cc`, including generated companion caption outputs and blank `caption_type` cases.
-- Spanish feature MOV names now use `[title]_feature_las_[resolution]_[house]_las.mov`.
-- Spanish episode MOV names now use `[series]_sXX_eXX_las_[resolution]_[house]_las.mov`.
+- Spanish feature MOV names use `[title]_feature_las_[resolution]_[house]_es.mov`.
+- Spanish episode MOV names use `[series]_sXX_eXX_las_[resolution]_[house]_es.mov`.
+- Spanish caption names end in `_cc_es.vtt` while retaining the earlier `_las_` language segment.
 - House Number validation is language-aware: English keeps the task-based prefixes, while Spanish now expects `LAS1234567`.

@@ -9,7 +9,7 @@ import {
   SUBTITLE_TYPE_OPTIONS,
   buildNebOutputs,
   plusWarningNeeded,
-} from "./neb_core.mjs?v=2026-09-14-spanish-caption-cc";
+} from "./neb_core.mjs?v=2026-09-28-spanish-filename-es";
 import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,

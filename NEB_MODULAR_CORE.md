@@ -29,7 +29,7 @@ const movie = buildNebOutputs("Movie", {
 });
 
 console.log(movie.filename);
-// friends_and_heroes_feature_las_hd_LAS1234567_las.mov
+// friends_and_heroes_feature_las_hd_LAS1234567_es.mov
 
 const episodeArt = buildArtOutputs("Episode", {
   title: "Example Name",
@@ -63,7 +63,7 @@ The CLI returns JSON by default:
   "result": {
     "domain": "neb",
     "task": "Movie",
-    "filename": "friends_and_heroes_feature_las_hd_LAS1234567_las.mov",
+    "filename": "friends_and_heroes_feature_las_hd_LAS1234567_es.mov",
     "companionCaptions": null,
     "externalReference": "FrndsAndHrs",
     "warnings": []

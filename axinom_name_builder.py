@@ -302,7 +302,7 @@ def mov_language_segment(language: str) -> str:
 
 
 def language_suffix(language: str) -> str:
-    return "las" if language == "Spanish" else "eng"
+    return "es" if language == "Spanish" else "eng"
 
 
 def normalize_season(value: str) -> str:
@@ -422,7 +422,7 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
             raise ValueError("Title is required.")
         subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         if language == "Spanish":
-            return f"{title}_feature_las_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_feature_las_{resolution}_{house}_{subtitle_type}_es.vtt"
         return f"{title}_feature_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Dub Audio":
@@ -449,7 +449,7 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
-            return f"{title}_{season}_{episode}_las_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_{season}_{episode}_las_{resolution}_{house}_{subtitle_type}_es.vtt"
         return f"{title}_{season}_{episode}_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Original Premium Series (Yearly)":
@@ -494,7 +494,7 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
         season = normalize_season(raw_fields.get(FIELD_SEASON, ""))
         episode = normalize_episode(raw_fields.get(FIELD_EPISODE, ""))
         if language == "Spanish":
-            return f"{title}_{season}_{episode}_virtual_screening_las_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_{season}_{episode}_virtual_screening_las_{resolution}_{house}_{subtitle_type}_es.vtt"
         return f"{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Trailer":
@@ -509,7 +509,7 @@ def build_filename(task: str, raw_fields: dict[str, str]) -> str:
             raise ValueError("Title is required.")
         subtitle_type = subtitle_type_for_language(language, raw_fields.get(FIELD_SUBTITLE_TYPE, ""))
         if language == "Spanish":
-            return f"{title}_trailer_las_{resolution}_{house}_{subtitle_type}_las.vtt"
+            return f"{title}_trailer_las_{resolution}_{house}_{subtitle_type}_es.vtt"
         return f"{title}_trailer_{resolution}_{house}_{subtitle_type}_eng.vtt"
 
     if task == "Extras":
