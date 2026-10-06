@@ -425,12 +425,38 @@ function normalizeNebEpisode(value) {
 }
 
 function normalizeArtEpisode(value) {
-  let raw = String(value || "").trim().toLowerCase();
-  if (raw.startsWith("e")) raw = raw.slice(1);
-  if (!/^\d{2}$/.test(raw)) {
-    throw new Error("Episode must be 2 digits, for example 05.");
+  return normalizeNebEpisode(value);
+}
+
+function parseArtEpisodes(value) {
+  const episodes = new Set();
+  for (const part of String(value || "").split(",")) {
+    const match = part.trim().match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+    if (!match) {
+      throw new Error("Enter episodes like 3,7,8 or a range like 1-89. You can combine them: 3,7-9.");
+    }
+    const first = Number(match[1]);
+    const last = match[2] === undefined ? first : Number(match[2]);
+    if (first < 1 || last > 999 || first > last) {
+      throw new Error("Episodes must be between 1 and 999, with ranges in ascending order.");
+    }
+    for (let episode = first; episode <= last; episode += 1) {
+      episodes.add(String(episode).padStart(2, "0"));
+    }
   }
-  return `e${raw}`;
+  return Array.from(episodes).sort((a, b) => Number(a) - Number(b));
+}
+
+function buildEpisodeArtEntries(rawFields, options = {}) {
+  const episodes = options.multiple
+    ? parseArtEpisodes(rawFields.episodes)
+    : [rawFields.episode];
+  return episodes.flatMap((episode) => {
+    const fields = { ...rawFields, episode };
+    return options.mode === "set"
+      ? requiredArtEntries("Episode", fields)
+      : [{ filename: buildArtFilename("Episode", fields), tags: [] }];
+  });
 }
 
 function normalizeYear(value) {
@@ -1023,6 +1049,7 @@ export {
   allowedDimensions,
   buildArtFilename,
   buildArtOutputs,
+  buildEpisodeArtEntries,
   buildNebExternalReference,
   buildNebFilename,
   buildNebOutputs,
@@ -1035,6 +1062,7 @@ export {
   normalizeArtTag,
   normalizeExtraUsage,
   plusWarningNeeded,
+  parseArtEpisodes,
   requiredArtEntries,
   requiredArtEntries as buildRequiredArtEntries,
   requiredArtFields,

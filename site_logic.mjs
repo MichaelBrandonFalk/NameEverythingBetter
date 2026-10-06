@@ -18,6 +18,7 @@ import {
   allowedAspectRatios,
   allowedDimensions,
   buildArtFilename,
+  buildEpisodeArtEntries,
   buildNebExternalReference,
   buildNebFilename,
   buildNebOutputs,
@@ -28,7 +29,7 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-09-28-spanish-filename-es";
+} from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
 
 export {
   buildArtFilename,
@@ -38,7 +39,7 @@ export {
   buildRequiredArtFilenames,
   defaultArtValuesForTask,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-09-28-spanish-filename-es";
+} from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -75,7 +76,7 @@ const TASK_FIELD_LABEL_OVERRIDES = {
 const state = {
   domain: null,
   neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false },
-  art: { task: "Movie", values: { ...ART_DEFAULTS }, outputMode: "set" },
+  art: { task: "Movie", values: { ...ART_DEFAULTS, episodes: "" }, outputMode: "set", episodeMode: "single" },
 };
 
 function optionsForField(domain, field, task, values) {
@@ -213,6 +214,17 @@ function renderBuilder() {
     : (taskMap[domainState.task].fields || taskMap[domainState.task]);
   fields.innerHTML = taskFields.map((field) => renderField(field, domainState)).join("");
   bindFieldHandlers(taskFields);
+  const episodeMode = document.getElementById("episode-mode");
+  if (episodeMode) {
+    episodeMode.value = state.art.episodeMode;
+    episodeMode.addEventListener("change", (event) => {
+      state.art.episodeMode = event.target.value;
+      renderBuilder();
+      resetOutput();
+    });
+    const episodes = document.getElementById("field-episodes");
+    if (episodes) episodes.addEventListener("input", onFieldInput);
+  }
   refreshOutputVisibility();
 }
 
@@ -222,6 +234,25 @@ function renderField(field, domainState) {
   const value = domainState.values[field] ?? "";
   const classes = config.full ? "field full" : "field";
   const label = TASK_FIELD_LABEL_OVERRIDES[state.domain]?.[task]?.[field] || config.label;
+
+  if (state.domain === "art" && task === "Episode" && field === "episode") {
+    const multiple = domainState.episodeMode === "multiple";
+    const inputField = multiple ? "episodes" : "episode";
+    return `
+      <div class="${classes}">
+        <label for="episode-mode">Episode Selection</label>
+        <select id="episode-mode">
+          <option value="single">Single Episode</option>
+          <option value="multiple">Multiple Episodes</option>
+        </select>
+        <label for="field-${inputField}">${multiple ? "Episodes *" : label}</label>
+        <input id="field-${inputField}" data-field="${inputField}" type="text"
+          value="${escapeHtml(String(domainState.values[inputField] || ""))}"
+          ${multiple ? 'placeholder="3,7,8 or 1-89" aria-describedby="episodes-help"' : 'inputmode="numeric"'}>
+        ${multiple ? '<small id="episodes-help">Use commas or ranges, for example 3,7,8 or 1-89.</small>' : ""}
+      </div>
+    `;
+  }
 
   if (config.type === "select") {
     const options = optionsForField(state.domain, field, task, domainState.values);
@@ -254,7 +285,7 @@ function escapeHtml(value) {
 
 function renderVideoOutput(value) {
   const output = document.getElementById("filename-output-video");
-  if (state.domain === "art" && getDomainState().outputMode === "set") {
+  if (state.domain === "art" && (getDomainState().outputMode === "set" || isMultipleEpisodeArt())) {
     const rows = String(value).split("\n").filter(Boolean);
     output.dataset.copyValue = rows.join("\n");
     output.innerHTML = `
@@ -312,7 +343,7 @@ function refreshOutputVisibility() {
         : "This required set uses the highest resolution for each required art type and aspect ratio.")
       : "Switch to one-at-a-time if you need a single custom art filename.";
     downloadBtn.classList.remove("hidden");
-    generateBtn.textContent = getDomainState().outputMode === "set" ? "Generate Names" : "Generate Name";
+    generateBtn.textContent = getDomainState().outputMode === "set" || isMultipleEpisodeArt() ? "Generate Names" : "Generate Name";
     document.getElementById("output-caption-eng-wrap").classList.add("hidden");
     document.getElementById("output-caption-las-wrap").classList.add("hidden");
     document.getElementById("output-external-reference-wrap").classList.add("hidden");
@@ -350,6 +381,7 @@ function onFieldInput(event) {
 
   if (state.domain === "art" && (field === "art_tag" || field === "aspect_ratio")) {
     renderBuilder();
+    resetOutput();
     return;
   }
 
@@ -385,6 +417,7 @@ function clearCurrentForm() {
     const currentMode = state.art.outputMode;
     state.art.values = { ...defaults };
     state.art.outputMode = currentMode;
+    state.art.values.episodes = "";
   }
   renderBuilder();
   resetOutput();
@@ -402,9 +435,7 @@ function generateCurrentFilename() {
       companionCaptions = outputs.companionCaptions;
       externalReference = outputs.externalReference;
     } else {
-      filename = domainState.outputMode === "set"
-        ? buildRequiredArtFilenames(domainState.task, domainState.values).join("\n")
-        : buildArtFilename(domainState.task, domainState.values);
+      filename = currentArtEntries().map((entry) => entry.filename).join("\n");
     }
 
     renderVideoOutput(filename);
@@ -439,6 +470,22 @@ async function copyFilename(targetId, label) {
   }
 }
 
+function isMultipleEpisodeArt() {
+  return state.art.task === "Episode" && state.art.episodeMode === "multiple";
+}
+
+function currentArtEntries() {
+  if (state.art.task === "Episode") {
+    return buildEpisodeArtEntries(state.art.values, {
+      mode: state.art.outputMode,
+      multiple: isMultipleEpisodeArt(),
+    });
+  }
+  return state.art.outputMode === "set"
+    ? requiredArtEntries(state.art.task, state.art.values)
+    : [{ filename: buildArtFilename(state.art.task, state.art.values), tags: [] }];
+}
+
 function downloadCurrentOutput() {
   if (state.domain !== "art") {
     return;
@@ -452,9 +499,7 @@ function downloadCurrentOutput() {
   const taskSlug = slugify(state.art.task) || "art";
   const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
   const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
-  let rows = state.art.outputMode === "set"
-    ? requiredArtEntries(state.art.task, state.art.values)
-    : [{ filename: text, tags: [] }];
+  let rows = currentArtEntries();
   if (state.art.outputMode === "set" && TAGGED_REQUIRED_ART_TASKS.has(state.art.task)) {
     rows = rows.filter((row) => row.tags.length);
   }
