@@ -404,6 +404,25 @@
       transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
     }
 
+    .caption-reveal-btn {
+      border: 0;
+      padding: 6px 0;
+      background: transparent;
+      color: var(--accent-dark);
+      font: inherit;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .caption-reveal-btn:focus-visible {
+      outline: 2px solid var(--accent-dark);
+      outline-offset: 4px;
+      border-radius: 3px;
+    }
+
     .copy-icon-btn:hover,
     .copy-icon-btn:focus-visible {
       transform: translateY(-1px);
@@ -677,8 +696,9 @@
               </div>
               <div id="output-caption-eng-wrap" class="output-item hidden">
                 <div class="output-head">
-                  <strong>English Caption</strong>
-                  <button class="copy-icon-btn" type="button" data-copy-target="filename-output-caption-eng" data-copy-label="English Caption" aria-label="Copy English Caption" title="Copy English Caption">
+                  <strong id="english-caption-label">English Caption</strong>
+                  <button id="english-caption-toggle" class="caption-reveal-btn hidden" type="button" aria-expanded="false" aria-controls="filename-output-caption-eng">Show English Caption</button>
+                  <button id="copy-caption-eng-btn" class="copy-icon-btn" type="button" data-copy-target="filename-output-caption-eng" data-copy-label="English Caption" aria-label="Copy English Caption" title="Copy English Caption">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1Zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H10V7h9v14Z"/></svg>
                   </button>
                 </div>
@@ -764,6 +784,6 @@
     </section>
   </main>
 
-  <script type="module" src="site_logic.mjs?v=2026-10-06-multiple-episode-art"></script>
+  <script type="module" src="site_logic.mjs?v=2026-10-06-caption-reveal"></script>
 </body>
 </html>

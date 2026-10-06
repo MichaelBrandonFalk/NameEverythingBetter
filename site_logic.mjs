@@ -75,7 +75,7 @@ const TASK_FIELD_LABEL_OVERRIDES = {
 
 const state = {
   domain: null,
-  neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false },
+  neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false, englishCaptionRevealed: false },
   art: { task: "Movie", values: { ...ART_DEFAULTS, episodes: "" }, outputMode: "set", episodeMode: "single" },
 };
 
@@ -118,6 +118,8 @@ function resetOutput() {
     output.innerHTML = "";
     output.textContent = "";
   });
+  state.neb.englishCaptionRevealed = false;
+  if (state.domain === "neb") refreshOutputVisibility();
 }
 
 function goHome() {
@@ -325,7 +327,18 @@ function refreshOutputVisibility() {
     copyVideoBtn.dataset.copyLabel = "MOV Name";
     copyVideoBtn.setAttribute("aria-label", "Copy MOV Name");
     copyVideoBtn.setAttribute("title", "Copy MOV Name");
-    outputNote.textContent = "For supported video tasks, the tool shows the MOV name, both caption names, and the external reference together.";
+    const spanish = getDomainState().values.language === "Spanish";
+    const revealEnglish = !spanish || state.neb.englishCaptionRevealed;
+    const englishToggle = document.getElementById("english-caption-toggle");
+    englishToggle.classList.toggle("hidden", !spanish);
+    englishToggle.textContent = revealEnglish ? "Hide English Caption" : "Show English Caption";
+    englishToggle.setAttribute("aria-expanded", String(revealEnglish));
+    document.getElementById("english-caption-label").classList.toggle("hidden", spanish);
+    document.getElementById("filename-output-caption-eng").classList.toggle("hidden", !revealEnglish);
+    document.getElementById("copy-caption-eng-btn").classList.toggle("hidden", !revealEnglish);
+    outputNote.textContent = spanish
+      ? "The tool shows the MOV name, Spanish caption, and external reference. Click Show English Caption if you need it."
+      : "For supported video tasks, the tool shows the MOV name, both caption names, and the external reference together.";
     downloadBtn.classList.add("hidden");
     generateBtn.textContent = "Generate Name";
     document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
@@ -545,6 +558,10 @@ function init() {
   backBtn.addEventListener("click", goHome);
   generateBtn.addEventListener("click", generateCurrentFilename);
   clearBtn.addEventListener("click", clearCurrentForm);
+  document.getElementById("english-caption-toggle").addEventListener("click", () => {
+    state.neb.englishCaptionRevealed = !state.neb.englishCaptionRevealed;
+    refreshOutputVisibility();
+  });
   copyButtons.forEach((button) => {
     button.addEventListener("click", () => {
       copyFilename(button.dataset.copyTarget, button.dataset.copyLabel || "Name");
