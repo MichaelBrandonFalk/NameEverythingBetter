@@ -1,3 +1,4 @@
+import { copyText } from "./desktop_bridge.mjs";
 import {
   COMPANION_CAPTION_TASKS,
   EXTRA_USAGE_OPTIONS,
@@ -226,7 +227,7 @@ async function copyValue(targetId, label) {
     return;
   }
   try {
-    await navigator.clipboard.writeText(text);
+    await copyText(text);
     setStatus(`${label} copied.`, "success");
   } catch {
     setStatus(`Clipboard access was blocked. Copy the ${label.toLowerCase()} manually.`, "warning");

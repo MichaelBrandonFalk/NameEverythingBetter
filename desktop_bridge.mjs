@@ -18,3 +18,14 @@ export async function saveText(filename, text, mime = 'text/plain;charset=utf-8'
 export async function readProfile() {
   return globalThis.__TAURI__.core.invoke('load_profile');
 }
+
+if (typeof document !== 'undefined' && isDesktop()) {
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link || !link.href.startsWith('https://')) return;
+    event.preventDefault();
+    globalThis.__TAURI__.core.invoke('open_url', { url: link.href }).catch(() => {
+      alert('Unable to open the browser. Open the download page in your browser manually.');
+    });
+  });
+}

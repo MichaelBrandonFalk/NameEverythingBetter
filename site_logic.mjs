@@ -31,8 +31,8 @@ import {
   slugify,
 } from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
 
-import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-14-profiles";
-import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-14-profiles";
+import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-14-profiles-v2";
+import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-14-profiles-v2";
 import { copyText, saveText } from "./desktop_bridge.mjs";
 
 let activeProfile = defaultProfile();
@@ -333,7 +333,7 @@ function outputText(targetId) {
 }
 
 function refreshOutputVisibility() {
-  const recipes = state.domain === "neb" ? selectedProfileType().templates[getDomainState().values.language || "English"] : null;
+  const recipes = state.domain === "neb" ? selectedProfileType().templates[typeLanguage(selectedProfileType(), getDomainState().values)] : null;
   const hasCompanionCaptions = Boolean(recipes?.eng || recipes?.las);
   const outputLabel = document.getElementById("output-video-label");
   const outputNote = document.getElementById("output-note");
@@ -347,7 +347,7 @@ function refreshOutputVisibility() {
     copyVideoBtn.dataset.copyLabel = videoLabel;
     copyVideoBtn.setAttribute("aria-label", `Copy ${videoLabel}`);
     copyVideoBtn.setAttribute("title", `Copy ${videoLabel}`);
-    const spanish = getDomainState().values.language === "Spanish";
+    const spanish = typeLanguage(selectedProfileType(), getDomainState().values) === "Spanish";
     const revealEnglish = !spanish || state.neb.englishCaptionRevealed;
     const englishToggle = document.getElementById("english-caption-toggle");
     englishToggle.classList.toggle("hidden", !spanish);

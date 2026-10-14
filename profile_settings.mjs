@@ -1,4 +1,4 @@
-import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-14-profiles';
+import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-14-profiles-v2';
 import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs';
 
 const STORE = 'neb.naming-profiles.v1';
@@ -25,6 +25,11 @@ export function initializeProfiles(onChange) {
   let typeIndex = 0;
   let language = 'English';
   const active = () => profiles.find((profile) => profile.id === selected) || standard;
+  function uniqueName(name) {
+    let resolved = name; let number = 2;
+    while ([standard, ...profiles].some((profile) => profile.name === resolved)) resolved = `${name} ${number++}`;
+    return resolved;
+  }
   const status = (message, error = false) => {
     const node = element('profile-status');
     node.textContent = message;
@@ -91,6 +96,7 @@ export function initializeProfiles(onChange) {
     element('profile-save').addEventListener('click', () => {
       try {
         captureDraft(); validateProfile(draft);
+        if (profiles.some((profile) => profile.id !== draft.id && profile.name === draft.name)) throw new Error('Give this profile a different name from the other saved profiles.');
         const saved = structuredClone(draft);
         persist([...profiles.filter((profile)=>profile.id!==saved.id),saved],saved.id);
         renderSelector(); onChange(active()); status('Profile saved and selected.');
@@ -162,14 +168,15 @@ export function initializeProfiles(onChange) {
     try { persist(profiles,event.target.value); draft=selected===standard.id?null:structuredClone(active());typeIndex=0;language='English';renderEditor();onChange(active());status(`Using ${active().name}.`); }
     catch(error) { renderSelector();status(`Unable to save profile selection. ${error.message}`,true); }
   });
-  element('profile-copy').addEventListener('click',()=>{draft=editableCopy(active());typeIndex=0;language='English';renderEditor();status('Editable copy created. Give it a name and Save Profile.');});
+  element('profile-copy').addEventListener('click',()=>{draft=editableCopy(active(),uniqueName(`${active().name} Copy`));typeIndex=0;language='English';renderEditor();status('Editable copy created. Give it a name and Save Profile.');});
   element('profile-export').addEventListener('click',async()=>{
     try {const copy=selected===standard.id?editableCopy(standard,'NEB Standard Copy'):active();const saved=await saveText('naming-convention-profile.json',JSON.stringify(copy,null,2),'application/json');if(saved)status('Profile exported.');}
     catch(error){status(`Export failed. ${error.message}`,true);}
   });
   function importText(text) {
     if(text.length>1_000_000)throw new Error('Choose a profile smaller than 1 MB.');
-    const profile=editableCopy(JSON.parse(text),JSON.parse(text).name);
+    const parsed=JSON.parse(text);
+    const profile=editableCopy(parsed,uniqueName(parsed.name));
     validateProfile(profile);persist([...profiles,profile],profile.id);
     draft=structuredClone(profile);typeIndex=0;language='English';renderSelector();renderEditor();onChange(active());status('Profile imported and selected.');
   }

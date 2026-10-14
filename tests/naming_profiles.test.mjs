@@ -60,3 +60,22 @@ test('title cleanup and cross-platform filename safeguards',()=>{
   assert.equal(profileSlug('GFAM+',rules),'gfam_plus');
   for(const recipe of ['CON.mov','../x.mov','x:bad.mov','bad.'])assert.throws(()=>renderRecipe(recipe,{}));
 });
+
+test('types without a language field do not inherit a hidden previous language',()=>{
+  const profile=editableCopy(standard);
+  const type=profile.types.find(type=>type.domain==='neb'&&type.name==='Movie');
+  type.fields=type.fields.filter(field=>field.key!=='language');
+  const result=profileNebOutputs(profile,'Movie',{...sample,language:'Spanish',house:'PUR1234567'});
+  assert.match(result.filename,/_eng.mov$/);
+});
+
+test('desktop bridge uses native clipboard and save dialogs',async()=>{
+  const calls=[];
+  globalThis.__TAURI__={core:{invoke:async(command,args)=>{calls.push({command,args});return true;}}};
+  try{
+    const bridge=await import('../desktop_bridge.mjs');
+    await bridge.copyText('movie.mov');await bridge.saveText('names.csv','filename\nmovie.mov');await bridge.readProfile();
+    assert.deepEqual(calls.map(call=>call.command),['copy_text','save_text','load_profile']);
+    assert.equal(calls[0].args.text,'movie.mov');
+  }finally{delete globalThis.__TAURI__;}
+});

@@ -1,6 +1,15 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use tauri_plugin_clipboard_manager::ClipboardExt;
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_opener::OpenerExt;
+
+#[tauri::command]
+fn open_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    if !url.starts_with("https://") {
+        return Err("Only HTTPS links can open in the browser.".into());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|error| error.to_string())
+}
 
 #[tauri::command]
 fn copy_text(app: tauri::AppHandle, text: String) -> Result<(), String> {
@@ -38,7 +47,8 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        .invoke_handler(tauri::generate_handler![copy_text, save_text, load_profile])
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![copy_text, save_text, load_profile, open_url])
         .run(tauri::generate_context!())
         .expect("Unable to start Name Everything Better");
 }

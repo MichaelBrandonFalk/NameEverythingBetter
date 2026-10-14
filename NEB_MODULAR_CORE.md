@@ -6,7 +6,9 @@ NEB can now be used by other local apps without running an API service. The reus
 - `neb_cli.mjs`: command-line adapter for apps that prefer shelling out and reading JSON.
 - `site_logic.mjs`: website UI/controller that imports `neb_core.mjs`.
 
-Keep `neb_core.mjs` as the JavaScript source of truth for website and CLI integrations. The downloadable desktop app is still built from the Python sources, so rule changes should continue to be mirrored there before making a new desktop build.
+Keep `neb_core.mjs` as the JavaScript source of truth for website and CLI integrations. The V2 desktop apps package the website and share its naming engine and profile editor through Tauri. The older V1 desktop apps remain based on the Python sources.
+
+Custom profiles are handled by `naming_profiles.mjs`, with validation, recipe rendering and the standard profile seed. `profile_settings.mjs` manages local storage and the editor. See [naming_profiles.md](naming_profiles.md) and [desktop_builds.md](desktop_builds.md).
 
 ## Recommended App Integration
 

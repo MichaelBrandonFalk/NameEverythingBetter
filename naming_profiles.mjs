@@ -1,4 +1,4 @@
-import * as core from "./neb_core.mjs?v=2026-10-14-profiles";
+import * as core from "./neb_core.mjs?v=2026-10-14-profiles-v2";
 
 export const PROFILE_VERSION = 1;
 export const DEFAULT_PROFILE_ID = "neb-standard";
@@ -41,6 +41,7 @@ function recipeFromExample(filename, domain, language) {
 
 function seedType(domain, name) {
   const fields = core.getTaskFields(domain, name).map((key) => ({ key, ...structuredClone(FIELD_DEFINITIONS[key]) }));
+  if (fields.some((field) => field.key === "season")) fields.find((field) => field.key === "title").label = "Series Title";
   const type = { domain, name, baseTask: name, fields, templates: {}, variants: [], sizes: [],
     englishPrefixes: domain === "neb" ? core.NEB_TASKS[name].housePrefixes : [] };
   if (domain === "neb") {
@@ -107,6 +108,10 @@ export function profileFields(profile, domain, name, mode = "single") {
     .filter((field) => !(domain === "art" && mode === "set" && ["art_tag", "aspect_ratio", "dimensions"].includes(field.key)));
 }
 
+export function typeLanguage(type, values) {
+  return type.fields.some((field) => field.key === "language") ? values.language || "English" : "English";
+}
+
 export function profileOptions(profile, type, field, values) {
   if (type.domain === "art") {
     const tag = String(values.art_tag || "").split(" ")[0];
@@ -145,7 +150,7 @@ function tokensFor(profile, type, rawFields) {
     values[field.key] = field.type === "select" ? value : profileSlug(value, rules, type.domain);
     if (!values[field.key]) throw new Error(`${field.label} needs letters or numbers.`);
   }
-  const language = rawFields.language || "English";
+  const language = typeLanguage(type, rawFields);
   if (!["English", "Spanish"].includes(language)) throw new Error("Choose English or Spanish.");
   values.language = type.domain === "art"
     ? (language === "Spanish" ? rules.spanishArt : rules.englishArt)
@@ -198,7 +203,7 @@ export function profileNebOutputs(profile, task, rawFields) {
   if (profile.id === DEFAULT_PROFILE_ID) return core.buildNebOutputs(task, rawFields);
   const type = profileType(profile, "neb", task);
   const tokens = tokensFor(profile, type, rawFields);
-  const recipes = type.templates[rawFields.language || "English"];
+  const recipes = type.templates[typeLanguage(type, rawFields)];
   if (!recipes.filename) throw new Error("This type has no recipe for the selected language.");
   const render = (recipe, extra = {}) => recipe ? renderRecipe(recipe, { ...tokens, ...extra }, profile.rules.separator) : "";
   return { filename: render(recipes.filename), externalReference: render(recipes.reference), companionCaptions:
@@ -223,12 +228,13 @@ export function profileArtEntries(profile, task, rawFields, { mode = "set", mult
   return episodes.flatMap((episode) => variants.map((variant) => {
     const fields = { ...rawFields, episode, art_tag: variant.artTag, aspect_ratio: variant.aspectRatio, dimensions: variant.dimensions };
     const tokens = tokensFor(profile, type, fields);
-    return { filename: renderRecipe(type.templates[fields.language || "English"].filename, tokens, profile.rules.separator), tags: variant.tags || [] };
+    return { filename: renderRecipe(type.templates[typeLanguage(type, fields)].filename, tokens, profile.rules.separator), tags: variant.tags || [] };
   }));
 }
 
 export function validateProfile(profile) {
-  if (!profile || profile.version !== PROFILE_VERSION || typeof profile.name !== "string" || !profile.name.trim() || profile.name.length > 100) throw new Error("Enter a profile name (up to 100 characters).");
+  if (!profile || profile.version !== PROFILE_VERSION || typeof profile.id !== "string" || !/^[a-z0-9-]{1,100}$/i.test(profile.id)
+    || typeof profile.name !== "string" || !profile.name.trim() || profile.name.length > 100) throw new Error("Enter a valid profile name (up to 100 characters) and ID.");
   if (profile.id === DEFAULT_PROFILE_ID) throw new Error("NEB Standard is protected. Make an editable copy.");
   const rules = profile.rules;
   if (!rules || !["lower", "upper", "preserve"].includes(rules.titleCase) || !["_", "-"].includes(rules.separator)
@@ -250,7 +256,7 @@ export function validateProfile(profile) {
     if (!Array.isArray(type.fields) || !type.fields.length || type.fields.length > 30) throw new Error("Each type needs 1 to 30 fields.");
     const keys = new Set();
     for (const field of type.fields) {
-      if (!/^[a-z][a-z0-9_]*$/.test(field.key) || ["constructor", "prototype", "__proto__"].includes(field.key) || keys.has(field.key)
+      if (typeof field.key !== "string" || !/^[a-z][a-z0-9_]*$/.test(field.key) || ["constructor", "prototype", "__proto__"].includes(field.key) || keys.has(field.key)
         || typeof field.label !== "string" || !field.label.trim() || !["text", "select"].includes(field.type)) throw new Error("Check the field names, labels and types.");
       if (field.type === "select" && (!Array.isArray(field.options) || !field.options.length || field.options.some((value) => typeof value !== "string" || !value))) throw new Error("Choice fields need a list of options.");
       keys.add(field.key);

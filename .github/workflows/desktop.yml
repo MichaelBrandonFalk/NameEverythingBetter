@@ -29,24 +29,62 @@ jobs:
           workspaces: desktop/src-tauri -> target
       - name: Linux system dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf xvfb
       - name: Install desktop tools
         working-directory: desktop
         run: npm ci
+      - name: Read app version
+        id: version
+        working-directory: desktop
+        run: node -e "const fs=require('fs');const version=JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json')).version;fs.appendFileSync(process.env.GITHUB_OUTPUT,'version='+version+'\n');"
+      - name: Preserve published releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: desktop-v${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' > release-state.txt 2>/dev/null; then
+            if grep -q false release-state.txt; then
+              echo 'This version is already published. Increase the app version before making a new build.'
+              exit 1
+            fi
+          fi
       - name: Build installers
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: desktop
-          tagName: desktop-v2.0.0
-          releaseName: Name Everything Better V2.0
+          tagName: desktop-v${{ steps.version.outputs.version }}
+          releaseName: Name Everything Better V${{ steps.version.outputs.version }}
           releaseBody: 'Naming convention profiles, editable recipes and custom types. Windows installer, Linux Mint DEB/AppImage, and macOS app. See DESKTOP.md for installation.'
           releaseDraft: true
           prerelease: false
           args: --bundles ${{ matrix.bundles }}
+      - name: Linux startup check
+        if: runner.os == 'Linux'
+        working-directory: desktop
+        run: |
+          set +e
+          WEBKIT_DISABLE_DMABUF_RENDERER=1 xvfb-run -a timeout 15s src-tauri/target/release/name-everything-better
+          launch_status=$?
+          test "$launch_status" -eq 124
+      - name: Windows startup check
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $app = Start-Process -FilePath 'desktop/src-tauri/target/release/name-everything-better.exe' -PassThru
+          Start-Sleep -Seconds 10
+          if ($app.HasExited) { throw 'The desktop app exited during startup.' }
+          Stop-Process -Id $app.Id
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ runner.os }}
           path: desktop/src-tauri/target/release/bundle
+      - name: Save dependency lock
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-cargo-lock
+          path: desktop/src-tauri/Cargo.lock
