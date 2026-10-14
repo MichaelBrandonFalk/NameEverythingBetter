@@ -265,6 +265,19 @@
       grid-column: 1 / -1;
     }
 
+    .profile-panel { margin-top: 24px; padding: 24px 32px; }
+    .profile-top { display: flex; align-items: end; gap: 20px; flex-wrap: wrap; }
+    .profile-top .field { flex: 1; min-width: 220px; }
+    .profile-panel summary { cursor: pointer; color: var(--accent-dark); font-weight: 700; padding: 12px 0; }
+    .profile-panel details > div { margin-top: 12px; }
+    .profile-subsection { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 8px; }
+    #profile-editor > .field, #profile-type-editor > .field { margin-top: 16px; }
+    .profile-status { margin-top: 12px; color: var(--muted); }
+    .profile-status:empty { display: none; }
+    .profile-status.error { color: #a22d19; }
+    .profile-preview { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; border: 1px solid var(--line); border-radius: 14px; }
+    button:disabled { opacity: 0.55; cursor: default; }
+
     label {
       font-size: 0.95rem;
       font-weight: 700;
@@ -651,6 +664,23 @@
       </div>
     </section>
 
+    <section class="panel profile-panel" aria-label="Naming convention profiles">
+      <div class="profile-top"><div class="field"><label for="profile-select">Naming Convention Profile</label><select id="profile-select"><option>NEB Standard</option></select></div></div>
+      <details id="advanced-settings">
+        <summary>Advanced Settings</summary>
+        <p class="note">Create your own naming conventions and types. Profiles save on this device. Export a profile to share it or keep a backup.</p>
+        <div class="action-row">
+          <button id="profile-copy" class="action-btn secondary" type="button">Make Editable Copy</button>
+          <button id="profile-export" class="action-btn secondary" type="button">Export Profile</button>
+          <button id="profile-import" class="action-btn secondary" type="button">Import Profile</button>
+          <button id="profile-delete" class="action-btn secondary" type="button" disabled>Delete Profile</button>
+          <input id="profile-import-file" class="hidden" type="file" accept=".json,application/json" aria-label="Import naming profile">
+        </div>
+        <div id="profile-editor"></div>
+      </details>
+      <p id="profile-status" class="profile-status" role="status" aria-live="polite"></p>
+    </section>
+
     <section id="builder" class="panel section hidden">
       <div class="builder-head">
         <div>
@@ -784,6 +814,6 @@
     </section>
   </main>
 
-  <script type="module" src="site_logic.mjs?v=2026-10-06-caption-reveal"></script>
+  <script type="module" src="site_logic.mjs?v=2026-10-14-profiles"></script>
 </body>
 </html>

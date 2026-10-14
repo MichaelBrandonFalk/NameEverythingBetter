@@ -1,0 +1,44 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use tauri_plugin_clipboard_manager::ClipboardExt;
+use tauri_plugin_dialog::DialogExt;
+
+#[tauri::command]
+fn copy_text(app: tauri::AppHandle, text: String) -> Result<(), String> {
+    app.clipboard().write_text(text).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+async fn save_text(app: tauri::AppHandle, filename: String, text: String) -> Result<bool, String> {
+    if filename.contains('/') || filename.contains('\\') || text.len() > 5_000_000 {
+        return Err("Invalid download.".into());
+    }
+    let path = app.dialog().file().set_file_name(filename).blocking_save_file();
+    if let Some(path) = path {
+        let path = path.into_path().map_err(|error| error.to_string())?;
+        std::fs::write(path, text).map_err(|error| error.to_string())?;
+        return Ok(true);
+    }
+    Ok(false)
+}
+
+#[tauri::command]
+async fn load_profile(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    let path = app.dialog().file().add_filter("Naming profiles", &["json"]).blocking_pick_file();
+    if let Some(path) = path {
+        let path = path.into_path().map_err(|error| error.to_string())?;
+        if std::fs::metadata(&path).map_err(|error| error.to_string())?.len() > 1_000_000 {
+            return Err("Choose a profile smaller than 1 MB.".into());
+        }
+        return std::fs::read_to_string(path).map(Some).map_err(|error| error.to_string());
+    }
+    Ok(None)
+}
+
+fn main() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .invoke_handler(tauri::generate_handler![copy_text, save_text, load_profile])
+        .run(tauri::generate_context!())
+        .expect("Unable to start Name Everything Better");
+}

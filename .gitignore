@@ -7,3 +7,8 @@ __pycache__/
 # Keep public downloads, but do not publish the whole local dist history.
 dist/
 !downloads/
+
+# Shared desktop builds
+/desktop/node_modules/
+/desktop/site/
+/desktop/src-tauri/target/

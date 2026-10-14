@@ -31,6 +31,16 @@ import {
   slugify,
 } from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
 
+import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-14-profiles";
+import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-14-profiles";
+import { copyText, saveText } from "./desktop_bridge.mjs";
+
+let activeProfile = defaultProfile();
+
+function selectedProfileType() {
+  return profileType(activeProfile, state.domain, getDomainState().task);
+}
+
 export {
   buildArtFilename,
   buildNebExternalReference,
@@ -80,6 +90,7 @@ const state = {
 };
 
 function optionsForField(domain, field, task, values) {
+  if (activeProfile.id !== DEFAULT_PROFILE_ID) return profileOptions(activeProfile, profileType(activeProfile, domain, task), field, values);
   if (field === "language") return LANGUAGE_OPTIONS;
   if (field === "subtitle_type") return domain === "neb" && values.language === "Spanish" ? ["cc"] : SUBTITLE_TYPE_OPTIONS;
   if (field === "resolution") return RESOLUTION_OPTIONS;
@@ -144,10 +155,7 @@ function currentTaskMap() {
 }
 
 function currentVisibleTaskNames() {
-  if (state.domain === "neb") {
-    return Object.keys(NEB_TASKS).filter((taskName) => !NEB_SINGLE_HIDDEN_TASKS.has(taskName));
-  }
-  return Object.keys(ART_TASKS);
+  return activeProfile.types.filter((type) => type.domain === state.domain).map((type) => type.name);
 }
 
 function currentDefaults() {
@@ -159,6 +167,13 @@ function applyArtTaskDefaultOverrides(taskState) {
 }
 
 function normalizeArtDependentValues(taskState) {
+  if (activeProfile.id !== DEFAULT_PROFILE_ID) {
+    for (const field of ["art_tag", "aspect_ratio", "dimensions"]) {
+      const options = optionsForField("art", field, taskState.task, taskState.values);
+      if (options.length && !options.includes(taskState.values[field])) taskState.values[field] = options[0];
+    }
+    return;
+  }
   const task = taskState.task;
   const allowedTags = allowedArtTagLabels(task);
   if (!allowedTags.includes(taskState.values.art_tag)) {
@@ -198,7 +213,7 @@ function renderBuilder() {
   eyebrow.textContent = state.domain === "neb" ? "Neb" : "Verso";
   title.textContent = state.domain === "neb" ? "Movies and Captions" : "Art";
   taskLabel.textContent = state.domain === "neb" ? "What are you naming?" : "This art is for :";
-  taskSelect.innerHTML = taskNames.map((taskName) => `<option value="${taskName}">${taskName}</option>`).join("");
+  taskSelect.innerHTML = taskNames.map((taskName) => `<option value="${escapeHtml(taskName)}">${escapeHtml(taskName)}</option>`).join("");
   taskSelect.value = domainState.task;
 
   if (state.domain === "art") {
@@ -211,9 +226,7 @@ function renderBuilder() {
     artModeWrap.classList.add("hidden");
   }
 
-  const taskFields = state.domain === "art"
-    ? (domainState.outputMode === "set" ? requiredArtFields(domainState.task) : taskMap[domainState.task])
-    : (taskMap[domainState.task].fields || taskMap[domainState.task]);
+  const taskFields = profileFields(activeProfile, state.domain, domainState.task, domainState.outputMode).map((field) => field.key);
   fields.innerHTML = taskFields.map((field) => renderField(field, domainState)).join("");
   bindFieldHandlers(taskFields);
   const episodeMode = document.getElementById("episode-mode");
@@ -231,11 +244,16 @@ function renderBuilder() {
 }
 
 function renderField(field, domainState) {
-  const config = FIELD_CONFIG[field];
+  const profileField = selectedProfileType().fields.find((item) => item.key === field);
+  const config = activeProfile.id === DEFAULT_PROFILE_ID ? FIELD_CONFIG[field] : {
+    ...FIELD_CONFIG[field], ...profileField, full: field === "title" || field === "interviewees",
+  };
   const task = domainState.task;
   const value = domainState.values[field] ?? "";
   const classes = config.full ? "field full" : "field";
-  const label = TASK_FIELD_LABEL_OVERRIDES[state.domain]?.[task]?.[field] || config.label;
+  const label = activeProfile.id === DEFAULT_PROFILE_ID
+    ? TASK_FIELD_LABEL_OVERRIDES[state.domain]?.[task]?.[field] || config.label
+    : `${escapeHtml(config.label)} *`;
 
   if (state.domain === "art" && task === "Episode" && field === "episode") {
     const multiple = domainState.episodeMode === "multiple";
@@ -260,7 +278,7 @@ function renderField(field, domainState) {
     const options = optionsForField(state.domain, field, task, domainState.values);
     const resolvedValue = options.includes(value) ? value : options[0];
     domainState.values[field] = resolvedValue;
-    const optionsHtml = options.map((option) => `<option value="${option}">${option}</option>`).join("");
+    const optionsHtml = options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join("");
     return `
       <div class="${classes}">
         <label for="field-${field}">${label}</label>
@@ -315,7 +333,8 @@ function outputText(targetId) {
 }
 
 function refreshOutputVisibility() {
-  const hasCompanionCaptions = state.domain === "neb" && Boolean(COMPANION_CAPTION_TASKS[getDomainState().task]);
+  const recipes = state.domain === "neb" ? selectedProfileType().templates[getDomainState().values.language || "English"] : null;
+  const hasCompanionCaptions = Boolean(recipes?.eng || recipes?.las);
   const outputLabel = document.getElementById("output-video-label");
   const outputNote = document.getElementById("output-note");
   const downloadBtn = document.getElementById("download-btn");
@@ -323,10 +342,11 @@ function refreshOutputVisibility() {
   const copyVideoBtn = document.getElementById("copy-video-btn");
   document.getElementById("output-video-wrap").classList.remove("hidden");
   if (state.domain === "neb") {
-    outputLabel.textContent = "MOV Name";
-    copyVideoBtn.dataset.copyLabel = "MOV Name";
-    copyVideoBtn.setAttribute("aria-label", "Copy MOV Name");
-    copyVideoBtn.setAttribute("title", "Copy MOV Name");
+    const videoLabel = activeProfile.id === DEFAULT_PROFILE_ID ? "MOV Name" : "Video Name";
+    outputLabel.textContent = videoLabel;
+    copyVideoBtn.dataset.copyLabel = videoLabel;
+    copyVideoBtn.setAttribute("aria-label", `Copy ${videoLabel}`);
+    copyVideoBtn.setAttribute("title", `Copy ${videoLabel}`);
     const spanish = getDomainState().values.language === "Spanish";
     const revealEnglish = !spanish || state.neb.englishCaptionRevealed;
     const englishToggle = document.getElementById("english-caption-toggle");
@@ -336,14 +356,16 @@ function refreshOutputVisibility() {
     document.getElementById("english-caption-label").classList.toggle("hidden", spanish);
     document.getElementById("filename-output-caption-eng").classList.toggle("hidden", !revealEnglish);
     document.getElementById("copy-caption-eng-btn").classList.toggle("hidden", !revealEnglish);
-    outputNote.textContent = spanish
+    outputNote.textContent = activeProfile.id !== DEFAULT_PROFILE_ID
+      ? "These outputs use the selected naming profile. English captions can be revealed when Spanish is selected."
+      : spanish
       ? "The tool shows the MOV name, Spanish caption, and external reference. Click Show English Caption if you need it."
       : "For supported video tasks, the tool shows the MOV name, both caption names, and the external reference together.";
     downloadBtn.classList.add("hidden");
     generateBtn.textContent = "Generate Name";
-    document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
-    document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
-    document.getElementById("output-external-reference-wrap").classList.remove("hidden");
+    document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions || !recipes.eng);
+    document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions || !recipes.las);
+    document.getElementById("output-external-reference-wrap").classList.toggle("hidden", !recipes.reference);
   } else {
     const artOutputLabel = getDomainState().outputMode === "set" ? "Required Art Names" : "Art Filename";
     outputLabel.textContent = artOutputLabel;
@@ -367,6 +389,7 @@ function bindFieldHandlers(taskFields) {
   taskFields.forEach((field) => {
     const el = document.getElementById(`field-${field}`);
     if (!el) return;
+    if (el.tagName === "SELECT" && !getDomainState().values[field]) getDomainState().values[field] = el.options[0]?.value || "";
     el.value = getDomainState().values[field] ?? "";
     el.addEventListener("input", onFieldInput);
     el.addEventListener("change", onFieldInput);
@@ -443,7 +466,7 @@ function generateCurrentFilename() {
     let companionCaptions = null;
     let externalReference = "";
     if (state.domain === "neb") {
-      const outputs = buildNebOutputs(domainState.task, domainState.values);
+      const outputs = profileNebOutputs(activeProfile, domainState.task, domainState.values);
       filename = outputs.filename;
       companionCaptions = outputs.companionCaptions;
       externalReference = outputs.externalReference;
@@ -476,7 +499,7 @@ async function copyFilename(targetId, label) {
     return;
   }
   try {
-    await navigator.clipboard.writeText(text);
+    await copyText(text);
     setStatus(`${label} copied.`, "success");
   } catch {
     setStatus(`Clipboard access was blocked. Copy the ${label.toLowerCase()} manually.`, "warning");
@@ -488,18 +511,12 @@ function isMultipleEpisodeArt() {
 }
 
 function currentArtEntries() {
-  if (state.art.task === "Episode") {
-    return buildEpisodeArtEntries(state.art.values, {
-      mode: state.art.outputMode,
-      multiple: isMultipleEpisodeArt(),
-    });
-  }
-  return state.art.outputMode === "set"
-    ? requiredArtEntries(state.art.task, state.art.values)
-    : [{ filename: buildArtFilename(state.art.task, state.art.values), tags: [] }];
+  return profileArtEntries(activeProfile, state.art.task, state.art.values, {
+    mode: state.art.outputMode, multiple: isMultipleEpisodeArt(),
+  });
 }
 
-function downloadCurrentOutput() {
+async function downloadCurrentOutput() {
   if (state.domain !== "art") {
     return;
   }
@@ -513,7 +530,7 @@ function downloadCurrentOutput() {
   const suffix = state.art.outputMode === "set" ? "required_art_names" : "art_filename";
   const filename = `${titleSlug}_${taskSlug}_${suffix}.csv`;
   let rows = currentArtEntries();
-  if (state.art.outputMode === "set" && TAGGED_REQUIRED_ART_TASKS.has(state.art.task)) {
+  if (activeProfile.id === DEFAULT_PROFILE_ID && state.art.outputMode === "set" && TAGGED_REQUIRED_ART_TASKS.has(state.art.task)) {
     rows = rows.filter((row) => row.tags.length);
   }
   const csvEscape = (value) => `"${String(value).replace(/"/g, '""')}"`;
@@ -522,19 +539,22 @@ function downloadCurrentOutput() {
     ? [["filename", "tags"], ...rows.map((row) => [row.filename, row.tags.join("; ")])]
     : [["filename"], ...rows.map((row) => [row.filename])];
   const csv = csvRows.map((row) => row.map(csvEscape).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-  setStatus("Art name CSV downloaded.", "success");
+  try {
+    if (await saveText(filename, csv, "text/csv;charset=utf-8")) setStatus("Art name CSV downloaded.", "success");
+  } catch (error) { setStatus(`Download failed. ${error.message}`, "error"); }
 }
 
 function init() {
+  const applyProfile = (profile) => {
+    activeProfile = profile;
+    for (const domain of ["neb", "art"]) {
+      const types = profile.types.filter((type) => type.domain === domain);
+      if (!types.some((type) => type.name === state[domain].task)) state[domain].task = types[0].name;
+    }
+    if (state.domain) { renderBuilder(); resetOutput(); }
+  };
+  activeProfile = initializeProfiles(applyProfile);
+  applyProfile(activeProfile);
   const chooser = document.getElementById("domain-chooser");
   const taskSelect = document.getElementById("task-select");
   const artModeSelect = document.getElementById("art-mode-select");
@@ -570,7 +590,7 @@ function init() {
   videoOutput.addEventListener("click", (event) => {
     const button = event.target.closest("[data-inline-copy]");
     if (!button) return;
-    navigator.clipboard.writeText(button.dataset.inlineCopy || "").then(
+    copyText(button.dataset.inlineCopy || "").then(
       () => setStatus(`${button.dataset.inlineCopyLabel || "Art Filename"} copied.`, "success"),
       () => setStatus("Clipboard access was blocked. Copy the art filename manually.", "warning"),
     );
