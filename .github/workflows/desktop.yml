@@ -57,7 +57,7 @@ jobs:
           projectPath: desktop
           tagName: desktop-v${{ steps.version.outputs.version }}
           releaseName: Name Everything Better V${{ steps.version.outputs.version }}
-          releaseBody: 'Naming convention profiles, editable recipes and custom types. Windows installer, Linux Mint DEB/AppImage, and macOS app. See DESKTOP.md for installation.'
+          releaseBody: 'Naming convention profiles, editable recipes and custom types. Windows installer, Linux Mint DEB/AppImage, and macOS app. See desktop_builds.md for installation.'
           releaseDraft: true
           prerelease: false
           args: --bundles ${{ matrix.bundles }}
