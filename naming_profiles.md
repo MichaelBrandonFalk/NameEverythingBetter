@@ -63,6 +63,8 @@ Required variants are explicit: the app generates the rows saved in the profile,
 
 ## Saving and sharing
 
+The public default profile is available at `default-profile.json` on the NEB website. The Pages build generates it from `defaultProfile()` and the current naming engine on every deployment. It contains artwork types, filename templates, required variants, language rules, the source revision, and engine-generated conformance examples. It never exports anyone's locally saved profiles. Integrations should validate its schema and examples, and refresh the feed before generating delivery files.
+
 Profiles save locally on the current device. Website profiles belong to the browser and website origin where they were saved. Desktop profiles belong to that app's local storage. They do not automatically sync between browsers, devices or desktop apps.
 
 Export Profile downloads a JSON file. Import Profile adds a copy and selects it. Use export/import to share a team profile or move one from the website to a desktop app. Import never replaces an existing saved profile. Clearing browser or app data removes saved profiles, so keep an exported backup.
