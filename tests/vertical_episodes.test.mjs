@@ -64,3 +64,14 @@ test('export is a valid OOXML workbook with frozen/filterable headers and litera
   assert(xml.includes('state="frozen"'));assert(xml.includes('<autoFilter'));assert(xml.includes('t="inlineStr"'));assert(xml.includes('destination_uri'));
   writeFileSync(join(tmpdir(),'neb-vertical-episodes-test.xlsx'),bytes);
 });
+
+test('native external links bind only once when the bridge has multiple module URLs',async()=>{
+  let registrations=0;
+  globalThis.document={addEventListener:()=>{registrations++;}};
+  globalThis.__TAURI__={core:{invoke:async()=>true}};
+  try{
+    await import('../desktop_bridge.mjs?test-bridge-one');
+    await import('../desktop_bridge.mjs?test-bridge-two');
+    assert.equal(registrations,1);
+  }finally{delete globalThis.document;delete globalThis.__TAURI__;delete globalThis.__nebExternalLinksBound;}
+});
