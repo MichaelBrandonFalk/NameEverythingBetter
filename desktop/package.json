@@ -1,7 +1,13 @@
 {
   "name": "name-everything-better-desktop",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "scripts": {"prepare-site": "node prepare.mjs", "tauri": "tauri", "build": "tauri build"},
-  "devDependencies": {"@tauri-apps/cli": "^2.0.0"}
+  "scripts": {
+    "prepare-site": "node prepare.mjs",
+    "tauri": "tauri",
+    "build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
 }

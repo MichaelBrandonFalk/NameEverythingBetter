@@ -68,3 +68,11 @@ Profiles save locally on the current device. Website profiles belong to the brow
 Export Profile downloads a JSON file. Import Profile adds a copy and selects it. Use export/import to share a team profile or move one from the website to a desktop app. Import never replaces an existing saved profile. Clearing browser or app data removes saved profiles, so keep an exported backup.
 
 Changes in Advanced Settings apply when Save Profile is clicked. Changing profiles or reloading discards an unsaved draft.
+
+## Vertical episodes and episode batches
+
+NEB Standard includes Vertical Episodes immediately after Episode. It defaults to Spanish and generates horizontal and vertical names together. Editable copies include separate vertical video and caption recipes. Existing saved custom profiles keep their configured types; select NEB Standard or make a new copy to use newly introduced standard types.
+
+Episode Selection is available for video tasks with an episode field. Multiple Episodes supports manual lists/ranges and spreadsheet uploads. Manual entry requires the house number for every episode. Spreadsheet templates include only the selected type's required fields, with two example rows to replace. Uploads accept .xlsx and .csv, using the first worksheet and template headers.
+
+The generated Excel workbook places filename in column A, with episode, house number, orientation, output type, language and external reference beside it. PathMaker adds destination_uri. Spanish rows include English captions only when explicitly enabled. Single-episode outputs retain copy buttons.

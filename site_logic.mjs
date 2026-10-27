@@ -29,11 +29,13 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
+} from "./neb_core.mjs?v=2026-10-27-vertical";
 
-import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-14-profiles-v2";
-import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-14-profiles-v2";
+import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-27-vertical";
+import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-27-vertical";
 import { copyText, saveText } from "./desktop_bridge.mjs";
+import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-10-27-vertical";
+import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-10-27-vertical";
 
 let activeProfile = defaultProfile();
 
@@ -49,7 +51,7 @@ export {
   buildRequiredArtFilenames,
   defaultArtValuesForTask,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-10-06-multiple-episode-art";
+} from "./neb_core.mjs?v=2026-10-27-vertical";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -70,6 +72,7 @@ const FIELD_CONFIG = {
 const TASK_FIELD_LABEL_OVERRIDES = {
   neb: {
     "Episode": { title: "Series Title *" },
+    "Vertical Episodes": { title: "Series Title *" },
     "Episode Caption": { title: "Series Title *" },
     "Virtual Screening Episode": { title: "Series Title *" },
     "Virtual Screening Episode Caption": { title: "Series Title *" },
@@ -85,7 +88,8 @@ const TASK_FIELD_LABEL_OVERRIDES = {
 
 const state = {
   domain: null,
-  neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false, englishCaptionRevealed: false },
+  neb: { task: "Movie", values: { ...NEB_DEFAULTS }, subtitleManual: false, englishCaptionRevealed: false,
+    episodeMode: "single", episodeHouses: {}, includeEnglish: false, batchRows: [], singleOutput: null, inputMode: "manual", uploadRows: [] },
   art: { task: "Movie", values: { ...ART_DEFAULTS, episodes: "" }, outputMode: "set", episodeMode: "single" },
 };
 
@@ -130,6 +134,10 @@ function resetOutput() {
     output.textContent = "";
   });
   state.neb.englishCaptionRevealed = false;
+  state.neb.batchRows = [];
+  state.neb.singleOutput = null;
+  document.getElementById("vertical-output").textContent = "";
+  document.getElementById("episode-batch-output").textContent = "Generate names to prepare an Excel spreadsheet for the selected episodes.";
   if (state.domain === "neb") refreshOutputVisibility();
 }
 
@@ -227,13 +235,17 @@ function renderBuilder() {
   }
 
   const taskFields = profileFields(activeProfile, state.domain, domainState.task, domainState.outputMode).map((field) => field.key);
-  fields.innerHTML = taskFields.map((field) => renderField(field, domainState)).join("");
+  fields.innerHTML = taskFields.filter((field) => !isNebBatch() || (domainState.inputMode === "upload" ? field === "episode" : field !== "house")).map((field) => renderField(field, domainState)).join("");
+  if (isNebBatch()) {
+    fields.insertAdjacentHTML("beforeend", '<div id="batch-houses" class="field full"></div>');
+    renderBatchHouses();
+  }
   bindFieldHandlers(taskFields);
   const episodeMode = document.getElementById("episode-mode");
   if (episodeMode) {
-    episodeMode.value = state.art.episodeMode;
+    episodeMode.value = domainState.episodeMode;
     episodeMode.addEventListener("change", (event) => {
-      state.art.episodeMode = event.target.value;
+      domainState.episodeMode = event.target.value;
       renderBuilder();
       resetOutput();
     });
@@ -241,6 +253,7 @@ function renderBuilder() {
     if (episodes) episodes.addEventListener("input", onFieldInput);
   }
   refreshOutputVisibility();
+  if (state.domain === "neb") bindEpisodeUpload(domainState, selectedProfileType().fields, () => { renderBuilder(); resetOutput(); }, setStatus);
 }
 
 function renderField(field, domainState) {
@@ -255,6 +268,7 @@ function renderField(field, domainState) {
     ? TASK_FIELD_LABEL_OVERRIDES[state.domain]?.[task]?.[field] || config.label
     : `${escapeHtml(config.label)} *`;
 
+  if (state.domain === "neb" && field === "episode") return episodeSelectionHtml(domainState, label);
   if (state.domain === "art" && task === "Episode" && field === "episode") {
     const multiple = domainState.episodeMode === "multiple";
     const inputField = multiple ? "episodes" : "episode";
@@ -341,6 +355,9 @@ function refreshOutputVisibility() {
   const generateBtn = document.getElementById("generate-btn");
   const copyVideoBtn = document.getElementById("copy-video-btn");
   document.getElementById("output-video-wrap").classList.remove("hidden");
+  const batch = isNebBatch();
+  document.getElementById("single-output-stack").classList.toggle("hidden", batch);
+  document.getElementById("episode-batch-output").classList.toggle("hidden", !batch);
   if (state.domain === "neb") {
     const videoLabel = activeProfile.id === DEFAULT_PROFILE_ID ? "MOV Name" : "Video Name";
     outputLabel.textContent = videoLabel;
@@ -361,8 +378,13 @@ function refreshOutputVisibility() {
       : spanish
       ? "The tool shows the MOV name, Spanish caption, and external reference. Click Show English Caption if you need it."
       : "For supported video tasks, the tool shows the MOV name, both caption names, and the external reference together.";
-    downloadBtn.classList.add("hidden");
-    generateBtn.textContent = "Generate Name";
+    downloadBtn.classList.toggle("hidden", !batch);
+    downloadBtn.textContent = "Download Spreadsheet (.xlsx)";
+    generateBtn.textContent = batch ? "Generate Spreadsheet" : "Generate Name";
+    if (batch) outputNote.textContent = "Generate the selected episodes, then download their filenames as an Excel spreadsheet.";
+    document.getElementById("vertical-output").innerHTML = verticalOutputsHtml(state.neb.singleOutput?.vertical, {
+      language: typeLanguage(selectedProfileType(), state.neb.values), showEnglish: revealEnglish,
+    });
     document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions || !recipes.eng);
     document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions || !recipes.las);
     document.getElementById("output-external-reference-wrap").classList.toggle("hidden", !recipes.reference);
@@ -378,6 +400,7 @@ function refreshOutputVisibility() {
         : "This required set uses the highest resolution for each required art type and aspect ratio.")
       : "Switch to one-at-a-time if you need a single custom art filename.";
     downloadBtn.classList.remove("hidden");
+    downloadBtn.textContent = "Download CSV";
     generateBtn.textContent = getDomainState().outputMode === "set" || isMultipleEpisodeArt() ? "Generate Names" : "Generate Name";
     document.getElementById("output-caption-eng-wrap").classList.add("hidden");
     document.getElementById("output-caption-las-wrap").classList.add("hidden");
@@ -400,6 +423,7 @@ function onFieldInput(event) {
   const field = event.target.dataset.field;
   const domainState = getDomainState();
   domainState.values[field] = event.target.value;
+  if (state.domain === "neb" && (field === "episodes" || field === "language")) renderBatchHouses();
 
   if (state.domain === "neb" && field === "subtitle_type") {
     domainState.subtitleManual = true;
@@ -429,6 +453,9 @@ function onTaskChange(event) {
   domainState.task = event.target.value;
   if (state.domain === "neb") {
     domainState.subtitleManual = false;
+    domainState.values.language = selectedProfileType().defaultLanguage || domainState.values.language || "English";
+    domainState.episodeHouses = {};
+    domainState.uploadRows = [];
     const language = domainState.values.language || "English";
     domainState.values.subtitle_type = SUBTITLE_DEFAULT_BY_LANGUAGE[language] || "cc";
   } else {
@@ -449,6 +476,9 @@ function clearCurrentForm() {
   if (state.domain === "neb") {
     state.neb.values = { ...defaults };
     state.neb.subtitleManual = false;
+    state.neb.values.language = selectedProfileType().defaultLanguage || defaults.language;
+    state.neb.episodeHouses = {};
+    state.neb.uploadRows = [];
   } else {
     const currentMode = state.art.outputMode;
     state.art.values = { ...defaults };
@@ -466,10 +496,22 @@ function generateCurrentFilename() {
     let companionCaptions = null;
     let externalReference = "";
     if (state.domain === "neb") {
+      if (isNebBatch()) {
+        const fields = batchEpisodeInputs(domainState, {
+          needsHouse: selectedProfileType().fields.some((field) => field.key === "house"),
+        });
+        const rows = fields.flatMap((values) => outputRows(profileNebOutputs(activeProfile, domainState.task, values), values, { includeEnglish: domainState.includeEnglish }));
+        domainState.batchRows = validateOutputRows(rows);
+        document.getElementById("episode-batch-output").textContent = `${fields.length} episodes / ${rows.length} files ready. Download the spreadsheet below.`;
+        setStatus(fields.some(plusWarningNeeded) ? `Episode spreadsheet is ready. ${PLUS_WARNING_MESSAGE}` : "Episode spreadsheet is ready.", fields.some(plusWarningNeeded) ? "warning" : "success");
+        return;
+      }
       const outputs = profileNebOutputs(activeProfile, domainState.task, domainState.values);
+      domainState.singleOutput = outputs;
       filename = outputs.filename;
       companionCaptions = outputs.companionCaptions;
       externalReference = outputs.externalReference;
+      refreshOutputVisibility();
     } else {
       filename = currentArtEntries().map((entry) => entry.filename).join("\n");
     }
@@ -484,6 +526,10 @@ function generateCurrentFilename() {
       setStatus("Names generated.", "success");
     }
   } catch (error) {
+    state.neb.batchRows = [];
+    state.neb.singleOutput = null;
+    document.getElementById("vertical-output").textContent = "";
+    document.getElementById("episode-batch-output").textContent = "Check the episode details before downloading.";
     renderVideoOutput("");
     document.getElementById("filename-output-caption-eng").textContent = "";
     document.getElementById("filename-output-caption-las").textContent = "";
@@ -510,6 +556,24 @@ function isMultipleEpisodeArt() {
   return state.art.task === "Episode" && state.art.episodeMode === "multiple";
 }
 
+function isNebBatch() {
+  return state.domain === "neb" && state.neb.episodeMode === "multiple" && selectedProfileType().fields.some((field) => field.key === "episode");
+}
+
+function renderBatchHouses() {
+  const container = document.getElementById("batch-houses");
+  if (!container || !isNebBatch()) return;
+  container.innerHTML = houseInputsHtml(state.neb, { needsHouse: selectedProfileType().fields.some((field) => field.key === "house") });
+  container.querySelector('.field-grid')?.classList.add('batch-house-fields');
+  container.querySelectorAll("[data-episode-house]").forEach((input) => input.addEventListener("input", () => {
+    state.neb.episodeHouses[input.dataset.episodeHouse] = input.value;
+    resetOutput();
+  }));
+  container.querySelector("#batch-include-english")?.addEventListener("change", (event) => {
+    state.neb.includeEnglish = event.target.checked; resetOutput();
+  });
+}
+
 function currentArtEntries() {
   return profileArtEntries(activeProfile, state.art.task, state.art.values, {
     mode: state.art.outputMode, multiple: isMultipleEpisodeArt(),
@@ -517,6 +581,13 @@ function currentArtEntries() {
 }
 
 async function downloadCurrentOutput() {
+  if (isNebBatch()) {
+    if (!state.neb.batchRows.length) { setStatus("Generate the spreadsheet first.", "error"); return; }
+    try {
+      if (await downloadSpreadsheet(`${slugify(state.neb.values.title || state.neb.task)}_episode_names.xlsx`, spreadsheetRows(state.neb.batchRows))) setStatus("Episode spreadsheet downloaded.", "success");
+    } catch (error) { setStatus(`Download failed. ${error.message}`, "error"); }
+    return;
+  }
   if (state.domain !== "art") {
     return;
   }
@@ -596,6 +667,10 @@ function init() {
     );
   });
   downloadBtn.addEventListener("click", downloadCurrentOutput);
+  document.getElementById("vertical-output").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-inline-copy]");
+    if (button) copyText(button.dataset.inlineCopy).then(() => setStatus("Name copied.", "success"), () => setStatus("Clipboard access was blocked.", "error"));
+  });
 }
 
 if (typeof document !== "undefined") {

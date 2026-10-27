@@ -173,6 +173,10 @@
     .field.full {
       grid-column: 1 / -1;
     }
+    #vertical-output { display: grid; gap: 12px; }
+    .batch-house-fields { max-height: 360px; overflow-y: auto; padding: 4px; }
+    .batch-caption-choice { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .batch-caption-choice input { width: auto; min-height: auto; }
 
     label {
       font-size: 0.95rem;
@@ -344,7 +348,7 @@
     <section class="app-grid">
       <div class="card">
         <div class="field">
-          <label for="task-select">What are you making?</label>
+          <label for="task-select">What are you naming?</label>
           <select id="task-select"></select>
         </div>
         <div id="fields" class="field-grid"></div>
@@ -358,7 +362,9 @@
 
       <aside class="card">
         <h2>Generated Outputs</h2>
-        <div class="output-stack">
+        <div id="episode-batch-output" class="note hidden" role="status"></div>
+        <button id="batch-download-btn" class="action-btn primary hidden" type="button">Download Spreadsheet (.xlsx)</button>
+        <div id="single-output-stack" class="output-stack">
           <div id="output-video-wrap" class="output-item">
             <div class="output-head">
               <strong>MOV Name</strong>
@@ -368,6 +374,7 @@
             </div>
             <div id="filename-output-video" class="filename"></div>
           </div>
+          <button id="pathmaker-english-toggle" class="action-btn secondary hidden" type="button" aria-expanded="false">Show English Caption</button>
           <div id="output-caption-eng-wrap" class="output-item hidden">
             <div class="output-head">
               <strong>English Caption</strong>
@@ -395,6 +402,7 @@
             </div>
             <div id="filename-output-external-reference" class="filename"></div>
           </div>
+          <div id="vertical-output"></div>
           <div class="output-item">
             <div class="output-head">
               <strong>S3 Path</strong>
@@ -411,6 +419,11 @@
     <section class="panel card" style="margin-top: 18px;">
       <h2>NEB+PathMaker Downloads</h2>
       <div class="downloads">
+        <div class="download-card">
+          <h3>Name Everything Better V2.1</h3>
+          <p>Includes the updated PathMaker with vertical episodes and spreadsheet workflows for Windows, Linux Mint, and Mac.</p>
+          <div class="action-row"><a class="link-btn" href="https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.1.0">Download V2.1 Apps</a></div>
+        </div>
         <div class="download-card">
           <h3>NEB+PathMaker V1_3</h3>
           <p>Mac app for NEB naming plus S3 path generation.</p>
@@ -429,6 +442,6 @@
     </section>
   </main>
 
-  <script type="module" src="pathmaker_logic.mjs?v=2026-09-28-spanish-filename-es"></script>
+  <script type="module" src="pathmaker_logic.mjs?v=2026-10-27-vertical"></script>
 </body>
 </html>

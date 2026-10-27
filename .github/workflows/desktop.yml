@@ -33,6 +33,8 @@ jobs:
       - name: Install desktop tools
         working-directory: desktop
         run: npm ci
+      - name: Test naming and spreadsheet rules
+        run: node --test tests/naming_profiles.test.mjs tests/vertical_episodes.test.mjs
       - name: Read app version
         id: version
         working-directory: desktop
@@ -57,7 +59,7 @@ jobs:
           projectPath: desktop
           tagName: desktop-v${{ steps.version.outputs.version }}
           releaseName: Name Everything Better V${{ steps.version.outputs.version }}
-          releaseBody: 'Naming convention profiles, editable recipes and custom types. Windows installer, Linux Mint DEB/AppImage, and macOS app. See desktop_builds.md for installation.'
+          releaseBody: 'Vertical episodes, Excel/CSV input, episode spreadsheets, saved naming profiles, and PathMaker. Windows installer, Linux Mint DEB/AppImage, and macOS app. See desktop_builds.md for installation.'
           releaseDraft: true
           prerelease: false
           args: --bundles ${{ matrix.bundles }}

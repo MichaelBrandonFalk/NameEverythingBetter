@@ -4,7 +4,7 @@ import {
   NEB_SINGLE_HIDDEN_TASKS,
   NEB_TASKS,
   slugify,
-} from "./neb_core.mjs?v=2026-07-10-spanish-sub";
+} from "./neb_core.mjs?v=2026-10-27-vertical";
 
 const PATHMAKER_BUCKET = "gacm-axinom-staging";
 const FIELD_SKU = "sku";
@@ -51,6 +51,8 @@ const MOVIE_ROOT_TASKS = new Set([
 const SERIES_ROOT_TASKS = new Set([
   PATHMAKER_SERIES_TASK,
   "Episode",
+  "Vertical Episodes",
+  "Vertical Episode Caption",
   "Episode Caption",
   "Original Premium Series (Yearly)",
   "Exclusive Conversation (Yearly)",
@@ -155,7 +157,7 @@ function pathmakerFieldsForTask(task, { forPathOnly = false } = {}) {
   return forPathOnly ? definition.pathFields : definition.fields;
 }
 
-function buildPathmakerPath(task, rawFields) {
+function buildPathmakerPath(task, rawFields, { vertical = false } = {}) {
   if (!PATHMAKER_TASKS[task]) {
     throw new Error("Unsupported PathMaker task type.");
   }
@@ -165,6 +167,12 @@ function buildPathmakerPath(task, rawFields) {
   const root = rootForTask(task);
   const projectSlug = projectSlugForTask(task, rawFields);
   const base = projectFolder(root, projectSlug, sku);
+
+  if (task === "Vertical Episodes" || task === "Vertical Episode Caption") {
+    const season = normalizeSeasonFolder(rawFields.season);
+    const episode = normalizeEpisodeFolder(rawFields.episode);
+    return `${base}/${season}/${episode}${vertical ? "_vert" : ""}/`;
+  }
 
   if (task === PATHMAKER_SERIES_TASK) {
     return `${base}/`;

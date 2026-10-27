@@ -204,6 +204,21 @@
     </section>
 
     <section class="panel">
+      <h2>Vertical Episodes and Episode Spreadsheets</h2>
+      <p>Choose Vertical Episodes directly below Episode in Movies and Captions or NEB + PathMaker. The default language is Spanish. This type generates a horizontal video and caption plus a vertical video and caption for each episode.</p>
+      <ul>
+        <li>Horizontal video: <code>amor_secreto_s01_e01_hd_LAS0003001_20_es.mov</code></li>
+        <li>Horizontal caption: <code>amor_secreto_s01_e01_hd_LAS0003001_cc_es.vtt</code></li>
+        <li>Vertical video: <code>amor_secreto_s01_e01_vert_hd_LAS0003001_20_es.mov</code></li>
+        <li>Vertical caption: <code>amor_secreto_s01_e01_vert_hd_LAS0003001_cc_es.vtt</code></li>
+      </ul>
+      <p>PathMaker places the horizontal files in <code>s01/e01/</code> and the vertical files in <code>s01/e01_vert/</code>, under the series title and Parent SKU folder.</p>
+      <p>Episode Selection supports one episode, a list such as <code>3,7,8</code>, or a range such as <code>1-89</code>. For manual batches, enter a house number for each selected episode. IDs are entered explicitly and are not counted up automatically.</p>
+      <p>For spreadsheet input, select Multiple Episodes, then Upload Spreadsheet. Download the input template, replace its two example rows, and upload an Excel (.xlsx) or CSV file. Each row represents one episode. The Vertical Episodes template has <code>title, language, season, episode, resolution, house_number</code>; PathMaker also needs <code>sku</code>. Use the first worksheet and keep the template headers.</p>
+      <p>Generate Spreadsheet produces a downloadable Excel workbook, with one row per file and the filename in column A. PathMaker includes a <code>destination_uri</code> column with the full S3 destination. Spanish rows omit English captions unless Include English Captions is selected. Single-episode outputs keep individual copy buttons.</p>
+    </section>
+
+    <section class="panel">
       <h2>Shared Cleanup Rules</h2>
       <div class="grid">
         <article class="card">

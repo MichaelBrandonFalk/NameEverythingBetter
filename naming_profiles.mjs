@@ -1,4 +1,4 @@
-import * as core from "./neb_core.mjs?v=2026-10-14-profiles-v2";
+import * as core from "./neb_core.mjs?v=2026-10-27-vertical";
 
 export const PROFILE_VERSION = 1;
 export const DEFAULT_PROFILE_ID = "neb-standard";
@@ -43,7 +43,9 @@ function seedType(domain, name) {
   const fields = core.getTaskFields(domain, name).map((key) => ({ key, ...structuredClone(FIELD_DEFINITIONS[key]) }));
   if (fields.some((field) => field.key === "season")) fields.find((field) => field.key === "title").label = "Series Title";
   const type = { domain, name, baseTask: name, fields, templates: {}, variants: [], sizes: [],
-    englishPrefixes: domain === "neb" ? core.NEB_TASKS[name].housePrefixes : [] };
+    englishPrefixes: domain === "neb" ? core.NEB_TASKS[name].housePrefixes : [],
+    ...(domain === "neb" && core.NEB_TASKS[name].defaultLanguage ? { defaultLanguage: core.NEB_TASKS[name].defaultLanguage } : {}),
+  };
   if (domain === "neb") {
     for (const language of core.LANGUAGE_OPTIONS) {
       const house = `${language === "Spanish" ? "LAS" : type.englishPrefixes[0]}1234567`;
@@ -54,6 +56,11 @@ function seedType(domain, name) {
           eng: result.companionCaptions ? recipeFromExample(result.companionCaptions.eng, domain, "English") : "",
           las: result.companionCaptions ? recipeFromExample(result.companionCaptions.las, domain, "Spanish") : "",
           reference: "{external_reference}",
+          ...(result.vertical ? {
+            verticalFilename: recipeFromExample(result.vertical.filename, domain, language),
+            verticalEng: recipeFromExample(result.vertical.companionCaptions.eng, domain, "English"),
+            verticalLas: recipeFromExample(result.vertical.companionCaptions.las, domain, "Spanish"),
+          } : {}),
         };
       } catch (error) {
         // Dub Audio has no English recipe in the standard conventions.
@@ -210,7 +217,15 @@ export function profileNebOutputs(profile, task, rawFields) {
     recipes.eng || recipes.las ? {
       eng: render(recipes.eng, { language: profile.rules.englishMedia, caption_type: profile.rules.englishCaption }),
       las: render(recipes.las, { language: profile.rules.spanishMedia, caption_type: profile.rules.spanishCaption }),
-    } : null };
+    } : null,
+    ...(recipes.verticalFilename ? { vertical: {
+      filename: render(recipes.verticalFilename),
+      companionCaptions: {
+        eng: render(recipes.verticalEng, { language: profile.rules.englishMedia, caption_type: profile.rules.englishCaption }),
+        las: render(recipes.verticalLas, { language: profile.rules.spanishMedia, caption_type: profile.rules.spanishCaption }),
+      },
+    } } : {}),
+  };
 }
 
 export function profileArtEntries(profile, task, rawFields, { mode = "set", multiple = false } = {}) {
@@ -264,7 +279,8 @@ export function validateProfile(profile) {
     if (!Array.isArray(type.englishPrefixes) || type.englishPrefixes.some((prefix) => !/^[A-Z]{3}$/.test(prefix)) || (keys.has("house") && !type.englishPrefixes.length)) throw new Error("A house number field needs English prefixes.");
     for (const language of core.LANGUAGE_OPTIONS) {
       if (!type.templates?.[language]) throw new Error("Each type needs recipes for both languages.");
-      for (const key of ["filename", "eng", "las", "reference"]) {
+      for (const key of ["filename", "eng", "las", "reference", "verticalFilename", "verticalEng", "verticalLas"]) {
+        if (key.startsWith("vertical") && type.templates[language][key] === undefined) continue;
         const recipe = type.templates[language][key];
         if (typeof recipe !== "string" || recipe.length > 1000 || /[\\/:*?"<>|\u0000-\u001f]/.test(recipe)) throw new Error("Use a filename recipe with no path characters.");
         const remaining = recipe.replace(/\{([a-z][a-z0-9_]*)\}/g, (_, token) => {

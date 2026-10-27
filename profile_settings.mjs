@@ -1,4 +1,4 @@
-import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-14-profiles-v2';
+import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-27-vertical';
 import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs';
 
 const STORE = 'neb.naming-profiles.v1';
@@ -127,6 +127,7 @@ export function initializeProfiles(onChange) {
       <div class="field"><label for="profile-recipe-language">Recipe Language</label><select id="profile-recipe-language"><option ${language==='English'?'selected':''}>English</option><option ${language==='Spanish'?'selected':''}>Spanish</option></select></div>
       ${textField('recipe-filename',type.domain==='art'?'Art Filename Recipe':'Video Filename Recipe',recipes.filename)}
       ${type.domain==='neb'?textField('recipe-eng','English Caption Recipe (blank to omit)',recipes.eng)+textField('recipe-las','Spanish Caption Recipe (blank to omit)',recipes.las)+textField('recipe-reference','External Reference Recipe (blank to omit)',recipes.reference):''}
+      ${recipes.verticalFilename!==undefined?textField('recipe-verticalFilename','Vertical Video Recipe',recipes.verticalFilename)+textField('recipe-verticalEng','Vertical English Caption Recipe',recipes.verticalEng||'')+textField('recipe-verticalLas','Vertical Spanish Caption Recipe',recipes.verticalLas||''):''}
       ${type.domain==='art'?`<div class="field"><label for="profile-sizes">Allowed Art Sizes</label><p class="note">One per line: tag | aspect ratio | dimensions</p><textarea id="profile-sizes" rows="7">${escape(type.sizes.map((row)=>`${row.artTag} | ${row.aspectRatio} | ${row.dimensions}`).join('\n'))}</textarea></div><div class="field"><label for="profile-variants">Required Art Variants</label><p class="note">One per line: tag | aspect ratio | dimensions | tags (optional). Tags are comma separated.</p><textarea id="profile-variants" rows="7">${escape(type.variants.map((row)=>`${row.artTag} | ${row.aspectRatio} | ${row.dimensions} | ${(row.tags||[]).join(', ')}`).join('\n'))}</textarea></div>`:''}
       <div class="action-row"><button id="profile-remove-type" type="button" class="action-btn secondary">Remove This Type</button></div>`;
     element('profile-recipe-language').addEventListener('change', (event) => {
@@ -159,7 +160,8 @@ export function initializeProfiles(onChange) {
       return {artTag,aspectRatio,dimensions,...(tags?{tags:tagList.split(',').map((value)=>value.trim()).filter(Boolean)}:{})};
     });
     type.name=element('profile-type-name').value.trim(); type.fields=fields;
-    type.templates[language]={filename:element('recipe-filename').value.trim(), eng:element('recipe-eng')?.value.trim()||'',las:element('recipe-las')?.value.trim()||'',reference:element('recipe-reference')?.value.trim()||''};
+    type.templates[language]={...type.templates[language],filename:element('recipe-filename').value.trim(), eng:element('recipe-eng')?.value.trim()||'',las:element('recipe-las')?.value.trim()||'',reference:element('recipe-reference')?.value.trim()||''};
+    for(const key of ['verticalFilename','verticalEng','verticalLas']) if(element(`recipe-${key}`)) type.templates[language][key]=element(`recipe-${key}`).value.trim();
     if(type.domain==='neb') type.englishPrefixes=element('profile-english-prefixes').value.split(',').map((value)=>value.trim().toUpperCase()).filter(Boolean);
     else {type.sizes=parseSizes('profile-sizes',false);type.variants=parseSizes('profile-variants',true);}
   }

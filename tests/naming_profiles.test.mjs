@@ -74,8 +74,8 @@ test('desktop bridge uses native clipboard and save dialogs',async()=>{
   globalThis.__TAURI__={core:{invoke:async(command,args)=>{calls.push({command,args});return true;}}};
   try{
     const bridge=await import('../desktop_bridge.mjs');
-    await bridge.copyText('movie.mov');await bridge.saveText('names.csv','filename\nmovie.mov');await bridge.readProfile();
-    assert.deepEqual(calls.map(call=>call.command),['copy_text','save_text','load_profile']);
+    await bridge.copyText('movie.mov');await bridge.saveText('names.csv','filename\nmovie.mov');await bridge.readProfile();await bridge.saveBytes('names.xlsx',new Uint8Array([80,75]));
+    assert.deepEqual(calls.map(call=>call.command),['copy_text','save_text','load_profile','save_bytes']);
     assert.equal(calls[0].args.text,'movie.mov');
   }finally{delete globalThis.__TAURI__;}
 });

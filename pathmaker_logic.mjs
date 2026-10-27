@@ -1,4 +1,6 @@
 import { copyText } from "./desktop_bridge.mjs";
+import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-10-27-vertical";
+import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-10-27-vertical";
 import {
   COMPANION_CAPTION_TASKS,
   EXTRA_USAGE_OPTIONS,
@@ -10,7 +12,7 @@ import {
   SUBTITLE_TYPE_OPTIONS,
   buildNebOutputs,
   plusWarningNeeded,
-} from "./neb_core.mjs?v=2026-09-28-spanish-filename-es";
+} from "./neb_core.mjs?v=2026-10-27-vertical";
 import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,
@@ -19,7 +21,7 @@ import {
   PATHMAKER_TASKS,
   buildPathmakerPath,
   pathmakerFieldsForTask,
-} from "./neb_pathmaker_core.mjs?v=2026-08-06-pathmaker-series-v1";
+} from "./neb_pathmaker_core.mjs?v=2026-10-27-vertical";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
@@ -38,6 +40,7 @@ const FIELD_CONFIG = {
 const TASK_FIELD_LABEL_OVERRIDES = {
   [PATHMAKER_SERIES_TASK]: { title: "Series Title *" },
   "Episode": { title: "Series Title *" },
+  "Vertical Episodes": { title: "Series Title *" },
   "Episode Caption": { title: "Series Title *" },
   "Virtual Screening Episode": { title: "Series Title *" },
   "Virtual Screening Episode Caption": { title: "Series Title *" },
@@ -47,6 +50,8 @@ const state = {
   task: "Movie",
   values: { ...PATHMAKER_DEFAULTS },
   subtitleManual: false,
+  episodeMode: "single", episodeHouses: {}, includeEnglish: false, batchRows: [], singleOutput: null,
+  inputMode: "manual", uploadRows: [], showEnglish: false,
 };
 
 function taskOptions() {
@@ -91,6 +96,10 @@ function clearOutputs() {
     document.getElementById(id).textContent = "";
   });
   setStatus("", "hidden");
+  state.batchRows = []; state.singleOutput = null; state.showEnglish = false;
+  document.getElementById("vertical-output").textContent = "";
+  document.getElementById("episode-batch-output").textContent = "Generate an Excel spreadsheet for the selected episodes.";
+  refreshOutputVisibility();
 }
 
 function bindFieldHandlers(fields) {
@@ -111,7 +120,8 @@ function renderFields() {
   const fieldsEl = document.getElementById("fields");
   const fields = pathmakerFieldsForTask(state.task);
   const overrides = TASK_FIELD_LABEL_OVERRIDES[state.task] || {};
-  fieldsEl.innerHTML = fields.map((field) => {
+  fieldsEl.innerHTML = fields.filter((field) => !isBatch() || (state.inputMode === "upload" ? field === "episode" : field !== "house")).map((field) => {
+    if (field === "episode") return episodeSelectionHtml(state);
     const config = FIELD_CONFIG[field];
     const label = overrides[field] || config.label;
     const full = config.full ? " full" : "";
@@ -136,7 +146,33 @@ function renderFields() {
     `;
   }).join("");
   bindFieldHandlers(fields);
+  document.getElementById("episode-mode")?.addEventListener("change", (event) => {
+    state.episodeMode = event.target.value; renderFields(); clearOutputs();
+  });
+  document.getElementById("field-episodes")?.addEventListener("input", onFieldInput);
+  if (isBatch()) {
+    fieldsEl.insertAdjacentHTML("beforeend", '<div id="batch-houses" class="field full"></div>');
+    renderBatchHouses();
+  }
+  bindEpisodeUpload(state, fields, () => { renderFields(); clearOutputs(); }, setStatus);
   refreshOutputVisibility();
+}
+
+function isBatch() {
+  return state.episodeMode === "multiple" && pathmakerFieldsForTask(state.task).includes("episode");
+}
+
+function renderBatchHouses() {
+  const container = document.getElementById("batch-houses");
+  if (!container || !isBatch()) return;
+  container.innerHTML = houseInputsHtml(state);
+  container.querySelector('.field-grid')?.classList.add('batch-house-fields');
+  container.querySelectorAll("[data-episode-house]").forEach((input) => input.addEventListener("input", () => {
+    state.episodeHouses[input.dataset.episodeHouse] = input.value; clearOutputs();
+  }));
+  container.querySelector("#batch-include-english")?.addEventListener("change", (event) => {
+    state.includeEnglish = event.target.checked; clearOutputs();
+  });
 }
 
 function refreshOutputVisibility() {
@@ -144,14 +180,26 @@ function refreshOutputVisibility() {
   const hasCompanionCaptions = !isPathOnly && Boolean(COMPANION_CAPTION_TASKS[state.task]);
   document.getElementById("generate-btn").classList.toggle("hidden", isPathOnly);
   document.getElementById("output-video-wrap").classList.toggle("hidden", isPathOnly);
-  document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions);
+  const revealEnglish = state.values.language !== "Spanish" || state.showEnglish;
+  document.getElementById("output-caption-eng-wrap").classList.toggle("hidden", !hasCompanionCaptions || !revealEnglish);
   document.getElementById("output-caption-las-wrap").classList.toggle("hidden", !hasCompanionCaptions);
   document.getElementById("output-external-reference-wrap").classList.toggle("hidden", isPathOnly);
+  document.getElementById("single-output-stack").classList.toggle("hidden", isBatch());
+  document.getElementById("episode-batch-output").classList.toggle("hidden", !isBatch());
+  document.getElementById("batch-download-btn").classList.toggle("hidden", !isBatch());
+  document.getElementById("pathmaker-btn").classList.toggle("hidden", isBatch());
+  document.getElementById("generate-btn").textContent = isBatch() ? "Generate Spreadsheet" : "Generate Name";
+  const toggle = document.getElementById("pathmaker-english-toggle");
+  toggle.classList.toggle("hidden", !hasCompanionCaptions || state.values.language !== "Spanish");
+  toggle.textContent = state.showEnglish ? "Hide English Caption" : "Show English Caption";
+  toggle.setAttribute("aria-expanded", String(state.showEnglish));
+  document.getElementById("vertical-output").innerHTML = verticalOutputsHtml(state.singleOutput?.vertical, { language: state.values.language, showEnglish: revealEnglish });
 }
 
 function onFieldInput(event) {
   const field = event.target.dataset.field;
   state.values[field] = event.target.value;
+  if (field === "episodes") renderBatchHouses();
 
   if (field === "subtitle_type") {
     state.subtitleManual = true;
@@ -171,6 +219,8 @@ function onFieldInput(event) {
 function onTaskChange(event) {
   state.task = event.target.value;
   state.subtitleManual = false;
+  state.values.language = PATHMAKER_TASKS[state.task].defaultLanguage || state.values.language || "English";
+  state.episodeHouses = {}; state.uploadRows = [];
   const language = state.values.language || "English";
   state.values.subtitle_type = SUBTITLE_DEFAULT_BY_LANGUAGE[language] || "cc";
   renderFields();
@@ -183,17 +233,35 @@ function generateName() {
     return;
   }
   try {
+    if (isBatch()) {
+      const inputs = batchEpisodeInputs(state);
+      const rows = inputs.flatMap((fields) => outputRows(buildNebOutputs(state.task, fields), fields, {
+        includeEnglish: state.includeEnglish, pathFor: (vertical) => buildPathmakerPath(state.task, fields, { vertical }),
+      }));
+      state.batchRows = validateOutputRows(rows);
+      document.getElementById("episode-batch-output").textContent = `${inputs.length} episodes / ${rows.length} files with S3 destinations ready. Download the spreadsheet.`;
+      setStatus(inputs.some(plusWarningNeeded) ? `Episode spreadsheet is ready. ${PLUS_WARNING_MESSAGE}` : "Episode spreadsheet is ready.", inputs.some(plusWarningNeeded) ? "warning" : "success");
+      return;
+    }
     const outputs = buildNebOutputs(state.task, state.values);
+    state.singleOutput = outputs;
     document.getElementById("filename-output-video").textContent = outputs.filename;
     document.getElementById("filename-output-caption-eng").textContent = outputs.companionCaptions?.eng || "";
     document.getElementById("filename-output-caption-las").textContent = outputs.companionCaptions?.las || "";
     document.getElementById("filename-output-external-reference").textContent = outputs.externalReference;
+    refreshOutputVisibility();
+    if (state.task === "Vertical Episodes" && state.values.sku) {
+      document.getElementById("path-output").textContent = outputRows(outputs, state.values, {
+        pathFor: (vertical) => buildPathmakerPath(state.task, state.values, { vertical }), includeEnglish: state.showEnglish,
+      }).map((row) => row.destination_uri).join("\n");
+    }
     if (plusWarningNeeded(state.values)) {
       setStatus(`Name generated. ${PLUS_WARNING_MESSAGE}`, "warning");
     } else {
       setStatus("Name generated.", "success");
     }
   } catch (error) {
+    clearOutputs();
     document.getElementById("filename-output-video").textContent = "";
     document.getElementById("filename-output-caption-eng").textContent = "";
     document.getElementById("filename-output-caption-las").textContent = "";
@@ -203,7 +271,14 @@ function generateName() {
 }
 
 function generatePath() {
+  if (isBatch()) { generateName(); return; }
   try {
+    if (state.task === "Vertical Episodes") {
+      if (state.values.house) { generateName(); return; }
+      document.getElementById("path-output").textContent = [buildPathmakerPath(state.task, state.values), buildPathmakerPath(state.task, state.values, { vertical: true })].join("\n");
+      setStatus("Horizontal and vertical folders generated.", "success");
+      return;
+    }
     const path = buildPathmakerPath(state.task, state.values);
     document.getElementById("path-output").textContent = path;
     setStatus("Path generated.", "success");
@@ -215,6 +290,8 @@ function generatePath() {
 
 function clearForm() {
   state.values = { ...PATHMAKER_DEFAULTS };
+  state.values.language = PATHMAKER_TASKS[state.task].defaultLanguage || PATHMAKER_DEFAULTS.language;
+  state.episodeHouses = {}; state.uploadRows = [];
   state.subtitleManual = false;
   renderFields();
   clearOutputs();
@@ -242,6 +319,19 @@ function init() {
   document.getElementById("generate-btn").addEventListener("click", generateName);
   document.getElementById("pathmaker-btn").addEventListener("click", generatePath);
   document.getElementById("clear-btn").addEventListener("click", clearForm);
+  document.getElementById("pathmaker-english-toggle").addEventListener("click", () => {
+    state.showEnglish = !state.showEnglish; refreshOutputVisibility();
+  });
+  document.getElementById("vertical-output").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-inline-copy]");
+    if (button) copyText(button.dataset.inlineCopy).then(() => setStatus("Name copied.", "success"), () => setStatus("Clipboard access was blocked.", "error"));
+  });
+  document.getElementById("batch-download-btn").addEventListener("click", async () => {
+    if (!state.batchRows.length) { setStatus("Generate the spreadsheet first.", "error"); return; }
+    try {
+      if (await downloadSpreadsheet("episode_names_and_paths.xlsx", spreadsheetRows(state.batchRows))) setStatus("Episode spreadsheet downloaded.", "success");
+    } catch (error) { setStatus(error.message, "error"); }
+  });
   document.querySelectorAll("[data-copy-target]").forEach((button) => {
     button.addEventListener("click", () => copyValue(button.dataset.copyTarget, button.dataset.copyLabel || "Output"));
   });

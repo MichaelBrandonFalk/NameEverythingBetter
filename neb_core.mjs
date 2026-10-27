@@ -21,6 +21,8 @@ const NEB_TASKS = {
   "Caption": { fields: ["title", "language", "subtitle_type", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Dub Audio": { fields: ["title", "language", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Episode": { fields: ["title", "language", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
+  "Vertical Episodes": { fields: ["title", "language", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"], defaultLanguage: "Spanish" },
+  "Vertical Episode Caption": { fields: ["title", "language", "subtitle_type", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Episode Caption": { fields: ["title", "language", "subtitle_type", "season", "episode", "resolution", "house"], housePrefixes: ["PUR", "PFP"] },
   "Original Premium Series (Yearly)": { fields: ["title", "language", "year", "episode", "resolution", "house"], housePrefixes: ["PFP"] },
   "Exclusive Conversation (Yearly)": { fields: ["language", "year", "episode", "interviewees", "resolution", "house"], housePrefixes: ["PFP"] },
@@ -32,18 +34,22 @@ const NEB_TASKS = {
   "Extras": { fields: ["title", "language", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
 };
 const NEB_SINGLE_HIDDEN_TASKS = new Set([
+  "Vertical Episode Caption",
   "Caption",
   "Episode Caption",
   "Trailer Caption",
   "Virtual Screening Episode Caption",
 ]);
 const COMPANION_CAPTION_TASKS = {
+  "Vertical Episodes": "Vertical Episode Caption",
   "Movie": "Caption",
   "Episode": "Episode Caption",
   "Trailer": "Trailer Caption",
   "Virtual Screening Episode": "Virtual Screening Episode Caption",
 };
 const EXTERNAL_REFERENCE_EPISODIC_TASKS = new Set([
+  "Vertical Episodes",
+  "Vertical Episode Caption",
   "Episode",
   "Episode Caption",
   "Virtual Screening Episode",
@@ -733,6 +739,17 @@ function buildNebFilename(task, rawFields) {
   const resolution = normalizeResolution(rawFields.resolution);
   const house = normalizeHouse(rawFields.house, definition.housePrefixes, houseLanguage);
 
+  if (task === "Vertical Episodes" || task === "Vertical Episode Caption") {
+    const title = normalizeNebTitle(rawFields.title);
+    const season = normalizeNebSeason(rawFields.season);
+    const episode = normalizeNebEpisode(rawFields.episode);
+    const orientation = rawFields.orientation === "vertical" ? "_vert" : "";
+    const base = `${title}_${season}_${episode}${orientation}_${resolution}_${house}`;
+    return task === "Vertical Episodes"
+      ? `${base}_20_${nebLanguageSuffix(language)}.mov`
+      : `${base}_${subtitleTypeForLanguage(language, rawFields.subtitle_type)}_${nebLanguageSuffix(language)}.vtt`;
+  }
+
   if (task === "Movie") {
     const title = normalizeNebTitle(rawFields.title);
     return `${title}_feature${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
@@ -971,6 +988,10 @@ function buildNebOutputs(task, rawFields) {
     companionCaptions: buildNebCompanionCaptions(task, rawFields),
     externalReference: buildNebExternalReference(task, rawFields),
     warnings: warningsForFields(rawFields),
+    ...(task === "Vertical Episodes" ? { vertical: {
+      filename: buildNebFilename(task, { ...rawFields, orientation: "vertical" }),
+      companionCaptions: buildNebCompanionCaptions(task, { ...rawFields, orientation: "vertical" }),
+    } } : {}),
   };
 }
 

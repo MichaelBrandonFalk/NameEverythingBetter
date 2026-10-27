@@ -31,6 +31,20 @@ async fn save_text(app: tauri::AppHandle, filename: String, text: String) -> Res
 }
 
 #[tauri::command]
+async fn save_bytes(app: tauri::AppHandle, filename: String, bytes: Vec<u8>) -> Result<bool, String> {
+    if filename.contains('/') || filename.contains('\\') || !filename.ends_with(".xlsx") || bytes.len() > 8_000_000 {
+        return Err("Invalid spreadsheet download.".into());
+    }
+    let path = app.dialog().file().set_file_name(filename).add_filter("Excel spreadsheet", &["xlsx"]).blocking_save_file();
+    if let Some(path) = path {
+        let path = path.into_path().map_err(|error| error.to_string())?;
+        std::fs::write(path, bytes).map_err(|error| error.to_string())?;
+        return Ok(true);
+    }
+    Ok(false)
+}
+
+#[tauri::command]
 async fn load_profile(app: tauri::AppHandle) -> Result<Option<String>, String> {
     let path = app.dialog().file().add_filter("Naming profiles", &["json"]).blocking_pick_file();
     if let Some(path) = path {
@@ -48,7 +62,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![copy_text, save_text, load_profile, open_url])
+        .invoke_handler(tauri::generate_handler![copy_text, save_text, save_bytes, load_profile, open_url])
         .run(tauri::generate_context!())
         .expect("Unable to start Name Everything Better");
 }
