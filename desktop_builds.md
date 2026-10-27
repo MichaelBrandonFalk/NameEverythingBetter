@@ -4,10 +4,10 @@ The V2 desktop apps package the same Movies and Captions, Art and profile editor
 
 ## Downloads
 
-Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.1.0).
+Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.2.0).
 
 - Windows 10/11, 64-bit: download the setup.exe installer. It installs Microsoft WebView2 if needed; this first-time runtime installation may require an internet connection.
-- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_1_2.1.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
+- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_2_2.2.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
 - Linux portable option: download the .AppImage, allow executing it in Properties > Permissions, and launch it. Mint may need libfuse2 and libwebkit2gtk-4.1-0 installed. If the AppImage will not launch, use the DEB package.
 - macOS: download the .dmg. The V2 app has a separate versioned name from the older Mac app.
 
@@ -38,3 +38,7 @@ The app stores profiles under Tauri's local webview storage for com.nameeverythi
 ## V2.1 episode workflows
 
 V2.1 adds Vertical Episodes in both Movies and Captions and PathMaker. Episode Selection supports manual ranges/lists with an explicitly entered house number per episode, or Excel/CSV upload using a task-specific template. Batch outputs download as real Excel workbooks. PathMaker includes the full S3 destination for every horizontal and vertical file. Earlier desktop releases remain available under their original release tags.
+
+## V2.2 profile rules export
+
+V2.2 adds Export This Profile's Rules As Text Document in Advanced Settings. It creates a readable .txt guide for the selected saved standard or custom profile. Native apps use the system Save dialog. JSON profile export/import remains available separately.

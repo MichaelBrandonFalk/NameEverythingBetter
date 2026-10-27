@@ -76,3 +76,11 @@ NEB Standard includes Vertical Episodes immediately after Episode. It defaults t
 Episode Selection is available for video tasks with an episode field. Multiple Episodes supports manual lists/ranges and spreadsheet uploads. Manual entry requires the house number for every episode. Spreadsheet templates include only the selected type's required fields, with two example rows to replace. Uploads accept .xlsx and .csv, using the first worksheet and template headers.
 
 The generated Excel workbook places filename in column A, with episode, house number, orientation, output type, language and external reference beside it. PathMaker adds destination_uri. Spanish rows include English captions only when explicitly enabled. Single-episode outputs retain copy buttons.
+
+## Export a readable rules document
+
+Select a profile, open Advanced Settings and choose Export This Profile's Rules As Text Document. This downloads a UTF-8 .txt guide named for that profile, such as neb_standard_rules.txt. It works for NEB Standard and saved custom profiles.
+
+The guide includes title cleanup, language and caption codes, house-number and numeric rules, Extra Type tokens, recipe token explanations, every configured video/art type, required fields and dropdown choices, exact recipes, engine-generated examples, and allowed and required art variants with delivery tags. If a custom recipe cannot generate its example, the guide includes the recipe and explains the example error.
+
+The export reflects the selected saved profile. Save Profile first to include new edits. This text document is a readable reference. Export Profile continues to create an importable JSON backup, and Import Profile continues to load those JSON backups.

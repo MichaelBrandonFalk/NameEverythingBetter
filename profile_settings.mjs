@@ -1,5 +1,6 @@
 import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-27-vertical';
 import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-10-27-vertical';
+import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-10-27-profile-rules';
 
 const STORE = 'neb.naming-profiles.v1';
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -174,6 +175,11 @@ export function initializeProfiles(onChange) {
   element('profile-export').addEventListener('click',async()=>{
     try {const copy=selected===standard.id?editableCopy(standard,'NEB Standard Copy'):active();const saved=await saveText('naming-convention-profile.json',JSON.stringify(copy,null,2),'application/json');if(saved)status('Profile exported.');}
     catch(error){status(`Export failed. ${error.message}`,true);}
+  });
+  element('profile-export-rules').addEventListener('click',async()=>{
+    const profile=active();
+    try { if(await exportProfileRulesText(profile))status(`Saved rules for ${profile.name} exported as a text document. Save Profile first to include new edits.`); }
+    catch(error){status(`Rules export failed. ${error.message}`,true);}
   });
   function importText(text) {
     if(text.length>1_000_000)throw new Error('Choose a profile smaller than 1 MB.');

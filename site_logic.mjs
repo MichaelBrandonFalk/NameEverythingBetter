@@ -32,7 +32,7 @@ import {
 } from "./neb_core.mjs?v=2026-10-27-vertical";
 
 import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-10-27-vertical";
-import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-27-vertical";
+import { initializeProfiles } from "./profile_settings.mjs?v=2026-10-27-profile-rules";
 import { copyText, saveText } from "./desktop_bridge.mjs?v=2026-10-27-vertical";
 import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-10-27-vertical";
 import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-10-27-vertical";
