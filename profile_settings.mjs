@@ -1,5 +1,5 @@
 import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-27-vertical';
-import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs';
+import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-10-27-vertical';
 
 const STORE = 'neb.naming-profiles.v1';
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');

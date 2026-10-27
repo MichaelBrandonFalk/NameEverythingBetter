@@ -29,7 +29,8 @@ export async function saveBytes(filename, bytes, mime) {
   return true;
 }
 
-if (typeof document !== 'undefined' && isDesktop()) {
+if (typeof document !== 'undefined' && isDesktop() && !globalThis.__nebExternalLinksBound) {
+  globalThis.__nebExternalLinksBound = true;
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a[href]');
     if (!link || !link.href.startsWith('https://')) return;
