@@ -72,13 +72,14 @@ export function episodeRecords(rows, requiredFields) {
   const headers=nonempty[0].map((value)=>{const key=String(value??'').trim().toLowerCase().replace(/\s+/g,'_');return aliases[key]||key;});
   const namedHeaders=headers.filter(Boolean);
   if(new Set(namedHeaders).size!==namedHeaders.length)throw new Error('Spreadsheet headers must be unique.');
-  const missing=requiredFields.filter((key)=>!headers.includes(key));
+  const missing=requiredFields.filter((key)=>key!=='channel_configuration'&&!headers.includes(key));
   if(missing.length)throw new Error(`Missing required headers: ${missing.map((key)=>key==='house'?'house_number':key).join(', ')}.`);
   if(nonempty.length>1000)throw new Error('Upload at most 999 episode rows.');
   return nonempty.slice(1).map((row,index)=>{
     const record=Object.create(null);
     for(const key of requiredFields){
       let value=String(row[headers.indexOf(key)]??'').trim();
+      if(key==='channel_configuration'&&!value)value='Stereo audio only';
       if(!value)throw new Error(`Row ${index+2}: ${key==='house'?'house_number':key} is required.`);
       if(key==='language'){
         const options={english:'English',eng:'English',spanish:'Spanish',es:'Spanish',las:'Spanish'};
@@ -105,6 +106,6 @@ export async function readEpisodeFile(file, requiredFields){
 export function episodeTemplate(fields, values = {}){
   const keys=fields.map((field)=>typeof field==='string'?field:field.key);
   const headers=keys.map((key)=>key==='house'?'house_number':key);
-  const example={title:'Amor Secreto',language:values.language||'Spanish',season:'01',year:'2026',resolution:'hd',sku:'bcdef123-4567-890a-bcde-f1234567890b',interviewees:'Example Guest',extra_usage:'Deleted Scenes'};
+  const example={title:'Amor Secreto',language:values.language||'Spanish',season:'01',year:'2026',resolution:'hd',channel_configuration:values.channel_configuration||'Stereo audio only',sku:'bcdef123-4567-890a-bcde-f1234567890b',interviewees:'Example Guest',extra_usage:'Deleted Scenes'};
   return [headers,...[1,2].map((episode)=>keys.map((key)=>key==='episode'?String(episode).padStart(2,'0'):key==='house'?`${example.language==='Spanish'?'LAS':'PUR'}000300${episode}`:example[key]||'Example'))];
 }

@@ -1,6 +1,6 @@
-import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-10-27-vertical';
-import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-10-27-vertical';
-import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-10-27-profile-rules';
+import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-11-03-channels';
+import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-11-03-channels';
+import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-11-03-channels';
 
 const STORE = 'neb.naming-profiles.v1';
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -72,8 +72,8 @@ export function initializeProfiles(onChange) {
       <div class="action-row"><button id="profile-add-neb" type="button" class="action-btn secondary">Add Video Type</button><button id="profile-add-art" type="button" class="action-btn secondary">Add Art Type</button></div>
       <div class="field"><label for="profile-type">Type To Edit</label><select id="profile-type">${draft.types.map((type,index)=>`<option value="${index}" ${index===typeIndex?'selected':''}>${type.domain==='art'?'Art':'Video'} / ${escape(type.name)}</option>`).join('')}</select></div>
       <div id="profile-type-editor"></div></details>
-      <details class="profile-subsection"><summary>Recipe Guide</summary><p class="note">{title} and custom text fields use your title rules. {season} becomes s02, {episode} becomes e05, and {year} stays 2026. {house} keeps capital letters. {language} uses the selected language code; caption outputs use their own language. {extra} is bts, del, int, alt, mus or clp. Art recipes use {art_tag}, {aspect_ratio}, {dimensions} and {extension}. Title Treatment uses png; other art uses jpg. Video recipes specify their extension directly. {external_reference} uses the existing shortened reference rule.</p>
-      <p class="note">Add fields one per line: key | Label | text. For a dropdown: key | Label | select | choice1, choice2. Standard keys: ${Object.keys(FIELD_DEFINITIONS).join(', ')}. Custom keys can contain lowercase letters, numbers and underscores.</p></details>
+      <details class="profile-subsection"><summary>Recipe Guide</summary><p class="note">{title} and custom text fields use your title rules. {season} becomes s02, {episode} becomes e05, and {year} stays 2026. {house} keeps capital letters. {language} uses the selected language code; caption outputs use their own language. {audio_trk} maps Channel Configuration to 20 (stereo), 51 (surround), DME (stems), or 8trk/12trk/14trk/16trk/18trk (multichannel). Use it only in MOV recipes before the language suffix. {extra} is bts, del, int, alt, mus or clp. Art recipes use {art_tag}, {aspect_ratio}, {dimensions} and {extension}. Title Treatment uses png; other art uses jpg. Video recipes specify their extension directly. {external_reference} uses the existing shortened reference rule.</p>
+      <p class="note">Add fields one per line: key | Label | text. For a dropdown: key | Label | select | ["choice1", "choice2"]. JSON arrays preserve commas inside labels; simple comma-separated lists also work. Standard keys: ${Object.keys(FIELD_DEFINITIONS).join(', ')}. Custom keys can contain lowercase letters, numbers and underscores.</p></details>
       <div class="action-row"><button id="profile-save" class="action-btn primary" type="button">Save Profile</button><button id="profile-preview" class="action-btn secondary" type="button">Preview Example</button></div>
       <pre id="profile-preview-output" class="profile-preview hidden" aria-live="polite"></pre>`;
     renderTypeEditor();
@@ -123,7 +123,7 @@ export function initializeProfiles(onChange) {
     const textField = (id,label,value) => `<div class="field"><label for="${id}">${label}</label><input id="${id}" value="${escape(value)}"></div>`;
     element('profile-type-editor').innerHTML = `
       ${textField('profile-type-name','Type Name',type.name)}
-      <div class="field"><label for="profile-fields">Required Fields</label><textarea id="profile-fields" rows="6">${escape(type.fields.map((field)=>`${field.key} | ${field.label} | ${field.type}${field.type==='select'?` | ${field.options.join(', ')}`:''}`).join('\n'))}</textarea></div>
+      <div class="field"><label for="profile-fields">Required Fields</label><textarea id="profile-fields" rows="6">${escape(type.fields.map((field)=>`${field.key} | ${field.label} | ${field.type}${field.type==='select'?` | ${JSON.stringify(field.options)}`:''}`).join('\n'))}</textarea></div>
       ${type.domain==='neb'?textField('profile-english-prefixes','English House Prefixes (comma separated)',type.englishPrefixes.join(', ')):''}
       <div class="field"><label for="profile-recipe-language">Recipe Language</label><select id="profile-recipe-language"><option ${language==='English'?'selected':''}>English</option><option ${language==='Spanish'?'selected':''}>Spanish</option></select></div>
       ${textField('recipe-filename',type.domain==='art'?'Art Filename Recipe':'Video Filename Recipe',recipes.filename)}
@@ -153,7 +153,7 @@ export function initializeProfiles(onChange) {
     const fields=element('profile-fields').value.split('\n').filter((line)=>line.trim()).map((line)=>{
       const [key,label,kind,choices='']=line.split('|').map((value)=>value.trim());
       const definition={key,label,type:kind};
-      if(kind==='select') definition.options=choices.split(',').map((value)=>value.trim()).filter(Boolean);
+      if(kind==='select') definition.options=choices.startsWith('[') ? JSON.parse(choices) : choices.split(',').map((value)=>value.trim()).filter(Boolean);
       return definition;
     });
     const parseSizes=(id,tags)=>element(id).value.split('\n').filter((line)=>line.trim()).map((line)=>{

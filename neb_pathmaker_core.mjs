@@ -4,7 +4,7 @@ import {
   NEB_SINGLE_HIDDEN_TASKS,
   NEB_TASKS,
   slugify,
-} from "./neb_core.mjs?v=2026-10-27-vertical";
+} from "./neb_core.mjs?v=2026-11-03-channels";
 
 const PATHMAKER_BUCKET = "gacm-axinom-staging";
 const FIELD_SKU = "sku";
@@ -27,7 +27,7 @@ Object.entries(NEB_TASKS).forEach(([task, definition]) => {
   PATHMAKER_TASKS[task] = {
     ...definition,
     fields: [...definition.fields, FIELD_SKU],
-    pathFields: definition.fields.filter((field) => !["resolution", "house", "subtitle_type"].includes(field)).concat(FIELD_SKU),
+    pathFields: definition.fields.filter((field) => !["resolution", "house", "subtitle_type", "channel_configuration"].includes(field)).concat(FIELD_SKU),
   };
   if (task === "Movie") {
     PATHMAKER_TASKS[PATHMAKER_SERIES_TASK] = {

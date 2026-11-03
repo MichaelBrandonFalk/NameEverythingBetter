@@ -47,7 +47,7 @@ test('language text fields can still produce examples',()=>{
   type.fields.find(field=>field.key==='language').type='text';
   const text=buildProfileRulesText(profile);
   assert(!text.includes('Example could not be generated'));
-  assert(text.includes('be_like_water_feature_hd_PUR1234567_eng.mov'));
+  assert(text.includes('be_like_water_feature_hd_PUR1234567_20_eng.mov'));
 });
 
 test('native export writes a UTF-8 text document named for the selected profile',async()=>{

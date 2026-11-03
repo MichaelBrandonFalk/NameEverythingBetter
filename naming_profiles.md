@@ -86,3 +86,9 @@ Select a profile, open Advanced Settings and choose Export This Profile's Rules 
 The guide includes title cleanup, language and caption codes, house-number and numeric rules, Extra Type tokens, recipe token explanations, every configured video/art type, required fields and dropdown choices, exact recipes, engine-generated examples, and allowed and required art variants with delivery tags. If a custom recipe cannot generate its example, the guide includes the recipe and explains the example error.
 
 The export reflects the selected saved profile. Save Profile first to include new edits. This text document is a readable reference. Export Profile continues to create an importable JSON backup, and Import Profile continues to load those JSON backups.
+
+## MOV channel configuration
+
+NEB Standard and new editable copies offer Channel Configuration for all MOV types. `{audio_trk}` maps the selected description to `20` (stereo, the default), `51` (surround), `DME` (Dialogue, Music, Effects stems), or `8trk`, `12trk`, `14trk`, `16trk`, `18trk`. Place it after `{house}` and before the language suffix in MOV recipes only. Captions, art, external references and path folders do not change. Saved custom profiles are not rewritten automatically. To adopt this rule, add the `channel_configuration` field and `{audio_trk}` token, or make a fresh editable copy of NEB Standard.
+
+Dropdown choices in the Required Fields editor are shown as JSON arrays so labels containing commas stay intact. Existing comma-separated choice lists are still accepted.

@@ -1,6 +1,6 @@
-import { parseArtEpisodes } from './neb_core.mjs?v=2026-10-27-vertical';
-import { readEpisodeFile, episodeTemplate } from './spreadsheet_input.mjs?v=2026-10-27-vertical';
-import { downloadSpreadsheet } from './spreadsheet_export.mjs?v=2026-10-27-vertical';
+import { parseArtEpisodes } from './neb_core.mjs?v=2026-11-03-channels';
+import { readEpisodeFile, episodeTemplate } from './spreadsheet_input.mjs?v=2026-11-03-channels';
+import { downloadSpreadsheet } from './spreadsheet_export.mjs?v=2026-11-03-channels';
 
 export function episodeInputs(values, { multiple = false, houses = {}, needsHouse = true, pathOnly = false } = {}) {
   if (!multiple) return [values];

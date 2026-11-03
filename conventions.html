@@ -260,9 +260,17 @@
         </p>
         <p>
           Language now applies across the full Neb MOV and caption set. MOV files end with
-          <code>_eng</code> or <code>_las</code>, and Spanish caption filenames also carry
+          <code>_eng</code> or <code>_es</code>, and Spanish caption filenames also carry
           <code>_las</code> in the main stem before resolution.
         </p>
+        <p>Channel Configuration affects MOV filenames only. The selected code goes after the house number and before the language suffix. Stereo audio only is the default.</p>
+        <table><thead><tr><th>Channel Configuration</th><th>Code</th></tr></thead><tbody>
+          <tr><td>Stereo audio only</td><td><code>20</code></td></tr>
+          <tr><td>Surround audio only</td><td><code>51</code></td></tr>
+          <tr><td>Stems only (Dialogue, Music, Effects)</td><td><code>DME</code></td></tr>
+          <tr><td>Multichannel (8, 12, 14, 16 or 18 tracks)</td><td><code>8trk</code>, <code>12trk</code>, <code>14trk</code>, <code>16trk</code>, <code>18trk</code></td></tr>
+        </tbody></table>
+        <p>Captions, art names, external references and folder paths do not include this code. Spreadsheet templates include <code>channel_configuration</code>; omitted or blank values default to stereo. Existing custom profiles keep their saved recipes. To use the new rule, add a Channel Configuration dropdown and <code>{audio_trk}</code> to their MOV recipes, or make a new editable copy of NEB Standard.</p>
         <p>
           House Number validation is now language-aware. English keeps the existing task-based
           prefixes such as <code>PUR</code>, <code>PFP</code>, <code>TRL</code>, and <code>EXT</code>.
@@ -286,19 +294,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Movie</td><td><code>[title]_feature_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Caption</td><td><code>[title]_feature[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
+            <tr><td>Movie</td><td><code>[title]_feature_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Caption</td><td><code>[title]_feature[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
             <tr><td>Dub Audio</td><td><code>[title]_feature_[resolution]_[house_number]_dub_las.wav</code></td></tr>
-            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
-            <tr><td>Trailer Caption</td><td><code>[title]_trailer[_las]_[resolution]_[house_number]_[cc|sub]_[eng|las].vtt</code></td></tr>
-            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number]_[eng|las].mov</code></td></tr>
+            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Trailer Caption</td><td><code>[title]_trailer[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
           </tbody>
         </table>
         <table>

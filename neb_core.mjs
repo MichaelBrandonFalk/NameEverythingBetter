@@ -1,6 +1,19 @@
 const LANGUAGE_OPTIONS = ["English", "Spanish"];
 const SUBTITLE_TYPE_OPTIONS = ["cc", "sub"];
 const RESOLUTION_OPTIONS = ["hd", "sd", "4k"];
+const CHANNEL_CONFIGURATION_SLUGS = {
+  "Stereo audio only": "20",
+  "Surround audio only": "51",
+  "Stems only (Dialogue, Music, Effects)": "DME",
+  ...Object.fromEntries([8, 12, 14, 16, 18].map((count) => [`Multichannel (${count} tracks)`, `${count}trk`])),
+};
+const CHANNEL_CONFIGURATION_OPTIONS = Object.keys(CHANNEL_CONFIGURATION_SLUGS);
+function channelConfigurationSlug(value = "Stereo audio only") {
+  const selected = value || "Stereo audio only";
+  if (Object.hasOwn(CHANNEL_CONFIGURATION_SLUGS, selected)) return CHANNEL_CONFIGURATION_SLUGS[selected];
+  if (Object.values(CHANNEL_CONFIGURATION_SLUGS).includes(selected)) return selected;
+  throw new Error("Choose a valid Channel Configuration.");
+}
 const SUBTITLE_DEFAULT_BY_LANGUAGE = {
   English: "cc",
   Spanish: "cc",
@@ -33,6 +46,9 @@ const NEB_TASKS = {
   "Trailer Caption": { fields: ["title", "language", "subtitle_type", "resolution", "house"], housePrefixes: ["TRL"] },
   "Extras": { fields: ["title", "language", "extra_usage", "resolution", "house"], housePrefixes: ["EXT"] },
 };
+for (const [task, definition] of Object.entries(NEB_TASKS)) {
+  if (!task.includes("Caption") && task !== "Dub Audio") definition.fields.splice(definition.fields.indexOf("resolution") + 1, 0, "channel_configuration");
+}
 const NEB_SINGLE_HIDDEN_TASKS = new Set([
   "Vertical Episode Caption",
   "Caption",
@@ -59,6 +75,7 @@ const EXTERNAL_REFERENCE_EPISODIC_TASKS = new Set([
 ]);
 
 const NEB_DEFAULTS = {
+  channel_configuration: "Stereo audio only",
   title: "",
   language: "English",
   subtitle_type: "cc",
@@ -735,6 +752,7 @@ function buildRequiredArtFilenames(task, rawFields) {
 function buildNebFilename(task, rawFields) {
   const definition = NEB_TASKS[task];
   const language = normalizeNebLanguage(rawFields.language);
+  const audio = definition.fields.includes("channel_configuration") ? channelConfigurationSlug(rawFields.channel_configuration) : "";
   const houseLanguage = rawFields.house_language ? normalizeNebLanguage(rawFields.house_language) : language;
   const resolution = normalizeResolution(rawFields.resolution);
   const house = normalizeHouse(rawFields.house, definition.housePrefixes, houseLanguage);
@@ -746,13 +764,13 @@ function buildNebFilename(task, rawFields) {
     const orientation = rawFields.orientation === "vertical" ? "_vert" : "";
     const base = `${title}_${season}_${episode}${orientation}_${resolution}_${house}`;
     return task === "Vertical Episodes"
-      ? `${base}_20_${nebLanguageSuffix(language)}.mov`
+      ? `${base}_${audio}_${nebLanguageSuffix(language)}.mov`
       : `${base}_${subtitleTypeForLanguage(language, rawFields.subtitle_type)}_${nebLanguageSuffix(language)}.vtt`;
   }
 
   if (task === "Movie") {
     const title = normalizeNebTitle(rawFields.title);
-    return `${title}_feature${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_feature${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Caption") {
@@ -775,7 +793,7 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_${season}_${episode}${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_${season}_${episode}${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Episode Caption") {
@@ -792,26 +810,26 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const year = normalizeYear(rawFields.year);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_s${year}_${episode}${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_s${year}_${episode}${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Exclusive Conversation (Yearly)") {
     const year = normalizeYear(rawFields.year);
     const episode = normalizeNebEpisode(rawFields.episode);
     const interviewees = normalizeInterviewees(rawFields.interviewees);
-    return `exclusive_conversations_s${year}_${episode}_${interviewees}${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `exclusive_conversations_s${year}_${episode}_${interviewees}${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Virtual Screening") {
     const title = normalizeNebTitle(rawFields.title);
-    return `${title}_virtual_screening${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_virtual_screening${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Virtual Screening Episode") {
     const title = normalizeNebTitle(rawFields.title);
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
-    return `${title}_${season}_${episode}_virtual_screening${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_${season}_${episode}_virtual_screening${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Virtual Screening Episode Caption") {
@@ -826,7 +844,7 @@ function buildNebFilename(task, rawFields) {
 
   if (task === "Trailer") {
     const title = normalizeNebTitle(rawFields.title);
-    return `${title}_trailer${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_trailer${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   if (task === "Trailer Caption") {
@@ -840,7 +858,7 @@ function buildNebFilename(task, rawFields) {
   if (task === "Extras") {
     const title = normalizeNebTitle(rawFields.title);
     const extraPrefix = normalizeExtraUsage(rawFields.extra_usage);
-    return `${title}_${extraPrefix}${movLanguageSegment(language)}_${resolution}_${house}_${nebLanguageSuffix(language)}.mov`;
+    return `${title}_${extraPrefix}${movLanguageSegment(language)}_${resolution}_${house}_${audio}_${nebLanguageSuffix(language)}.mov`;
   }
 
   throw new Error("Unsupported task type.");
@@ -1040,6 +1058,9 @@ function validateTaskFields(domain, task, rawFields, options = {}) {
 }
 
 export {
+  CHANNEL_CONFIGURATION_OPTIONS,
+  CHANNEL_CONFIGURATION_SLUGS,
+  channelConfigurationSlug,
   ART_DEFAULTS,
   ART_DETAIL_FIELDS,
   ART_OUTPUT_MODES,

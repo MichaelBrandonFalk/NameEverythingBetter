@@ -1,6 +1,6 @@
-import { copyText } from "./desktop_bridge.mjs?v=2026-10-27-vertical";
-import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-10-27-vertical";
-import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-10-27-vertical";
+import { copyText } from "./desktop_bridge.mjs?v=2026-11-03-channels";
+import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-11-03-channels";
+import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-11-03-channels";
 import {
   COMPANION_CAPTION_TASKS,
   EXTRA_USAGE_OPTIONS,
@@ -8,11 +8,12 @@ import {
   NEB_SINGLE_HIDDEN_TASKS,
   PLUS_WARNING_MESSAGE,
   RESOLUTION_OPTIONS,
+  CHANNEL_CONFIGURATION_OPTIONS,
   SUBTITLE_DEFAULT_BY_LANGUAGE,
   SUBTITLE_TYPE_OPTIONS,
   buildNebOutputs,
   plusWarningNeeded,
-} from "./neb_core.mjs?v=2026-10-27-vertical";
+} from "./neb_core.mjs?v=2026-11-03-channels";
 import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,
@@ -21,12 +22,13 @@ import {
   PATHMAKER_TASKS,
   buildPathmakerPath,
   pathmakerFieldsForTask,
-} from "./neb_pathmaker_core.mjs?v=2026-10-27-vertical";
+} from "./neb_pathmaker_core.mjs?v=2026-11-03-channels";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },
   language: { label: "Language *", type: "select" },
   subtitle_type: { label: "Caption Type *", type: "select" },
+  channel_configuration: { label: "Channel Configuration *", type: "select" },
   resolution: { label: "Resolution *", type: "select" },
   house: { label: "House Number *", type: "text" },
   season: { label: "Season *", type: "text" },
@@ -61,6 +63,7 @@ function taskOptions() {
 function optionsForField(field) {
   if (field === "language") return LANGUAGE_OPTIONS;
   if (field === "subtitle_type") return state.values.language === "Spanish" ? ["cc"] : SUBTITLE_TYPE_OPTIONS;
+  if (field === "channel_configuration") return CHANNEL_CONFIGURATION_OPTIONS;
   if (field === "resolution") return RESOLUTION_OPTIONS;
   if (field === "extra_usage") return EXTRA_USAGE_OPTIONS.filter((option) => PATHMAKER_EXTRA_USAGE_TO_PREFIX[option]);
   return [];

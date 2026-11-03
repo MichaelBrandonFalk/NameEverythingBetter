@@ -1,10 +1,11 @@
-import * as core from "./neb_core.mjs?v=2026-10-27-vertical";
+import * as core from "./neb_core.mjs?v=2026-11-03-channels";
 
 export const PROFILE_VERSION = 1;
 export const DEFAULT_PROFILE_ID = "neb-standard";
 export const FIELD_DEFINITIONS = {
   title: { label: "Title", type: "text" },
   language: { label: "Language", type: "select", options: core.LANGUAGE_OPTIONS },
+  channel_configuration: { label: "Channel Configuration", type: "select", options: core.CHANNEL_CONFIGURATION_OPTIONS },
   resolution: { label: "Resolution", type: "select", options: core.RESOLUTION_OPTIONS },
   house: { label: "House Number", type: "text" },
   season: { label: "Season", type: "text" },
@@ -19,7 +20,7 @@ export const FIELD_DEFINITIONS = {
 };
 const TOKEN_KEYS = new Set([
   ...Object.keys(FIELD_DEFINITIONS), "extra", "caption_type", "extension", "external_reference",
-  "english_media", "spanish_media", "spanish_marker",
+  "english_media", "spanish_media", "spanish_marker", "audio_trk",
 ]);
 const SAMPLE = {
   ...core.NEB_DEFAULTS, ...core.ART_DEFAULTS, title: "Profile Example Title",
@@ -33,6 +34,7 @@ function recipeFromExample(filename, domain, language) {
     .replaceAll("s2026", "s{year}").replaceAll("s03", "{season}").replaceAll("e07", "{episode}")
     .replace(/(?:PUR|PFP|LAS|TRL|EXT)1234567/g, "{house}")
     .replaceAll("_del", "_{extra}").replaceAll("_hd", "_{resolution}")
+    .replace(/_20(?=_(?:eng|es)\.mov$)/, "_{audio_trk}")
     .replaceAll("_cc", "_{caption_type}")
     .replaceAll("_eng", domain === "art" ? "_{language}" : language === "English" ? "_{language}" : "_{english_media}")
     .replaceAll("_es", language === "Spanish" ? "_{language}" : "_{spanish_media}")
@@ -149,7 +151,7 @@ function tokensFor(profile, type, rawFields) {
   const rules = profile.rules;
   const values = Object.create(null);
   for (const field of type.fields) {
-    const value = String(rawFields[field.key] ?? "").trim();
+    const value = String(rawFields[field.key] ?? (field.key === "channel_configuration" ? "Stereo audio only" : "")).trim();
     if (!value) throw new Error(`${field.label} is required.`);
     if (field.type === "select" && !profileOptions(profile, type, field.key, rawFields).includes(value)) {
       throw new Error(`Choose an allowed ${field.label.toLowerCase()}.`);
@@ -162,6 +164,7 @@ function tokensFor(profile, type, rawFields) {
   values.language = type.domain === "art"
     ? (language === "Spanish" ? rules.spanishArt : rules.englishArt)
     : (language === "Spanish" ? rules.spanishMedia : rules.englishMedia);
+  if (type.domain === "neb") values.audio_trk = core.channelConfigurationSlug(rawFields.channel_configuration);
   values.english_media = rules.englishMedia;
   values.spanish_media = rules.spanishMedia;
   values.spanish_marker = rules.spanishMarker;

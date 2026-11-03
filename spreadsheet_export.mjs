@@ -1,4 +1,4 @@
-import { saveBytes } from './desktop_bridge.mjs?v=2026-10-27-vertical';
+import { saveBytes } from './desktop_bridge.mjs?v=2026-11-03-channels';
 const xml = (value) => String(value).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const encode = (value) => new TextEncoder().encode(value);
 const crcTable = Array.from({length:256},(_,value)=>{

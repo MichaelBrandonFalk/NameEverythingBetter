@@ -1,8 +1,8 @@
 import {
   DEFAULT_PROFILE_ID, profileNebOutputs, profileArtEntries, profileOptions, typeLanguage,
-} from './naming_profiles.mjs?v=2026-10-27-vertical';
-import { ART_TASK_DEFAULT_OVERRIDES, EXTRA_USAGE_TO_PREFIX, PLUS_WARNING_MESSAGE, slugify } from './neb_core.mjs?v=2026-10-27-vertical';
-import { saveText } from './desktop_bridge.mjs?v=2026-10-27-vertical';
+} from './naming_profiles.mjs?v=2026-11-03-channels';
+import { CHANNEL_CONFIGURATION_SLUGS, ART_TASK_DEFAULT_OVERRIDES, EXTRA_USAGE_TO_PREFIX, PLUS_WARNING_MESSAGE, slugify } from './neb_core.mjs?v=2026-11-03-channels';
+import { saveText } from './desktop_bridge.mjs?v=2026-11-03-channels';
 
 const RECIPE_LABELS = {
   filename: 'Video filename', eng: 'English caption', las: 'Spanish caption', reference: 'External reference',
@@ -163,6 +163,9 @@ export function buildProfileRulesText(profile) {
     bullet('{season}=s02; {episode}=e05; {year}=2026; {house}=the uppercase house number.'),
     bullet('{language}=the source language code for the current output. Companion caption outputs use their own caption language.'),
     bullet(`{english_media}=${rules.englishMedia}; {spanish_media}=${rules.spanishMedia}; {spanish_marker}=${rules.spanishMarker}.`),
+    bullet('Channel Configuration defaults to Stereo audio only (20). It affects MOV filenames only, immediately before the language suffix. Captions, art, external references and folder paths are unchanged.'),
+    ...Object.entries(CHANNEL_CONFIGURATION_SLUGS).map(([label,code])=>bullet(`${label}: ${code}`)),
+    bullet('{audio_trk}=the mapped Channel Configuration code. Existing custom profile recipes are preserved; add this token to their MOV recipes to opt in.'),
     bullet('{caption_type}=the caption type for that output language; {extra}=the Extra Type token; {resolution}=the selected resolution.'),
     bullet('{art_tag}, {aspect_ratio}, {dimensions}=the selected or required art variant.'),
     bullet('{extension}=png for tt; jpg for other art tags. A literal extension written into a recipe is used as written.'),

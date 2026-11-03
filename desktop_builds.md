@@ -4,10 +4,10 @@ The V2 desktop apps package the same Movies and Captions, Art and profile editor
 
 ## Downloads
 
-Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.2.0).
+Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.3.0).
 
 - Windows 10/11, 64-bit: download the setup.exe installer. It installs Microsoft WebView2 if needed; this first-time runtime installation may require an internet connection.
-- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_2_2.2.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
+- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_3_2.3.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
 - Linux portable option: download the .AppImage, allow executing it in Properties > Permissions, and launch it. Mint may need libfuse2 and libwebkit2gtk-4.1-0 installed. If the AppImage will not launch, use the DEB package.
 - macOS: download the .dmg. The V2 app has a separate versioned name from the older Mac app.
 
@@ -42,3 +42,9 @@ V2.1 adds Vertical Episodes in both Movies and Captions and PathMaker. Episode S
 ## V2.2 profile rules export
 
 V2.2 adds Export This Profile's Rules As Text Document in Advanced Settings. It creates a readable .txt guide for the selected saved standard or custom profile. Native apps use the system Save dialog. JSON profile export/import remains available separately.
+
+## V2.3 channel configuration
+
+All MOV types now include a Channel Configuration dropdown, defaulting to Stereo audio only (`20`). Other choices are Surround audio only (`51`), Stems only (`DME`), and 8, 12, 14, 16 or 18 tracks (`8trk`, `12trk`, `14trk`, `16trk`, `18trk`). The code appears between the house number and language suffix, including horizontal and vertical outputs in PathMaker. Captions, art, external references and folder paths are unchanged.
+
+Episode input templates include `channel_configuration`. Older spreadsheets without that column, and blank cells, default to stereo. Existing custom profiles remain unchanged; make a fresh editable copy of NEB Standard, or add the dropdown and `{audio_trk}` token to custom MOV recipes. Earlier releases remain available.

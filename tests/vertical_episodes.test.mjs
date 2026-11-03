@@ -30,8 +30,8 @@ test('exact horizontal and vertical destinations for both supplied examples',()=
     assert(rows.every(row=>row.house_number===values.house));
   }
 });
-test('ordinary episode naming and Spanish folder rules remain unchanged',()=>{
-  assert.equal(buildNebOutputs('Episode',fields).filename,'amor_secreto_s01_e01_las_hd_LAS0003001_es.mov');
+test('ordinary episodes include default audio and retain Spanish folder rules',()=>{
+  assert.equal(buildNebOutputs('Episode',fields).filename,'amor_secreto_s01_e01_las_hd_LAS0003001_20_es.mov');
   assert.match(buildPathmakerPath('Episode',fields),/\/s01_las\/e01\/$/);
 });
 test('manual batches demand each exact house number, without assigning a sequence',()=>{
