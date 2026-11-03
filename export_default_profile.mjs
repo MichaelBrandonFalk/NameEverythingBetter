@@ -37,6 +37,7 @@ export function defaultProfileDocument(revision = "local") {
     generatedAt: new Date().toISOString(),
     normalization: { titleCharacterSet: "ascii" },
     profile, artExtensions, extraUsageCodes: core.EXTRA_USAGE_TO_PREFIX,
+    channelConfigurationCodes: core.CHANNEL_CONFIGURATION_SLUGS,
     titleExamples: titles.map((input) => ({ input, output: core.slugify(input) })),
     artExamples,
   };

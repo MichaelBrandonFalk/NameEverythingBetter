@@ -89,6 +89,6 @@ The export reflects the selected saved profile. Save Profile first to include ne
 
 ## MOV channel configuration
 
-NEB Standard and new editable copies offer Channel Configuration for all MOV types. `{audio_trk}` maps the selected description to `20` (stereo, the default), `51` (surround), `DME` (Dialogue, Music, Effects stems), or `8trk`, `12trk`, `14trk`, `16trk`, `18trk`. Place it after `{house}` and before the language suffix in MOV recipes only. Captions, art, external references and path folders do not change. Saved custom profiles are not rewritten automatically. To adopt this rule, add the `channel_configuration` field and `{audio_trk}` token, or make a fresh editable copy of NEB Standard.
+NEB Standard and new editable copies offer Channel Configuration for all MOV types. `{audio_trk}` maps the selected description to `20` (stereo, the default), `51` (surround), `DME` (Dialogue, Music, Effects stems), or `8trk`, `12trk`, `14trk`, `16trk`, `18trk`. Place it after `{house}` and before the language suffix in MOV recipes only. Captions, art, external references and path folders do not change. Saved custom profiles are not rewritten automatically. To adopt this rule, add the `channel_configuration` field and `{audio_trk}` token, or make a fresh editable copy of NEB Standard. The public default-profile feed includes this mapping as `channelConfigurationCodes` for integrations.
 
 Dropdown choices in the Required Fields editor are shown as JSON arrays so labels containing commas stay intact. Existing comma-separated choice lists are still accepted.

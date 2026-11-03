@@ -9,6 +9,8 @@ test("public default profile is generated from the live engine, including requir
   assert.equal(document.source.revision, "test-revision");
   assert.deepEqual(document.profile, defaultProfile());
   assert.deepEqual(document.artExtensions, { ca: "jpg", bg: "jpg", tt: "png" });
+  assert.equal(document.channelConfigurationCodes["Stereo audio only"], "20");
+  assert.equal(document.channelConfigurationCodes["Stems only (Dialogue, Music, Effects)"], "DME");
   const episode = document.profile.types.find((type) => type.domain === "art" && type.name === "Episode");
   assert.equal(episode.variants.length, 2);
   for (const example of document.artExamples) {
