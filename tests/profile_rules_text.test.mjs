@@ -8,7 +8,7 @@ test('standard rules document describes every type, recipe and art requirement',
   const text=buildProfileRulesText(profile);
   assert(text.includes('Protected standard conventions'));
   assert(text.includes('Spanish video/caption language code: es'));
-  assert(text.includes('Spanish art language code: las'));
+  assert(text.includes('Spanish art language code: es'));
   for(const type of profile.types){
     assert(text.includes(type.name));
     for(const recipes of Object.values(type.templates))for(const recipe of Object.values(recipes))if(recipe)assert(text.includes(recipe));

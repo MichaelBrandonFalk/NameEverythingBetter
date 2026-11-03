@@ -22,7 +22,7 @@ test('editable copies preserve all established type outputs and requirement tags
 test('rules and language-specific house validation are isolated to the selected profile',()=>{
   const profile=editableCopy(standard);profile.rules.titleCase='upper';profile.rules.spanishMedia='spa';profile.rules.spanishPrefixes=['ESP'];
   const result=profileNebOutputs(profile,'Movie',{...sample,language:'Spanish',house:'ESP1234567'});
-  assert.equal(result.filename,'ROMEO_AND_JULIETS_MOVIE_feature_las_hd_ESP1234567_20_spa.mov');
+  assert.equal(result.filename,'ROMEO_AND_JULIETS_MOVIE_feature_es_hd_ESP1234567_20_spa.mov');
   assert.match(result.companionCaptions.las,/_cc_spa.vtt$/);
   assert.throws(()=>profileNebOutputs(profile,'Movie',{...sample,language:'Spanish',house:'LAS1234567'}));
   assert.equal(standard.rules.spanishPrefixes[0],'LAS');

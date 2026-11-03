@@ -258,10 +258,11 @@
           In the single-item browser tool, supported video tasks show the MOV output first, then
           the English caption name, then the Spanish caption name.
         </p>
+        <p>Spanish uses <code>es</code> as its language code throughout filenames and localized paths. The <code>LAS</code> house-number prefix stays unchanged. For example, Spanish movies use <code>feature_es/</code>, regular episode seasons use <code>s03_es/</code>, and art uses <code>title_es_bg_16x9_3840x2160.jpg</code>.</p>
         <p>
           Language now applies across the full Neb MOV and caption set. MOV files end with
           <code>_eng</code> or <code>_es</code>, and Spanish caption filenames also carry
-          <code>_las</code> in the main stem before resolution.
+          <code>_es</code> in the main stem before resolution.
         </p>
         <p>Channel Configuration affects MOV filenames only. The selected code goes after the house number and before the language suffix. Stereo audio only is the default.</p>
         <table><thead><tr><th>Channel Configuration</th><th>Code</th></tr></thead><tbody>
@@ -294,19 +295,19 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Movie</td><td><code>[title]_feature_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Caption</td><td><code>[title]_feature[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
-            <tr><td>Dub Audio</td><td><code>[title]_feature_[resolution]_[house_number]_dub_las.wav</code></td></tr>
-            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
-            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
-            <tr><td>Trailer</td><td><code>[title]_trailer_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
-            <tr><td>Trailer Caption</td><td><code>[title]_trailer[_las]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
-            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Movie</td><td><code>[title]_feature[_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Caption</td><td><code>[title]_feature[_es]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Dub Audio</td><td><code>[title]_feature_[resolution]_[house_number]_dub_es.wav</code></td></tr>
+            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx][_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Episode Caption</td><td><code>[series_title]_s[xx]_e[xx][_es]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx][_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees][_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening[_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Virtual Screening Episode Caption</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening[_es]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer[_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
+            <tr><td>Trailer Caption</td><td><code>[title]_trailer[_es]_[resolution]_[house_number]_[cc|sub]_[eng|es].vtt</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix][_es]_[resolution]_[house_number]_[audio_trk]_[eng|es].mov</code></td></tr>
           </tbody>
         </table>
         <table>
@@ -332,7 +333,7 @@
       <div class="section-stack">
         <p>
           For season and episode art, the title field should contain the series title. Language is
-          always included before the art tag as <code>_eng</code> or <code>_las</code>.
+          always included before the art tag as <code>_eng</code> or <code>_es</code>.
         </p>
         <p>
           For <code>Movie</code>, <code>Series</code>, <code>Season Placeholder</code>, and <code>Episode</code>,
@@ -353,20 +354,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Movie</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Series</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Season Placeholder</td><td><code>[series_title]_s[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Trailer</td><td><code>[title]_trailer_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Carousel</td><td><code>[title]_carousel_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Podcast Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Familia Mini-Novelas Series</td><td><code>[title]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
-            <tr><td>Familia Mini-Novelas Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|las]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Movie</td><td><code>[title]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Series</td><td><code>[title]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Season Placeholder</td><td><code>[series_title]_s[xx]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Episode</td><td><code>[series_title]_s[xx]_e[xx]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Original Premium Series (Yearly)</td><td><code>[title]_s[yyyy]_e[xx]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Exclusive Conversation (Yearly)</td><td><code>exclusive_conversations_s[yyyy]_e[xx]_[interviewees]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Virtual Screening</td><td><code>[title]_virtual_screening_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Virtual Screening Episode</td><td><code>[series_title]_s[xx]_e[xx]_virtual_screening_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Trailer</td><td><code>[title]_trailer_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Extras</td><td><code>[title]_[extra_prefix]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Carousel</td><td><code>[title]_carousel_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Podcast Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Familia Mini-Novelas Series</td><td><code>[title]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
+            <tr><td>Familia Mini-Novelas Episodes</td><td><code>[series_title]_s[xx]_e[xx]_[eng|es]_[art_tag]_[aspect_ratio]_[dimensions].[ext]</code></td></tr>
           </tbody>
         </table>
         <table>

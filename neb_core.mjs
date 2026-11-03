@@ -418,7 +418,7 @@ function subtitleTypeForLanguage(language, value) {
 }
 
 function movLanguageSegment(language) {
-  return language === "Spanish" ? "_las" : "";
+  return language === "Spanish" ? "_es" : "";
 }
 
 function nebLanguageSuffix(language) {
@@ -591,12 +591,12 @@ function normalizeArtTitle(value) {
 function normalizeArtLanguage(value) {
   const raw = String(value || "").trim().toLowerCase();
   if (raw === "" || raw === "english" || raw === "eng") return "english";
-  if (raw === "spanish" || raw === "las") return "spanish";
+  if (raw === "spanish" || raw === "es" || raw === "las") return "spanish";
   throw new Error("Language must be English or Spanish.");
 }
 
 function languageSuffix(value) {
-  return normalizeArtLanguage(value) === "spanish" ? "las" : "eng";
+  return normalizeArtLanguage(value) === "spanish" ? "es" : "eng";
 }
 
 function normalizeExtraUsage(value) {
@@ -777,7 +777,7 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const subtitleType = subtitleTypeForLanguage(language, rawFields.subtitle_type);
     return language === "Spanish"
-      ? `${title}_feature_las_${resolution}_${house}_${subtitleType}_es.vtt`
+      ? `${title}_feature_es_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_feature_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -786,7 +786,7 @@ function buildNebFilename(task, rawFields) {
     if (language !== "Spanish") {
       throw new Error("Dub Audio is only supported for Spanish in the current Section 7 examples.");
     }
-    return `${title}_feature_${resolution}_${house}_dub_las.wav`;
+    return `${title}_feature_${resolution}_${house}_dub_es.wav`;
   }
 
   if (task === "Episode") {
@@ -802,7 +802,7 @@ function buildNebFilename(task, rawFields) {
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
     return language === "Spanish"
-      ? `${title}_${season}_${episode}_las_${resolution}_${house}_${subtitleType}_es.vtt`
+      ? `${title}_${season}_${episode}_es_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_${season}_${episode}_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -838,7 +838,7 @@ function buildNebFilename(task, rawFields) {
     const season = normalizeNebSeason(rawFields.season);
     const episode = normalizeNebEpisode(rawFields.episode);
     return language === "Spanish"
-      ? `${title}_${season}_${episode}_virtual_screening_las_${resolution}_${house}_${subtitleType}_es.vtt`
+      ? `${title}_${season}_${episode}_virtual_screening_es_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_${season}_${episode}_virtual_screening_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 
@@ -851,7 +851,7 @@ function buildNebFilename(task, rawFields) {
     const title = normalizeNebTitle(rawFields.title);
     const subtitleType = subtitleTypeForLanguage(language, rawFields.subtitle_type);
     return language === "Spanish"
-      ? `${title}_trailer_las_${resolution}_${house}_${subtitleType}_es.vtt`
+      ? `${title}_trailer_es_${resolution}_${house}_${subtitleType}_es.vtt`
       : `${title}_trailer_${resolution}_${house}_${subtitleType}_eng.vtt`;
   }
 

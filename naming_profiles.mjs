@@ -1,7 +1,18 @@
-import * as core from "./neb_core.mjs?v=2026-11-03-channels";
+import * as core from "./neb_core.mjs?v=2026-11-03-spanish-es";
 
 export const PROFILE_VERSION = 1;
 export const DEFAULT_PROFILE_ID = "neb-standard";
+
+export function upgradeLegacySpanishCodes(profile) {
+  const upgraded = structuredClone(profile);
+  if (upgraded.spanishCodeRevision === 1) return upgraded;
+  for (const key of ["spanishMedia", "spanishArt", "spanishMarker"]) {
+    if (upgraded.rules?.[key] === "las") upgraded.rules[key] = "es";
+  }
+  upgraded.spanishCodeRevision = 1;
+  return upgraded;
+}
+
 export const FIELD_DEFINITIONS = {
   title: { label: "Title", type: "text" },
   language: { label: "Language", type: "select", options: core.LANGUAGE_OPTIONS },
@@ -36,9 +47,9 @@ function recipeFromExample(filename, domain, language) {
     .replaceAll("_del", "_{extra}").replaceAll("_hd", "_{resolution}")
     .replace(/_20(?=_(?:eng|es)\.mov$)/, "_{audio_trk}")
     .replaceAll("_cc", "_{caption_type}")
-    .replaceAll("_eng", domain === "art" ? "_{language}" : language === "English" ? "_{language}" : "_{english_media}")
-    .replaceAll("_es", language === "Spanish" ? "_{language}" : "_{spanish_media}")
-    .replaceAll("_las", domain === "art" ? "_{language}" : "_{spanish_marker}");
+    .replace(/_(eng|es)(?=\.(mov|vtt|wav)$)/, "_{language}")
+    .replaceAll("_eng", "_{language}")
+    .replaceAll("_es", domain === "art" ? "_{language}" : "_{spanish_marker}");
 }
 
 function seedType(domain, name) {
@@ -96,10 +107,10 @@ function seedType(domain, name) {
 }
 
 export function defaultProfile() {
-  return { version: PROFILE_VERSION, id: DEFAULT_PROFILE_ID, name: "NEB Standard", rules: {
+  return { version: PROFILE_VERSION, spanishCodeRevision: 1, id: DEFAULT_PROFILE_ID, name: "NEB Standard", rules: {
     titleCase: "lower", separator: "_", stripAccents: true, apostrophes: "remove", plus: "context",
-    ampersand: "and", at: "at", englishMedia: "eng", spanishMedia: "es", englishArt: "eng", spanishArt: "las",
-    spanishMarker: "las", englishCaption: "cc", spanishCaption: "cc", spanishPrefixes: ["LAS"], houseDigits: 7,
+    ampersand: "and", at: "at", englishMedia: "eng", spanishMedia: "es", englishArt: "eng", spanishArt: "es",
+    spanishMarker: "es", englishCaption: "cc", spanishCaption: "cc", spanishPrefixes: ["LAS"], houseDigits: 7,
   }, types: [
     ...core.listTasks("neb").filter((name) => !core.NEB_SINGLE_HIDDEN_TASKS.has(name)).map((name) => seedType("neb", name)),
     ...core.listTasks("art").map((name) => seedType("art", name)),

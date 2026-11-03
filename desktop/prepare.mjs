@@ -12,7 +12,7 @@ for (const file of files) {
 }
 for (const file of files.filter((file) => file.endsWith('.html'))) {
   let html = await readFile(new URL(file, output), 'utf8');
-  html = html.replace('Browser Edition', 'Desktop Edition V2.3')
+  html = html.replace('Browser Edition', 'Desktop Edition V2.4')
     .replaceAll('href="downloads/', 'href="https://michaelbrandonfalk.github.io/NameEverythingBetter/downloads/');
   if (file === 'conventions.html') html = html.replace('</body>', '<script type="module" src="desktop_bridge.mjs"></script></body>');
   await writeFile(new URL(file, output), html);

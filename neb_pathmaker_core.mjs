@@ -4,7 +4,7 @@ import {
   NEB_SINGLE_HIDDEN_TASKS,
   NEB_TASKS,
   slugify,
-} from "./neb_core.mjs?v=2026-11-03-channels";
+} from "./neb_core.mjs?v=2026-11-03-spanish-es";
 
 const PATHMAKER_BUCKET = "gacm-axinom-staging";
 const FIELD_SKU = "sku";
@@ -112,11 +112,11 @@ function titleSlug(rawFields, label = "Title") {
 }
 
 function localizedFeatureFolder(language) {
-  return language === "Spanish" ? "feature_las" : "feature";
+  return language === "Spanish" ? "feature_es" : "feature";
 }
 
 function localizedSeasonFolder(seasonFolder, language) {
-  return language === "Spanish" ? `${seasonFolder}_las` : seasonFolder;
+  return language === "Spanish" ? `${seasonFolder}_es` : seasonFolder;
 }
 
 function projectFolder(root, slug, sku) {

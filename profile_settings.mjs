@@ -1,6 +1,6 @@
-import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-11-03-channels';
-import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-11-03-channels';
-import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-11-03-channels';
+import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, upgradeLegacySpanishCodes, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-11-03-spanish-es';
+import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-11-03-spanish-es';
+import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-11-03-spanish-es';
 
 const STORE = 'neb.naming-profiles.v1';
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -17,7 +17,7 @@ export function initializeProfiles(onChange) {
     const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
     if (saved) {
       for (const item of saved.profiles || []) {
-        try { profiles.push(validateProfile(item)); } catch { storageMessage = 'Some saved profiles could not be loaded. Your standard conventions are available.'; }
+        try { const upgraded=upgradeLegacySpanishCodes(item); profiles.push(validateProfile(upgraded)); if(item.spanishCodeRevision!==1 && ['spanishMedia','spanishArt','spanishMarker'].some((key)=>item.rules[key]==='las'))storageMessage="Legacy Spanish profile language settings now use es. Other custom settings and recipes are unchanged."; } catch { storageMessage = 'Some saved profiles could not be loaded. Your standard conventions are available.'; }
       }
       if (profiles.some((profile) => profile.id === saved.selected)) selected = saved.selected;
     }
@@ -184,7 +184,7 @@ export function initializeProfiles(onChange) {
   function importText(text) {
     if(text.length>1_000_000)throw new Error('Choose a profile smaller than 1 MB.');
     const parsed=JSON.parse(text);
-    const profile=editableCopy(parsed,uniqueName(parsed.name));
+    const profile=editableCopy(upgradeLegacySpanishCodes(parsed),uniqueName(parsed.name));
     validateProfile(profile);persist([...profiles,profile],profile.id);
     draft=structuredClone(profile);typeIndex=0;language='English';renderSelector();renderEditor();onChange(active());status('Profile imported and selected.');
   }

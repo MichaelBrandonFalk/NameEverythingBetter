@@ -1,8 +1,8 @@
 import {
   DEFAULT_PROFILE_ID, profileNebOutputs, profileArtEntries, profileOptions, typeLanguage,
-} from './naming_profiles.mjs?v=2026-11-03-channels';
-import { CHANNEL_CONFIGURATION_SLUGS, ART_TASK_DEFAULT_OVERRIDES, EXTRA_USAGE_TO_PREFIX, PLUS_WARNING_MESSAGE, slugify } from './neb_core.mjs?v=2026-11-03-channels';
-import { saveText } from './desktop_bridge.mjs?v=2026-11-03-channels';
+} from './naming_profiles.mjs?v=2026-11-03-spanish-es';
+import { CHANNEL_CONFIGURATION_SLUGS, ART_TASK_DEFAULT_OVERRIDES, EXTRA_USAGE_TO_PREFIX, PLUS_WARNING_MESSAGE, slugify } from './neb_core.mjs?v=2026-11-03-spanish-es';
+import { saveText } from './desktop_bridge.mjs?v=2026-11-03-spanish-es';
 
 const RECIPE_LABELS = {
   filename: 'Video filename', eng: 'English caption', las: 'Spanish caption', reference: 'External reference',

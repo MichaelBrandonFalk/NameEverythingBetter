@@ -81,7 +81,7 @@ These selectors appear at the bottom of the NEB Art type list. They reuse the no
 - Use two digits for season and episode numbers, such as `s02` and `e05`.
 - Use a four-digit year for yearly formats, such as `2026`.
 - Language rule:
-  English adds `_eng` immediately before the art tag. Spanish adds `_las` immediately before the art tag.
+  English adds `_eng` immediately before the art tag. Spanish adds `_es` immediately before the art tag.
 
 ## Symbol Handling Rules
 
@@ -133,7 +133,7 @@ English example:
 
 Spanish example:
 
-`strong_fathers_strong_daughters_las_bg_16x9_1920x1080.jpg`
+`strong_fathers_strong_daughters_es_bg_16x9_1920x1080.jpg`
 
 ### Series
 
@@ -400,131 +400,131 @@ The tables below use one fixed sample title so every allowed filename variation 
 - Title / Series Name: `be_like_water`
 - Season sample: `s01`
 - Episode sample: `e01`
-- Languages shown: `eng`, `las`
+- Languages shown: `eng`, `es`
 ### Movie Combinations
 | Title | Language | Art Tag | Aspect Ratio | Dimensions | Example Filename |
 | --- | --- | --- | --- | --- | --- |
 | be_like_water | eng | ca | 7x3 | 2450x1100 | be_like_water_eng_ca_7x3_2450x1100.jpg |
-| be_like_water | las | ca | 7x3 | 2450x1100 | be_like_water_las_ca_7x3_2450x1100.jpg |
+| be_like_water | es | ca | 7x3 | 2450x1100 | be_like_water_es_ca_7x3_2450x1100.jpg |
 | be_like_water | eng | ca | 16x9 | 3840x2160 | be_like_water_eng_ca_16x9_3840x2160.jpg |
-| be_like_water | las | ca | 16x9 | 3840x2160 | be_like_water_las_ca_16x9_3840x2160.jpg |
+| be_like_water | es | ca | 16x9 | 3840x2160 | be_like_water_es_ca_16x9_3840x2160.jpg |
 | be_like_water | eng | ca | 16x9 | 1920x1080 | be_like_water_eng_ca_16x9_1920x1080.jpg |
-| be_like_water | las | ca | 16x9 | 1920x1080 | be_like_water_las_ca_16x9_1920x1080.jpg |
+| be_like_water | es | ca | 16x9 | 1920x1080 | be_like_water_es_ca_16x9_1920x1080.jpg |
 | be_like_water | eng | ca | 4x3 | 3200x2400 | be_like_water_eng_ca_4x3_3200x2400.jpg |
-| be_like_water | las | ca | 4x3 | 3200x2400 | be_like_water_las_ca_4x3_3200x2400.jpg |
+| be_like_water | es | ca | 4x3 | 3200x2400 | be_like_water_es_ca_4x3_3200x2400.jpg |
 | be_like_water | eng | ca | 4x3 | 2560x1920 | be_like_water_eng_ca_4x3_2560x1920.jpg |
-| be_like_water | las | ca | 4x3 | 2560x1920 | be_like_water_las_ca_4x3_2560x1920.jpg |
+| be_like_water | es | ca | 4x3 | 2560x1920 | be_like_water_es_ca_4x3_2560x1920.jpg |
 | be_like_water | eng | ca | 3x4 | 2400x3200 | be_like_water_eng_ca_3x4_2400x3200.jpg |
-| be_like_water | las | ca | 3x4 | 2400x3200 | be_like_water_las_ca_3x4_2400x3200.jpg |
+| be_like_water | es | ca | 3x4 | 2400x3200 | be_like_water_es_ca_3x4_2400x3200.jpg |
 | be_like_water | eng | ca | 3x4 | 1920x2560 | be_like_water_eng_ca_3x4_1920x2560.jpg |
-| be_like_water | las | ca | 3x4 | 1920x2560 | be_like_water_las_ca_3x4_1920x2560.jpg |
+| be_like_water | es | ca | 3x4 | 1920x2560 | be_like_water_es_ca_3x4_1920x2560.jpg |
 | be_like_water | eng | ca | 2x3 | 2000x3000 | be_like_water_eng_ca_2x3_2000x3000.jpg |
-| be_like_water | las | ca | 2x3 | 2000x3000 | be_like_water_las_ca_2x3_2000x3000.jpg |
+| be_like_water | es | ca | 2x3 | 2000x3000 | be_like_water_es_ca_2x3_2000x3000.jpg |
 | be_like_water | eng | ca | 2x3 | 1600x2400 | be_like_water_eng_ca_2x3_1600x2400.jpg |
-| be_like_water | las | ca | 2x3 | 1600x2400 | be_like_water_las_ca_2x3_1600x2400.jpg |
+| be_like_water | es | ca | 2x3 | 1600x2400 | be_like_water_es_ca_2x3_1600x2400.jpg |
 | be_like_water | eng | ca | 1x1 | 3000x3000 | be_like_water_eng_ca_1x1_3000x3000.jpg |
-| be_like_water | las | ca | 1x1 | 3000x3000 | be_like_water_las_ca_1x1_3000x3000.jpg |
+| be_like_water | es | ca | 1x1 | 3000x3000 | be_like_water_es_ca_1x1_3000x3000.jpg |
 | be_like_water | eng | bg | 16x9 | 3840x2160 | be_like_water_eng_bg_16x9_3840x2160.jpg |
-| be_like_water | las | bg | 16x9 | 3840x2160 | be_like_water_las_bg_16x9_3840x2160.jpg |
+| be_like_water | es | bg | 16x9 | 3840x2160 | be_like_water_es_bg_16x9_3840x2160.jpg |
 | be_like_water | eng | bg | 16x9 | 2560x1440 | be_like_water_eng_bg_16x9_2560x1440.jpg |
-| be_like_water | las | bg | 16x9 | 2560x1440 | be_like_water_las_bg_16x9_2560x1440.jpg |
+| be_like_water | es | bg | 16x9 | 2560x1440 | be_like_water_es_bg_16x9_2560x1440.jpg |
 | be_like_water | eng | bg | 16x9 | 1920x1080 | be_like_water_eng_bg_16x9_1920x1080.jpg |
-| be_like_water | las | bg | 16x9 | 1920x1080 | be_like_water_las_bg_16x9_1920x1080.jpg |
+| be_like_water | es | bg | 16x9 | 1920x1080 | be_like_water_es_bg_16x9_1920x1080.jpg |
 | be_like_water | eng | bg | 2x3 | 2000x3000 | be_like_water_eng_bg_2x3_2000x3000.jpg |
-| be_like_water | las | bg | 2x3 | 2000x3000 | be_like_water_las_bg_2x3_2000x3000.jpg |
+| be_like_water | es | bg | 2x3 | 2000x3000 | be_like_water_es_bg_2x3_2000x3000.jpg |
 | be_like_water | eng | bg | 7x3 | 2450x1100 | be_like_water_eng_bg_7x3_2450x1100.jpg |
-| be_like_water | las | bg | 7x3 | 2450x1100 | be_like_water_las_bg_7x3_2450x1100.jpg |
+| be_like_water | es | bg | 7x3 | 2450x1100 | be_like_water_es_bg_7x3_2450x1100.jpg |
 | be_like_water | eng | bg | 4x3 | 1440x1080 | be_like_water_eng_bg_4x3_1440x1080.jpg |
-| be_like_water | las | bg | 4x3 | 1440x1080 | be_like_water_las_bg_4x3_1440x1080.jpg |
+| be_like_water | es | bg | 4x3 | 1440x1080 | be_like_water_es_bg_4x3_1440x1080.jpg |
 | be_like_water | eng | tt | 9x5 | 1800x1000 | be_like_water_eng_tt_9x5_1800x1000.png |
-| be_like_water | las | tt | 9x5 | 1800x1000 | be_like_water_las_tt_9x5_1800x1000.png |
+| be_like_water | es | tt | 9x5 | 1800x1000 | be_like_water_es_tt_9x5_1800x1000.png |
 
 ### Series Combinations
 | Title | Language | Art Tag | Aspect Ratio | Dimensions | Example Filename |
 | --- | --- | --- | --- | --- | --- |
 | be_like_water | eng | ca | 7x3 | 2450x1100 | be_like_water_eng_ca_7x3_2450x1100.jpg |
-| be_like_water | las | ca | 7x3 | 2450x1100 | be_like_water_las_ca_7x3_2450x1100.jpg |
+| be_like_water | es | ca | 7x3 | 2450x1100 | be_like_water_es_ca_7x3_2450x1100.jpg |
 | be_like_water | eng | ca | 16x9 | 3840x2160 | be_like_water_eng_ca_16x9_3840x2160.jpg |
-| be_like_water | las | ca | 16x9 | 3840x2160 | be_like_water_las_ca_16x9_3840x2160.jpg |
+| be_like_water | es | ca | 16x9 | 3840x2160 | be_like_water_es_ca_16x9_3840x2160.jpg |
 | be_like_water | eng | ca | 16x9 | 1920x1080 | be_like_water_eng_ca_16x9_1920x1080.jpg |
-| be_like_water | las | ca | 16x9 | 1920x1080 | be_like_water_las_ca_16x9_1920x1080.jpg |
+| be_like_water | es | ca | 16x9 | 1920x1080 | be_like_water_es_ca_16x9_1920x1080.jpg |
 | be_like_water | eng | ca | 4x3 | 3200x2400 | be_like_water_eng_ca_4x3_3200x2400.jpg |
-| be_like_water | las | ca | 4x3 | 3200x2400 | be_like_water_las_ca_4x3_3200x2400.jpg |
+| be_like_water | es | ca | 4x3 | 3200x2400 | be_like_water_es_ca_4x3_3200x2400.jpg |
 | be_like_water | eng | ca | 4x3 | 2560x1920 | be_like_water_eng_ca_4x3_2560x1920.jpg |
-| be_like_water | las | ca | 4x3 | 2560x1920 | be_like_water_las_ca_4x3_2560x1920.jpg |
+| be_like_water | es | ca | 4x3 | 2560x1920 | be_like_water_es_ca_4x3_2560x1920.jpg |
 | be_like_water | eng | ca | 3x4 | 2400x3200 | be_like_water_eng_ca_3x4_2400x3200.jpg |
-| be_like_water | las | ca | 3x4 | 2400x3200 | be_like_water_las_ca_3x4_2400x3200.jpg |
+| be_like_water | es | ca | 3x4 | 2400x3200 | be_like_water_es_ca_3x4_2400x3200.jpg |
 | be_like_water | eng | ca | 3x4 | 1920x2560 | be_like_water_eng_ca_3x4_1920x2560.jpg |
-| be_like_water | las | ca | 3x4 | 1920x2560 | be_like_water_las_ca_3x4_1920x2560.jpg |
+| be_like_water | es | ca | 3x4 | 1920x2560 | be_like_water_es_ca_3x4_1920x2560.jpg |
 | be_like_water | eng | ca | 2x3 | 2000x3000 | be_like_water_eng_ca_2x3_2000x3000.jpg |
-| be_like_water | las | ca | 2x3 | 2000x3000 | be_like_water_las_ca_2x3_2000x3000.jpg |
+| be_like_water | es | ca | 2x3 | 2000x3000 | be_like_water_es_ca_2x3_2000x3000.jpg |
 | be_like_water | eng | ca | 2x3 | 1600x2400 | be_like_water_eng_ca_2x3_1600x2400.jpg |
-| be_like_water | las | ca | 2x3 | 1600x2400 | be_like_water_las_ca_2x3_1600x2400.jpg |
+| be_like_water | es | ca | 2x3 | 1600x2400 | be_like_water_es_ca_2x3_1600x2400.jpg |
 | be_like_water | eng | ca | 1x1 | 3000x3000 | be_like_water_eng_ca_1x1_3000x3000.jpg |
-| be_like_water | las | ca | 1x1 | 3000x3000 | be_like_water_las_ca_1x1_3000x3000.jpg |
+| be_like_water | es | ca | 1x1 | 3000x3000 | be_like_water_es_ca_1x1_3000x3000.jpg |
 | be_like_water | eng | bg | 16x9 | 3840x2160 | be_like_water_eng_bg_16x9_3840x2160.jpg |
-| be_like_water | las | bg | 16x9 | 3840x2160 | be_like_water_las_bg_16x9_3840x2160.jpg |
+| be_like_water | es | bg | 16x9 | 3840x2160 | be_like_water_es_bg_16x9_3840x2160.jpg |
 | be_like_water | eng | bg | 16x9 | 2560x1440 | be_like_water_eng_bg_16x9_2560x1440.jpg |
-| be_like_water | las | bg | 16x9 | 2560x1440 | be_like_water_las_bg_16x9_2560x1440.jpg |
+| be_like_water | es | bg | 16x9 | 2560x1440 | be_like_water_es_bg_16x9_2560x1440.jpg |
 | be_like_water | eng | bg | 16x9 | 1920x1080 | be_like_water_eng_bg_16x9_1920x1080.jpg |
-| be_like_water | las | bg | 16x9 | 1920x1080 | be_like_water_las_bg_16x9_1920x1080.jpg |
+| be_like_water | es | bg | 16x9 | 1920x1080 | be_like_water_es_bg_16x9_1920x1080.jpg |
 | be_like_water | eng | bg | 2x3 | 2000x3000 | be_like_water_eng_bg_2x3_2000x3000.jpg |
-| be_like_water | las | bg | 2x3 | 2000x3000 | be_like_water_las_bg_2x3_2000x3000.jpg |
+| be_like_water | es | bg | 2x3 | 2000x3000 | be_like_water_es_bg_2x3_2000x3000.jpg |
 | be_like_water | eng | bg | 7x3 | 2450x1100 | be_like_water_eng_bg_7x3_2450x1100.jpg |
-| be_like_water | las | bg | 7x3 | 2450x1100 | be_like_water_las_bg_7x3_2450x1100.jpg |
+| be_like_water | es | bg | 7x3 | 2450x1100 | be_like_water_es_bg_7x3_2450x1100.jpg |
 | be_like_water | eng | bg | 4x3 | 1440x1080 | be_like_water_eng_bg_4x3_1440x1080.jpg |
-| be_like_water | las | bg | 4x3 | 1440x1080 | be_like_water_las_bg_4x3_1440x1080.jpg |
+| be_like_water | es | bg | 4x3 | 1440x1080 | be_like_water_es_bg_4x3_1440x1080.jpg |
 | be_like_water | eng | tt | 9x5 | 1800x1000 | be_like_water_eng_tt_9x5_1800x1000.png |
-| be_like_water | las | tt | 9x5 | 1800x1000 | be_like_water_las_tt_9x5_1800x1000.png |
+| be_like_water | es | tt | 9x5 | 1800x1000 | be_like_water_es_tt_9x5_1800x1000.png |
 
 ### Season Combinations
 | Title | Season | Language | Art Tag | Aspect Ratio | Dimensions | Example Filename |
 | --- | --- | --- | --- | --- | --- | --- |
 | be_like_water | s01 | eng | ca | 7x3 | 2450x1100 | be_like_water_s01_eng_ca_7x3_2450x1100.jpg |
-| be_like_water | s01 | las | ca | 7x3 | 2450x1100 | be_like_water_s01_las_ca_7x3_2450x1100.jpg |
+| be_like_water | s01 | es | ca | 7x3 | 2450x1100 | be_like_water_s01_es_ca_7x3_2450x1100.jpg |
 | be_like_water | s01 | eng | ca | 16x9 | 3840x2160 | be_like_water_s01_eng_ca_16x9_3840x2160.jpg |
-| be_like_water | s01 | las | ca | 16x9 | 3840x2160 | be_like_water_s01_las_ca_16x9_3840x2160.jpg |
+| be_like_water | s01 | es | ca | 16x9 | 3840x2160 | be_like_water_s01_es_ca_16x9_3840x2160.jpg |
 | be_like_water | s01 | eng | ca | 16x9 | 1920x1080 | be_like_water_s01_eng_ca_16x9_1920x1080.jpg |
-| be_like_water | s01 | las | ca | 16x9 | 1920x1080 | be_like_water_s01_las_ca_16x9_1920x1080.jpg |
+| be_like_water | s01 | es | ca | 16x9 | 1920x1080 | be_like_water_s01_es_ca_16x9_1920x1080.jpg |
 | be_like_water | s01 | eng | ca | 4x3 | 3200x2400 | be_like_water_s01_eng_ca_4x3_3200x2400.jpg |
-| be_like_water | s01 | las | ca | 4x3 | 3200x2400 | be_like_water_s01_las_ca_4x3_3200x2400.jpg |
+| be_like_water | s01 | es | ca | 4x3 | 3200x2400 | be_like_water_s01_es_ca_4x3_3200x2400.jpg |
 | be_like_water | s01 | eng | ca | 4x3 | 2560x1920 | be_like_water_s01_eng_ca_4x3_2560x1920.jpg |
-| be_like_water | s01 | las | ca | 4x3 | 2560x1920 | be_like_water_s01_las_ca_4x3_2560x1920.jpg |
+| be_like_water | s01 | es | ca | 4x3 | 2560x1920 | be_like_water_s01_es_ca_4x3_2560x1920.jpg |
 | be_like_water | s01 | eng | ca | 3x4 | 2400x3200 | be_like_water_s01_eng_ca_3x4_2400x3200.jpg |
-| be_like_water | s01 | las | ca | 3x4 | 2400x3200 | be_like_water_s01_las_ca_3x4_2400x3200.jpg |
+| be_like_water | s01 | es | ca | 3x4 | 2400x3200 | be_like_water_s01_es_ca_3x4_2400x3200.jpg |
 | be_like_water | s01 | eng | ca | 3x4 | 1920x2560 | be_like_water_s01_eng_ca_3x4_1920x2560.jpg |
-| be_like_water | s01 | las | ca | 3x4 | 1920x2560 | be_like_water_s01_las_ca_3x4_1920x2560.jpg |
+| be_like_water | s01 | es | ca | 3x4 | 1920x2560 | be_like_water_s01_es_ca_3x4_1920x2560.jpg |
 | be_like_water | s01 | eng | ca | 2x3 | 2000x3000 | be_like_water_s01_eng_ca_2x3_2000x3000.jpg |
-| be_like_water | s01 | las | ca | 2x3 | 2000x3000 | be_like_water_s01_las_ca_2x3_2000x3000.jpg |
+| be_like_water | s01 | es | ca | 2x3 | 2000x3000 | be_like_water_s01_es_ca_2x3_2000x3000.jpg |
 | be_like_water | s01 | eng | ca | 2x3 | 1600x2400 | be_like_water_s01_eng_ca_2x3_1600x2400.jpg |
-| be_like_water | s01 | las | ca | 2x3 | 1600x2400 | be_like_water_s01_las_ca_2x3_1600x2400.jpg |
+| be_like_water | s01 | es | ca | 2x3 | 1600x2400 | be_like_water_s01_es_ca_2x3_1600x2400.jpg |
 | be_like_water | s01 | eng | ca | 1x1 | 3000x3000 | be_like_water_s01_eng_ca_1x1_3000x3000.jpg |
-| be_like_water | s01 | las | ca | 1x1 | 3000x3000 | be_like_water_s01_las_ca_1x1_3000x3000.jpg |
+| be_like_water | s01 | es | ca | 1x1 | 3000x3000 | be_like_water_s01_es_ca_1x1_3000x3000.jpg |
 | be_like_water | s01 | eng | bg | 16x9 | 3840x2160 | be_like_water_s01_eng_bg_16x9_3840x2160.jpg |
-| be_like_water | s01 | las | bg | 16x9 | 3840x2160 | be_like_water_s01_las_bg_16x9_3840x2160.jpg |
+| be_like_water | s01 | es | bg | 16x9 | 3840x2160 | be_like_water_s01_es_bg_16x9_3840x2160.jpg |
 | be_like_water | s01 | eng | bg | 16x9 | 2560x1440 | be_like_water_s01_eng_bg_16x9_2560x1440.jpg |
-| be_like_water | s01 | las | bg | 16x9 | 2560x1440 | be_like_water_s01_las_bg_16x9_2560x1440.jpg |
+| be_like_water | s01 | es | bg | 16x9 | 2560x1440 | be_like_water_s01_es_bg_16x9_2560x1440.jpg |
 | be_like_water | s01 | eng | bg | 16x9 | 1920x1080 | be_like_water_s01_eng_bg_16x9_1920x1080.jpg |
-| be_like_water | s01 | las | bg | 16x9 | 1920x1080 | be_like_water_s01_las_bg_16x9_1920x1080.jpg |
+| be_like_water | s01 | es | bg | 16x9 | 1920x1080 | be_like_water_s01_es_bg_16x9_1920x1080.jpg |
 | be_like_water | s01 | eng | bg | 2x3 | 2000x3000 | be_like_water_s01_eng_bg_2x3_2000x3000.jpg |
-| be_like_water | s01 | las | bg | 2x3 | 2000x3000 | be_like_water_s01_las_bg_2x3_2000x3000.jpg |
+| be_like_water | s01 | es | bg | 2x3 | 2000x3000 | be_like_water_s01_es_bg_2x3_2000x3000.jpg |
 | be_like_water | s01 | eng | bg | 7x3 | 2450x1100 | be_like_water_s01_eng_bg_7x3_2450x1100.jpg |
-| be_like_water | s01 | las | bg | 7x3 | 2450x1100 | be_like_water_s01_las_bg_7x3_2450x1100.jpg |
+| be_like_water | s01 | es | bg | 7x3 | 2450x1100 | be_like_water_s01_es_bg_7x3_2450x1100.jpg |
 | be_like_water | s01 | eng | bg | 4x3 | 1440x1080 | be_like_water_s01_eng_bg_4x3_1440x1080.jpg |
-| be_like_water | s01 | las | bg | 4x3 | 1440x1080 | be_like_water_s01_las_bg_4x3_1440x1080.jpg |
+| be_like_water | s01 | es | bg | 4x3 | 1440x1080 | be_like_water_s01_es_bg_4x3_1440x1080.jpg |
 
 ### Episode Combinations
 | Title | Season | Episode | Language | Art Tag | Aspect Ratio | Dimensions | Example Filename |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | be_like_water | s01 | e01 | eng | bg | 16x9 | 3840x2160 | be_like_water_s01_e01_eng_bg_16x9_3840x2160.jpg |
-| be_like_water | s01 | e01 | las | bg | 16x9 | 3840x2160 | be_like_water_s01_e01_las_bg_16x9_3840x2160.jpg |
+| be_like_water | s01 | e01 | es | bg | 16x9 | 3840x2160 | be_like_water_s01_e01_es_bg_16x9_3840x2160.jpg |
 | be_like_water | s01 | e01 | eng | bg | 16x9 | 2560x1440 | be_like_water_s01_e01_eng_bg_16x9_2560x1440.jpg |
-| be_like_water | s01 | e01 | las | bg | 16x9 | 2560x1440 | be_like_water_s01_e01_las_bg_16x9_2560x1440.jpg |
+| be_like_water | s01 | e01 | es | bg | 16x9 | 2560x1440 | be_like_water_s01_e01_es_bg_16x9_2560x1440.jpg |
 | be_like_water | s01 | e01 | eng | bg | 16x9 | 1920x1080 | be_like_water_s01_e01_eng_bg_16x9_1920x1080.jpg |
-| be_like_water | s01 | e01 | las | bg | 16x9 | 1920x1080 | be_like_water_s01_e01_las_bg_16x9_1920x1080.jpg |
+| be_like_water | s01 | e01 | es | bg | 16x9 | 1920x1080 | be_like_water_s01_e01_es_bg_16x9_1920x1080.jpg |
 | be_like_water | s01 | e01 | eng | bg | 2x3 | 2000x3000 | be_like_water_s01_e01_eng_bg_2x3_2000x3000.jpg |
-| be_like_water | s01 | e01 | las | bg | 2x3 | 2000x3000 | be_like_water_s01_e01_las_bg_2x3_2000x3000.jpg |
+| be_like_water | s01 | e01 | es | bg | 2x3 | 2000x3000 | be_like_water_s01_e01_es_bg_2x3_2000x3000.jpg |
 | be_like_water | s01 | e01 | eng | bg | 7x3 | 2450x1100 | be_like_water_s01_e01_eng_bg_7x3_2450x1100.jpg |
-| be_like_water | s01 | e01 | las | bg | 7x3 | 2450x1100 | be_like_water_s01_e01_las_bg_7x3_2450x1100.jpg |
+| be_like_water | s01 | e01 | es | bg | 7x3 | 2450x1100 | be_like_water_s01_e01_es_bg_7x3_2450x1100.jpg |
 | be_like_water | s01 | e01 | eng | bg | 4x3 | 1440x1080 | be_like_water_s01_e01_eng_bg_4x3_1440x1080.jpg |
-| be_like_water | s01 | e01 | las | bg | 4x3 | 1440x1080 | be_like_water_s01_e01_las_bg_4x3_1440x1080.jpg |
+| be_like_water | s01 | e01 | es | bg | 4x3 | 1440x1080 | be_like_water_s01_e01_es_bg_4x3_1440x1080.jpg |

@@ -34,7 +34,7 @@ jobs:
         working-directory: desktop
         run: npm ci
       - name: Test naming and spreadsheet rules
-        run: node --test tests/naming_profiles.test.mjs tests/vertical_episodes.test.mjs tests/profile_rules_text.test.mjs tests/channel_configuration.test.mjs tests/default_profile_export.test.mjs
+        run: node --test tests/naming_profiles.test.mjs tests/vertical_episodes.test.mjs tests/profile_rules_text.test.mjs tests/channel_configuration.test.mjs tests/default_profile_export.test.mjs tests/spanish_language_code.test.mjs
       - name: Read app version
         id: version
         working-directory: desktop
@@ -59,7 +59,7 @@ jobs:
           projectPath: desktop
           tagName: desktop-v${{ steps.version.outputs.version }}
           releaseName: Name Everything Better V${{ steps.version.outputs.version }}
-          releaseBody: 'MOV Channel Configuration (stereo, surround, stems and multichannel), saved profile rules exports, vertical episodes, Excel/CSV input, episode spreadsheets, naming profiles, and PathMaker. Windows installer, Linux Mint DEB/AppImage, and macOS app. See desktop_builds.md for installation.'
+          releaseBody: 'Unified Spanish language code es for video, captions, art and paths; LAS house IDs unchanged. MOV Channel Configuration (stereo, surround, stems and multichannel), saved profile rules exports, vertical episodes, Excel/CSV input, episode spreadsheets, naming profiles, and PathMaker. Windows installer, Linux Mint DEB/AppImage, and macOS app. See desktop_builds.md for installation.'
           releaseDraft: true
           prerelease: false
           args: --bundles ${{ matrix.bundles }}
