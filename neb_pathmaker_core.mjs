@@ -4,7 +4,7 @@ import {
   NEB_SINGLE_HIDDEN_TASKS,
   NEB_TASKS,
   slugify,
-} from "./neb_core.mjs?v=2026-11-03-spanish-es";
+} from "./neb_core.mjs?v=2026-11-12-virtual-art";
 
 const PATHMAKER_BUCKET = "gacm-axinom-staging";
 const FIELD_SKU = "sku";

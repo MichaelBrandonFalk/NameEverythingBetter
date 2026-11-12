@@ -30,13 +30,13 @@ import {
   requiredArtEntries,
   requiredArtFields,
   slugify,
-} from "./neb_core.mjs?v=2026-11-03-spanish-es";
+} from "./neb_core.mjs?v=2026-11-12-virtual-art";
 
-import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-11-03-spanish-es";
-import { initializeProfiles } from "./profile_settings.mjs?v=2026-11-03-spanish-es";
-import { copyText, saveText } from "./desktop_bridge.mjs?v=2026-11-03-spanish-es";
-import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-11-03-spanish-es";
-import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-11-03-spanish-es";
+import { defaultProfile, profileType, profileFields, profileOptions, profileNebOutputs, profileArtEntries, typeLanguage, DEFAULT_PROFILE_ID } from "./naming_profiles.mjs?v=2026-11-12-virtual-art";
+import { initializeProfiles } from "./profile_settings.mjs?v=2026-11-12-virtual-art";
+import { copyText, saveText } from "./desktop_bridge.mjs?v=2026-11-12-virtual-art";
+import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-11-12-virtual-art";
+import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-11-12-virtual-art";
 
 let activeProfile = defaultProfile();
 
@@ -52,7 +52,7 @@ export {
   buildRequiredArtFilenames,
   defaultArtValuesForTask,
   requiredArtEntries,
-} from "./neb_core.mjs?v=2026-11-03-spanish-es";
+} from "./neb_core.mjs?v=2026-11-12-virtual-art";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },

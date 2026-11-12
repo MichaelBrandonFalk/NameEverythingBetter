@@ -112,6 +112,9 @@ const ART_FILENAME_TEMPLATE_TASK = {
   [ART_TASK_FAMILIA_MINI_NOVELAS_EPISODES]: "Episode",
 };
 
+// Share requirements without sharing the destination's filename recipe.
+const ART_REQUIREMENT_SOURCE_TASK = { "Virtual Screening": "Movie" };
+
 const TASK_ART_TAG_CODES = {
   "Movie": ["ca", "bg", "tt"],
   "Series": ["ca", "bg", "tt"],
@@ -119,7 +122,7 @@ const TASK_ART_TAG_CODES = {
   "Episode": ["bg"],
   "Original Premium Series (Yearly)": ["bg"],
   "Exclusive Conversation (Yearly)": ["bg"],
-  "Virtual Screening": ["bg"],
+  "Virtual Screening": ["ca", "bg", "tt"],
   "Virtual Screening Episode": ["bg"],
   "Trailer": ["bg"],
   "Extras": ["bg"],
@@ -171,6 +174,7 @@ const TASK_ADDITIONAL_ART_SIZES = {
 };
 
 function approvedArtSizesForTask(task, artTag) {
+  task = ART_REQUIREMENT_SOURCE_TASK[task] || task;
   const merged = {};
   const addSizes = (sizes) => {
     for (const [aspectRatio, dimensions] of Object.entries(sizes || {})) {
@@ -292,6 +296,7 @@ const SYNDICATION_REQUIRED_ART_SPECS = {
   ],
 };
 const TAGGED_REQUIRED_ART_TASKS = new Set([
+  ...Object.keys(ART_REQUIREMENT_SOURCE_TASK),
   ...Object.keys(SYNDICATION_REQUIRED_ART_SPECS),
   ...Object.keys(AXINOM_REQUIRED_ART_SPECS),
 ]);
@@ -617,7 +622,7 @@ function normalizeArtTag(value) {
 }
 
 function allowedArtTagCodes(task) {
-  return TASK_ART_TAG_CODES[task] || ["ca", "bg", "tt"];
+  return TASK_ART_TAG_CODES[ART_REQUIREMENT_SOURCE_TASK[task] || task] || ["ca", "bg", "tt"];
 }
 
 function allowedArtTagLabels(task) {
@@ -698,10 +703,11 @@ function requiredArtConsolidationKey(entry) {
 }
 
 function requiredArtEntries(task, rawFields) {
+  const sourceTask = ART_REQUIREMENT_SOURCE_TASK[task] || task;
   const merged = new Map();
   const addEntries = (entries, tag) => {
     for (const entry of entries || []) {
-      const targetTask = entry.task || task;
+      const targetTask = entry.task === sourceTask ? task : entry.task || task;
       const key = [targetTask, entry.artTag, entry.aspectRatio, entry.dimensions].join("|");
       if (!merged.has(key)) {
         merged.set(key, { ...entry, task: targetTask, tags: [] });
@@ -711,9 +717,9 @@ function requiredArtEntries(task, rawFields) {
       }
     }
   };
-  addEntries(baseRequiredArtSpecs(task), "");
-  addEntries(SYNDICATION_REQUIRED_ART_SPECS[task], "syndication");
-  addEntries(AXINOM_REQUIRED_ART_SPECS[task], "Axinom");
+  addEntries(baseRequiredArtSpecs(sourceTask), "");
+  addEntries(SYNDICATION_REQUIRED_ART_SPECS[sourceTask], "syndication");
+  addEntries(AXINOM_REQUIRED_ART_SPECS[sourceTask], "Axinom");
   const consolidated = new Map();
   for (const entry of merged.values()) {
     const key = requiredArtConsolidationKey(entry);

@@ -1,4 +1,4 @@
-import * as core from "./neb_core.mjs?v=2026-11-03-spanish-es";
+import * as core from "./neb_core.mjs?v=2026-11-12-virtual-art";
 
 export const PROFILE_VERSION = 1;
 export const DEFAULT_PROFILE_ID = "neb-standard";

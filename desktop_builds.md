@@ -4,10 +4,10 @@ The V2 desktop apps package the same Movies and Captions, Art and profile editor
 
 ## Downloads
 
-Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.4.0).
+Installers are published on the [V2 release page](https://github.com/MichaelBrandonFalk/NameEverythingBetter/releases/tag/desktop-v2.5.0).
 
 - Windows 10/11, 64-bit: download the setup.exe installer. It installs Microsoft WebView2 if needed; this first-time runtime installation may require an internet connection.
-- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_4_2.4.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
+- Linux Mint 21/22, 64-bit: download the .deb package and open it with the package installer. Alternatively, run `sudo apt install ./Name.Everything.Better.V2_5_2.5.0_amd64.deb` from the folder containing the download. This installs the required GTK/WebKit packages.
 - Linux portable option: download the .AppImage, allow executing it in Properties > Permissions, and launch it. Mint may need libfuse2 and libwebkit2gtk-4.1-0 installed. If the AppImage will not launch, use the DEB package.
 - macOS: download the .dmg. The V2 app has a separate versioned name from the older Mac app.
 
@@ -52,3 +52,7 @@ Episode input templates include `channel_configuration`. Older spreadsheets with
 ## V2.4 Spanish language code
 
 Spanish now uses `es` consistently for video and caption names, art names, and localized folders such as `feature_es` and `s03_es`. Spanish house numbers still use `LAS` followed by seven digits. English naming is unchanged. Legacy saved/imported `las` language settings upgrade once; other custom settings and recipes are preserved. Previous releases remain available.
+
+## V2.5 Virtual Screening art
+
+Virtual Screening now shares Movie's required art types, ratios, highest-resolution dimensions and Axinom/syndication tags. Filenames retain `_virtual_screening_`. One-at-a-time naming supports Cover Art, Background Art and Title Treatment. Virtual Screening Episode is unchanged. NEB Standard and newly created profile copies use these requirements; existing custom profiles retain their saved requirements.

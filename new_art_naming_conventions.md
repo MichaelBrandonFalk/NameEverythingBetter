@@ -51,7 +51,7 @@ These are the three art types currently used in the standard:
 | Episode | `bg` |
 | Original Premium Series (Yearly) | `bg` |
 | Exclusive Conversation (Yearly) | `bg` |
-| Virtual Screening | `bg` |
+| Virtual Screening | `ca`, `bg`, `tt` |
 | Virtual Screening Episode | `bg` |
 | Trailer | `bg` |
 | Extras | `bg` |
@@ -240,6 +240,8 @@ Example:
 `exclusive_conversations_s2026_e09_anthony_hopkins_eng_bg_16x9_1920x1080.jpg`
 
 ### Virtual Screening
+
+The required set matches Movie art types, aspect ratios, dimensions, and Axinom/syndication tags. Filenames retain `_virtual_screening_`. Virtual Screening Episode requirements are unchanged.
 
 Formula:
 

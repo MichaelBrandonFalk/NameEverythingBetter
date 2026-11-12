@@ -1,6 +1,6 @@
-import { copyText } from "./desktop_bridge.mjs?v=2026-11-03-spanish-es";
-import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-11-03-spanish-es";
-import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-11-03-spanish-es";
+import { copyText } from "./desktop_bridge.mjs?v=2026-11-12-virtual-art";
+import { batchEpisodeInputs, bindEpisodeUpload, episodeSelectionHtml, houseInputsHtml, outputRows, spreadsheetRows, verticalOutputsHtml, validateOutputRows } from "./episode_workflow.mjs?v=2026-11-12-virtual-art";
+import { downloadSpreadsheet } from "./spreadsheet_export.mjs?v=2026-11-12-virtual-art";
 import {
   COMPANION_CAPTION_TASKS,
   EXTRA_USAGE_OPTIONS,
@@ -13,7 +13,7 @@ import {
   SUBTITLE_TYPE_OPTIONS,
   buildNebOutputs,
   plusWarningNeeded,
-} from "./neb_core.mjs?v=2026-11-03-spanish-es";
+} from "./neb_core.mjs?v=2026-11-12-virtual-art";
 import {
   FIELD_SKU,
   PATHMAKER_DEFAULTS,
@@ -22,7 +22,7 @@ import {
   PATHMAKER_TASKS,
   buildPathmakerPath,
   pathmakerFieldsForTask,
-} from "./neb_pathmaker_core.mjs?v=2026-11-03-spanish-es";
+} from "./neb_pathmaker_core.mjs?v=2026-11-12-virtual-art";
 
 const FIELD_CONFIG = {
   title: { label: "Title *", type: "text", full: true },

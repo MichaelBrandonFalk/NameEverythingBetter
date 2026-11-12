@@ -1,6 +1,6 @@
-import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, upgradeLegacySpanishCodes, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-11-03-spanish-es';
-import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-11-03-spanish-es';
-import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-11-03-spanish-es';
+import { defaultProfile, editableCopy, validateProfile, FIELD_DEFINITIONS, upgradeLegacySpanishCodes, profileNebOutputs, profileArtEntries } from './naming_profiles.mjs?v=2026-11-12-virtual-art';
+import { isDesktop, readProfile, saveText } from './desktop_bridge.mjs?v=2026-11-12-virtual-art';
+import { exportProfileRulesText } from './profile_rules_text.mjs?v=2026-11-12-virtual-art';
 
 const STORE = 'neb.naming-profiles.v1';
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
